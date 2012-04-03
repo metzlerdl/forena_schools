@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   height="100%" width="100%"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:components="components.*" xmlns:services="services.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals; 
+			
+			public function refreshTestData():void { 
+				if (yearSelect.selectedValue && testSelect.selectedValue) { 
+					statSvc.send({school_year: yearSelect.selectedValue, test_id:testSelect.selectedValue}); 
+				}
+			}
+			
+			public function recalcStats():void { 
+				if (yearSelect.selectedValue && testSelect.selectedValue) { 
+					statSvc.send({method: "recalcStats", school_year: yearSelect.selectedValue, test_id:testSelect.selectedValue}); 					
+				}
+			}
+			
+			public function renormalizeScores():void { 
+				if (yearSelect.selectedValue && testSelect.selectedValue) { 
+					statSvc.send({method: "renormalizeScores", school_year: yearSelect.selectedValue, test_id: testSelect.selectedValue}); 
+				}
+			}
+			
+
+			
+	
+		]]>
+	</fx:Script>
+	<services:RestXMLService id="yearSvc" defaultService="Lookup" defaultMethod="schoolYears" preload="true"/> 
+	<services:RestXMLService id="testSvc" defaultService="Lookup" defaultMethod="tests" preload="true"/> 
+	<services:RestXMLService id="statSvc" defaultService="TestControlPanel" defaultMethod="scoreStats" showProgress="true"/> 
+	<s:Panel height="100%" width="100%">
+		<s:layout>
+			<s:VerticalLayout/> 
+		</s:layout>
+		<s:controlBarContent>
+			<s:Button label="Calculate Statistics" enabled="{statSvc.xml.row.length()>0}" click="recalcStats()"/> 
+   	    	<s:Button label="Renormalize Scores" enabled="{statSvc.xml.row.length()>0}" click="renormalizeScores()"/> 
+		</s:controlBarContent>
+		<components:BindingList id="yearSelect" width="100%" XML="{yearSvc.xml.row}" dataField="school_year" labelField="label" minHeight="10" change="refreshTestData()" defaultSelect="true">
+			<components:layout>
+				<s:HorizontalLayout/> 
+			</components:layout>
+		</components:BindingList>
+		
+		<mx:HBox width="100%" height="100%">		
+		    <components:BindingList id="testSelect" XML="{testSvc.xml.row}" dataField="test_id" labelField="name" change="refreshTestData()"
+								 height="100%">
+				<components:layout>
+					<s:VerticalLayout/>
+				</components:layout>
+			</components:BindingList> 
+			<s:DataGrid id="statsGrid" height="100%" width="100%">
+				<s:dataProvider>
+					<s:XMLListCollection source="{statSvc.xml.row}"/> 
+				</s:dataProvider>
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn headerText="building" dataField="building" width="100"/> 
+						<s:GridColumn headerText="grade" dataField="grade" width="90"/> 	
+						<s:GridColumn headerText="schedule" dataField="schedule" width="100"/> 
+						<s:GridColumn headerText="students" dataField="total_students" width="90"/> 
+						<s:GridColumn headerText="stats" dataField="stat_scores" width="90"/> 
+						<s:GridColumn headerText="enrolled" dataField="building_students" width="90"/> 
+						<s:GridColumn headerText="coverage" dataField="coverage" width="90"/> 
+						<s:GridColumn headerText="statistics" dataField="calc_status" width="90"/>
+						<s:GridColumn headerText="min date" dataField="min_date_taken" width="90"/>
+						<s:GridColumn headerText="max date" dataField="max_date_taken" width="90"/> 
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+		</mx:HBox>						
+	</s:Panel>
+</s:Application>

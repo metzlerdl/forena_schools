@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--ACCESS=design any report -->
+<root>
+  <row><title>Overview</title><name>help.ReportWritersGuide</name></row>
+  <row><title>Create a simple report</title><name>help.CreateReportSimple</name></row>
+  <row><title>Using the Forena Report Editor</title><name>help.ReportEditing</name></row>
+  <row><title>Forena Report XML (frx) reference</title><name>help.design</name></row>
+</root>

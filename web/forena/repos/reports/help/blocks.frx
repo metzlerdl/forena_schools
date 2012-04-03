@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Building Custom Data Blocks</title>
+<frx:category />
+<frx:options hidden="1" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen />
+<frx:fields>
+	<frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+	<p>Custom data blocks are generally written as .sql files in a
+		database repository. &nbsp;If you're just starting out in forena, you
+		may want to experiment by creating additional data blocks in the
+		repos/drupal folder found in the modules source directory. &nbsp;
+		Below is the contents of the drupal/role_permissions data block that
+		demonstrates role permissions.&nbsp;</p>
+<pre>--ACCESS=administer permissions
+  SELECT * FROM {role_permission} p&nbsp;
+    WHERE p.rid = :role
+</pre>
+	<p>The content of a data block is a SQL statement.&nbsp;</p>
+	<h3>Security and data blocks&nbsp;</h3>
+	<p>
+		The line beginning with<strong>&nbsp;--ACCESS=<em>some_permission</em>
+		</strong>&nbsp;is a required comment that indicates the permission required to
+		access the data retrived by this block. &nbsp; The security for data
+		block repository is configurable and pluggable, meaning that
+		developers may create functions that determine how the permission is
+		checked. &nbsp;In the drupal repository delivered with forena,
+		&nbsp;access permissions are tested using the drupal user_access()
+		function, so the value should match a drupal permission.
+	</p>
+	<h3>Parameters</h3>
+	<p>
+		The <strong>:role</strong>&nbsp;parameter in the example is named
+		token that will be replaced in the SQL query with a parameter from the
+		report. &nbsp;The parameter replacement is done by forena in a way
+		that protects against SQL injection. &nbsp;Although these tokens are
+		modeled after a commonly used database binding syntax, the replacement
+		is done by Forena. &nbsp;Use this sytax instead of the native
+		parameter binding for any database you are accessing with Forena.
+		&nbsp; Tokens may be reference multiple times within the same SQL
+		query.&nbsp;
+	</p>
+	<ul id="forena-1" frx:block="forena_help/admin_topics">
+		<li id="forena-2" frx:foreach="*"><span>{title}</span>
+		</li>
+	</ul>
+	<p>&nbsp;</p>
+</body>
+</html>

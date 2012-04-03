@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:components="components.*" xmlns:services="services.*" xmlns:local="*" >
+	<fx:Script>
+		<![CDATA[
+			import mx.charts.events.ChartEvent;
+			import mx.charts.events.ChartItemEvent;
+			import mx.events.CloseEvent;
+			import mx.graphics.SolidColor;
+			import mx.managers.PopUpManager;
+			
+			import statistics.Identify; 
+			
+			
+			private var _gradeLevel:String; 
+			private var _profileId:String; 
+			[Bindable]
+			private var selBuildingXML:XML; 
+			[Bindable]
+			private var selMeasureXML:XML;
+			[Bindable]
+			private var selLevel:String; 
+		    private var _selYear:String; 
+			private var identificationWindow:Identify; 
+			private var levelLabel:Object = {
+				'1':'Minimim',
+				'2':'Below Expectations',
+				'3':'Meets Expectations',
+				'4':'Exceeds Expectations'
+			}; 
+			
+			
+			[Bindable] private var colors:Object = {
+				red:     new SolidColor(0xE3B5B5),
+				yellow:  new SolidColor(0xE3E288),
+				green:   new SolidColor(0xBBE3B5),
+				blue:    new SolidColor(0xB5C0E3),
+				mdGreen: new SolidColor(0x96BF8F),
+				dkGreen: new SolidColor(0x6C9F63),
+				mdBlue:  new SolidColor(0x8F9BBF),
+				dkBlue:  new SolidColor(0x6D799F)
+			};
+			// Bindable setter and getter so that things track changes
+			[Bindable] private function set gradeLevel(l:String):void { 
+				_gradeLevel = l; 
+				profileSvc.send({grade_level:_gradeLevel}); 
+			  
+			}
+			
+			private function get gradeLevel():String {
+				return _gradeLevel; 
+			}
+			
+			[Bindable]
+			private function set profileId(p:String):void { 
+				_profileId = p; 
+				refreshDistrictScores(); 
+			}
+			
+			private function get profileId():String { 
+				return _profileId; 
+			}
+			
+			[Bindable]
+			private function get selYear():String { 
+				return _selYear; 
+			}
+			
+			private function set selYear(y:String):void { 
+				_selYear = y; 
+				refreshDistrictScores(); 
+			}
+			
+			private function refreshDistrictScores( reset:Boolean = true):void { 
+				buildingStatsSvc.xml = null; 
+				selBuildingXML = null; 
+				selMeasureXML = null; 
+				if (_gradeLevel && _profileId) districtStatsSvc.send({grade_level:_gradeLevel, profile_id:_profileId, school_year: _selYear}); 
+			}
+			
+			private function onMeasureClick(event:ChartItemEvent):void {
+				selMeasureXML = XML(event.hitData.chartItem.item);
+				var cs:ColumnSeries = event.hitData.element as ColumnSeries;
+				var yField:String = cs.yField; //'@level_3_count';
+				selLevel = yField.substr(1,1); 
+				var m:String = selMeasureXML.measure_id; 
+				var s:String = selMeasureXML.seq; 
+				buildingStatsSvc.send({profile_id:profileId, grade_level:gradeLevel, measure_id:m, seq: s, school_year: _selYear}); 
+				
+			}
+			
+			private function onBuildingClick(event:ChartItemEvent):void {
+				var cs:ColumnSeries = event.hitData.element as ColumnSeries;
+				var yField:String = cs.yField; //'@level_3_count';
+				selLevel = yField.substr(1,1); 
+				selBuildingXML = XML(event.hitData.chartItem.item); 					
+			}
+			
+			private function levelLabelFn(l:String):String { 
+				return levelLabel[l]; 
+			}
+			
+			private function identify():void { 
+	  			if (!identificationWindow) identificationWindow = new Identify(); 
+				PopUpManager.addPopUp(identificationWindow,this,true); 				
+				PopUpManager.centerPopUp(identificationWindow); 
+				identificationWindow.addEventListener(CloseEvent.CLOSE, onIdentificationClose);
+				var data:Object = {
+					grade_level:selMeasureXML.grade_level, 
+					measure_id:selMeasureXML.measure_id, 
+					norm_score:selLevel,
+					seq:selMeasureXML.seq, 
+					school_year:selYear,
+					profile_id:profileSelect.selectedValue
+				};
+				if (selBuildingXML) data['bldg_id'] = selBuildingXML.bldg_id[0]; 
+				identificationWindow.identfyStudents(data); 
+			}
+			
+			private function onIdentificationClose(event:CloseEvent):void {
+				PopUpManager.removePopUp(identificationWindow); 
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<services:DataService id="profileSvc" defaultService="Analysis" defaultMethod="profiles" /> 
+	<services:DataService id="districtStatsSvc" defaultService="Analysis" defaultMethod="districtScores"/>
+	<services:DataService id="buildingStatsSvc" defaultService="Analysis" defaultMethod="buildingScores"/>
+	<services:DataService id="gradeLevelSvc" defaultService="Analysis" defaultMethod="gradeLevels" preload="true"/> 
+	<services:DataService id="yearSvc" defaultService="Lookup" defaultMethod="schoolYears" preload="true"/>
+	<s:TitleWindow width="100%" height="100%" title="Analysis">
+		<s:controlBarContent>
+		  <s:Button label="Indentify" click="identify()"/>
+		  <mx:Text text="{selBuildingXML.building}"/>
+		  <mx:Text text="{selMeasureXML.grade}"/>
+		  <mx:Text text="{selMeasureXML.test}"/>
+		  <mx:Text text="{selMeasureXML.measure}"/>
+		  <mx:Text text="{levelLabelFn(selLevel)}"/>
+		</s:controlBarContent>
+		<s:VGroup width="100%" height="100%">
+			<components:BindingList id="yearSelect" XML="{yearSvc.xml.row}"  dataField="school_year" labelField="label" width="100%" defaultSelect="true" selectedValue="@{selYear}" borderVisible="false">
+				<components:layout>
+					<s:HorizontalLayout requestedMinColumnCount="5"/>
+				</components:layout>
+			</components:BindingList>
+			<components:BindingList id="profileSelect" XML="{profileSvc.xml.row}" dataField="profile_id" labelField="name" defaultSelect="true" width="100%" selectedValue="@{profileId}" borderVisible="false">
+				<components:layout>
+					<s:TileLayout requestedRowCount="1"/>
+				</components:layout>
+			</components:BindingList>
+			<s:HGroup width="100%" height="100%">	
+				<components:BindingList XML="{gradeLevelSvc.xml.row}" dataField="grade_level" selectedValue="@{gradeLevel}" labelField="name" defaultSelect="true"/>
+				<s:VGroup width="100%" height="100%">
+					
+				<mx:ColumnChart id="mainChart" dataProvider="{districtStatsSvc.xml.row}"  itemClick="onMeasureClick(event)" width="100%" height="50%" type="100%" >
+					<mx:horizontalAxis>
+						<mx:CategoryAxis categoryField="label"/>
+					</mx:horizontalAxis>
+					<mx:series>
+						<mx:ColumnSeries id="dl1" yField="l1_count" fill="{colors.red}"/>
+						<mx:ColumnSeries id="dl2" yField="l2_count" fill="{colors.yellow}"/>
+						<mx:ColumnSeries id="dl3"  yField="l3_count" fill="{colors.green}"/>
+						<mx:ColumnSeries id="dl4" yField="l4_count" fill="{colors.blue}"/>
+					</mx:series>
+				</mx:ColumnChart>
+			    <mx:ColumnChart id="slaveChart" dataProvider="{buildingStatsSvc.xml.row}" width="100%" height="50%" type="100%" itemClick="onBuildingClick(event)">
+					<mx:horizontalAxis>
+						<mx:CategoryAxis categoryField="label"/>
+					</mx:horizontalAxis>
+					<mx:series>
+						<mx:ColumnSeries id="bl1" yField="l1_count" fill="{colors.red}"/>
+						<mx:ColumnSeries id="bl2" yField="l2_count" fill="{colors.yellow}"/>
+						<mx:ColumnSeries id="bl3" yField="l3_count" fill="{colors.green}"/>
+						<mx:ColumnSeries id="bl4" yField="l4_count" fill="{colors.blue}"/>
+					</mx:series>
+				</mx:ColumnChart>
+				</s:VGroup>
+			</s:HGroup>
+		</s:VGroup>
+	</s:TitleWindow>
+</s:Application>

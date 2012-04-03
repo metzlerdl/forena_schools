@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Building Dashboard</title>
+<frx:category>District</frx:category>
+<frx:options hidden="0" form="" />
+<frx:parameters>
+	<frx:parm id="expired" default="Y" />
+</frx:parameters>
+<frx:fields>
+	<frx:field id="year_label"
+		link="index.php?q=BuildingDashboard&amp;school_year={school_year}&amp;bldg_id={parm.bldg_id}&amp;" />
+	<frx:field id="@title"
+		link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
+	<frx:field id="@grade_name"
+		link="index.php?q=GradeView&amp;bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
+	<frx:field id="collection_name"
+		link="index.php?q=GroupView&amp;stu_coll_id={collection_id}&amp;name={collection_name}" />
+	<frx:field id="@course_name"
+		link="index.php?q=GroupView&amp;group_id={@group_id}&amp;name={@course_name}" />
+	<frx:field id="edit"
+		link="index.php?q=TestEntry&amp;group_id={@group_id}&amp;name={@course_name}">Test Entry</frx:field>
+	<frx:field id="@teacher_name"
+		link="index.php?q=TeacherDashboard&amp;staff_id={@staff_id}&amp;name={@teacher_name}" />
+	<frx:field id="manage" 
+		link="index.php?q=GroupEditor&amp;group_id={@group_id}&amp;popup=true" target="popup_{@group_id}" >Manage</frx:field>
+	<frx:field id="student_search"
+	  link="index.php?q=StudentSearch&amp;bldg_id={bldg_id}">Student Search</frx:field>
+	<frx:field id="add_course"
+	  link="index.php?q=GroupEditor&amp;group_type=course&amp;bldg_id={bldg.bldg_id}&amp;school_year={parm.school_year}&amp;popup=true" target="popup_add_course">Add Course</frx:field>
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+	<div id="menu-1" class="nav grid_4">
+		<h3>Building</h3>
+		<ul frx:block="menus/building">
+			<li frx:foreach="*"><span>{@title}</span>
+			</li>
+		</ul>
+		<h3>Performance by Grade</h3>
+		<div frx:block="ims/building/grade_levels" id="buildings">
+		 <div  id="bldg" frx:foreach="*">
+			<h4>{bldg_name}</h4>
+			<p>
+			<ul>
+			  <li>{student_search}</li>
+			</ul>
+			</p>
+			<p>
+			<ul>
+				<li frx:foreach="grades/*" id="forena-2"><span class="{@selected}">{@grade_name}</span>
+				</li>
+			</ul>
+			</p>
+			</div>
+		</div>
+
+	</div>
+	<div class="grid_8">
+    <h3>Classes</h3>
+    <p>{add_course}</p>
+    <table frx:block="ims/building/courses_by_grade">
+      <tbody frx:foreach="*">
+        <tr>
+          <th colspan="4"><h4>{grade_heading}</h4></th>
+        </tr>
+        <tr frx:foreach="courses/course">
+          <td>{@teacher_name}</td>
+          <td>{@course_name}</td>
+          <td>{edit}</td>
+          <td>{manage}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Collections</h3>
+    <table frx:block="ims/collections">
+      <tr frx:foreach="*">
+        <td>{collection_name}</td>
+        <td>{editable}</td>
+      </tr>
+    </table>
+	
+	</div>
+	<div id="school_years" class="grid_12" frx:block="ims/school_years">
+		<h3>Select Year</h3>
+		<ul class="nav hnav">
+			<li frx:foreach="*" class="{year_selected}">{year_label}</li>
+		</ul>
+	</div>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="608" dropShadowVisible="true" title="New Measure" xmlns:components="components.*" xmlns:services="services.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.validators.Validator; 
+			
+			[Bindable] private var editMeasureXML:XML = XML(<measure id="-1" name="" abbrev="" code="" is_strand="f" calc_rule=""/>);
+			public var saveMeasure:Boolean = false; 
+			private var validators:Array = new Array(); 
+			[Bindable]
+			private var _isStrand:Boolean = false; 
+			[Bindable] private var selectedMeasures: Vector.<Object>;  
+		    [Bindable] public var existingMeasures:XML; 
+			[Bindable] 
+			private var calcRules:XML = new XML( <sels>
+				<sel label="None" rule=""/>
+				<sel label="Sum" rule="sum"/>
+				<sel label="Average" rule="avg"/>
+				</sels>); 
+				            
+			
+			protected function init():void { 
+			    // Load the validators for this form. 
+				validators.push(tvName); 
+				validators.push(tvAbbrev); 
+				validators.push(tvCode); 
+			}
+			
+			
+			private function setSelectedMeasures():void
+			{
+				var a:Vector.<Object> = new <Object>[];
+				if (editMeasureXML.calc.strand.length()>0) {
+					for each (var sx:XML in editMeasureXML.calc.strand)
+					{
+						for each (var mx:XML in existingMeasures.measure)
+						{
+							if (mx.@id == sx.@id)
+							{
+								a.push(mx);
+								break;
+							}
+						}
+					}
+					selectedMeasures = a;
+				}
+			}
+
+			
+			/** 
+			 * Set the measure XML
+			 */ 
+			public function set srcMeasureXML(x:XML):void { 
+				if (x) { 
+					editMeasureXML = x.copy(); 
+					if (editMeasureXML.calc.strand.length()>0) {
+						var cx:XML = editMeasureXML.calc[0]; 
+						setSelectedMeasures(); 
+					}
+				}	
+				this.title="Edit Measure"; 
+			}
+			
+			public function set strandParent(p:String):void {
+				if (p) { 
+				  editMeasureXML['@parent'] = p; 	
+				}
+			}
+			
+			public function set is_strand(s:String):void { 
+				if (s) {
+					editMeasureXML['@is_strand'] = s; 
+					_isStrand = (s=='t') ? true : false; 
+					
+				}
+			}
+			
+			/**
+			 * Validate the measure before adding
+			 */ 
+			private function validMeasure():Boolean { 
+				var ve:Array = new Array(); 
+				ve = Validator.validateAll(validators); 
+				if (ve.length>0) {
+					return false; 
+				}
+				else {
+					return true; 
+				}
+			}
+			
+			/**
+			 * Handle click event and decide whether to save
+			 */ 
+			private function okClick(doSave:Boolean):void { 
+				// Validate measure 
+				if (!doSave  || validMeasure()) { 
+					saveMeasure = doSave;
+					if (editMeasureXML.child('calc').length()>0) delete editMeasureXML.child('calc')[0]; 
+					switch (calcRuleSelect.selectedValue) { 
+						case 'avg':
+						case 'sum':
+			                  var x:XML = new XML(<calc/>); 
+						      editMeasureXML.appendChild(x);
+			
+							  for each(var ss:XML in calcMeasureList.selectedItems) {
+						        var s:XML = new XML(<strand/>); 
+								s['@id'] = ss.@id; 
+								s['@name'] = ss.@name; 
+								x.appendChild(s); 
+							  }
+					        break; 
+					}
+					var e:CloseEvent = new CloseEvent(CloseEvent.CLOSE); 
+					dispatchEvent(e); 
+				}
+			}
+			
+			/**
+			 * Getter ot retrieve the xml 
+			 */ 
+			public function get measureXML():XML {
+			    return editMeasureXML; 
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:StringValidator id="tvName" source="{nameInput}" property="text" minLength="3" maxLength="75" required="true"/> 
+		<mx:StringValidator id="tvAbbrev" source="{abbrevInput}" property="text" maxLength="25" minLength="1" required="true"/> 
+		<mx:StringValidator id="tvCode" source="{codeInput}" property="text" maxLength="128" minLength="1"/> 
+	</fx:Declarations>
+    <s:controlBarContent>
+		<s:Button label="OK" click="okClick(true)"/>
+		<s:Button label="Cancel" click="okClick(false)"/>
+		
+	</s:controlBarContent>
+	<services:DataService id="subjectSvc" defaultService="TestDefinition" defaultMethod="subjects"  preload="true"/>
+	<mx:Form x="10" y="10" width="100%">
+		<mx:FormItem label="Name" required="true" width="100%">
+			<s:TextInput id="nameInput" text="@{editMeasureXML.@name}" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="Abbrev"  required="true">
+			<s:TextInput id="abbrevInput" text="@{editMeasureXML.@abbrev}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Code" width="100%">
+			<s:TextInput id="codeInput" text="@{editMeasureXML.@code}" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="Subject">
+			<components:BindingDropDown id="subjectInput" XML="{subjectSvc.xml.row}" dataField="subject" labelField="subject" selectedValue="@{editMeasureXML.@subject}" prompt="select" width="300"/>
+		</mx:FormItem>
+		<mx:FormItem label="Grad Requirement">
+			<components:BindingDropDown id="gradInput" XML="{subjectSvc.xml.row}" dataField="subject" labelField="subject" selectedValue="@{editMeasureXML.@grad_requirement}" prompt="select" width="300"/>
+		</mx:FormItem>
+		<mx:FormItem label="Caculation Rule">
+			<components:BindingDropDown id="calcRuleSelect" selectedValue="@{editMeasureXML.@calc_rule}" 
+										enabled="{!_isStrand &amp;&amp; existingMeasures.measure.(@id!=editMeasureXML.@id &amp;&amp; @parent==editMeasureXML.@parent).length()>0}" 
+										XML="{calcRules.sel}" prompt="Calc Rule" dataField="@rule" labelField="@label"/>
+		</mx:FormItem>
+	    <mx:FormItem label="Measures in caclulation" >
+		  <components:BindingList id="calcMeasureList" allowMultipleSelection="true" 
+								  enabled="{!_isStrand &amp;&amp; calcRuleSelect.selectedValue}" 
+								  selectedItems = "{selectedMeasures}"
+								  XML="{existingMeasures.measure.(@id!=editMeasureXML.@id &amp;&amp; @parent==editMeasureXML.@parent)}" 
+								  labelField="@name" dataField="@id"
+								  defaultSelect="false"
+								  height="100%"/>	
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

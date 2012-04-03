@@ -1,0 +1,12 @@
+@CHARSET "ISO-8859-1";
+
+/*styles for the report page*/
+	
+div.doclinks{
+  float: right;
+}
+
+a.doclinks{
+  padding-left: 10px;	
+}
+

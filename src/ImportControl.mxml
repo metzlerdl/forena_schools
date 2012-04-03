@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:services="services.*" xmlns:components="components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XMLList id="testImportModes" xmlns="">
+			<mode data="spreadsheet" label="Spreadsheet"/>
+			<mode data="state_testing" label="State Testing Import"/> 
+			<mode data="standard" label="standard import"/> 
+		</fx:XMLList>
+		<s:TitleWindow id="testDefaults" title="Test Upload Defaults" width="500">
+			<s:controlBarContent>
+				<s:Button label="Save" click="uploadTestFile()"/> 
+				<s:Button label="Cancel" click="PopUpManager.removePopUp(testDefaults)"/> 
+			</s:controlBarContent>
+			<services:DataService id="bldgSvc" defaultService="Lookup" defaultMethod="buildings" preload="true"/> 
+			<services:DataService id="testCodeSvc" defaultService="Lookup" defaultMethod="tests" preload="true"/>  
+			<services:DataService id="gradeSvc" defaultService="Lookup" defaultMethod="gradeLevels" preload="true"/> 
+				<s:Form width="100%">
+					<s:FormItem label="Input Mode(mode):" width="100%">
+						<components:BindingDropDown id="defaultTestMode" XML="{testImportModes}" 
+													defaultSelect="true" dataField="@data" labelField="@label" width="100%"/> 
+					</s:FormItem>
+					<s:FormItem label="Default Date Taken (date_taken):">
+						<mx:DateField id="defaultDateTakenInput" /> 
+					</s:FormItem>
+					<s:FormItem label="Default Test(test_code):" width="100%">
+						<components:BindingDropDown id="defaultTestCodeSelect" XML="{testCodeSvc.xml.row}"
+						  dataField="code" labelField="name" width="100%"/> 
+					</s:FormItem>
+					<s:FormItem label="Default Building(bldg_code)" width="100%">
+						<components:BindingDropDown id="defaultBuildingSelect" XML="{bldgSvc.xml.row}"
+						  dataField="code" labelField="name" width="100%"/> 
+					</s:FormItem>
+					<s:FormItem label="Default Grade(grade_level)" width="100%">
+						<components:BindingDropDown id="defaultGradeSelect" XML="{gradeSvc.xml.row}"
+						  dataField="grade_level" labelField="abbrev" width="100%"/> 
+					</s:FormItem>
+							
+				</s:Form>
+		</s:TitleWindow>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+			import mx.managers.PopUpManager;
+			
+			import tests.MeasureSelect; 
+			
+			private var uploadType:String='TestScores'; 
+			
+			public function gotoTest():void { 
+				if (testGrid.selectedItem['test_id']) { 
+					app.popUp("TestDefinition?test_id=" + testGrid.selectedItem['test_id']); 
+				}
+			}
+			public function setImportTestDefaults():void { 
+				PopUpManager.addPopUp(testDefaults, this, true); 
+				PopUpManager.centerPopUp(testDefaults); 
+			}
+			public function refresh():void { 
+				testSvc.send(); 
+			}
+			public function saveTranslations():void { 
+				testSvc.send({method:"saveTranslations", xml:testSvc.xml.toXMLString()}); 
+			}
+			
+			public function translateScores():void { 
+				testSvc.send({method:"translateScores"}); 
+			}
+			
+			public function importScores():void { 
+				testSvc.send({method:"importScores"}); 
+			}
+			
+			public function selectMeasure():void { 
+				if (testGrid.selectedItem && testGrid.selectedItem.test_id) { 
+					MeasureSelect.selectMeasure(testPanel,
+						  testGrid.selectedItem.test_id,
+						  "Select Measure code for " + testGrid.selectedItem.measure_code+" "+testGrid.selectedItem['description'], 
+						  onMeasureSelect); 
+				}
+			}
+			
+			public function onMeasureSelect(event:FlexXMLEvent):void { 
+				if (testGrid.selectedItem) {
+					var m:XML = XML(testGrid.selectedItem); 
+					var code:String = event.xml.code; 
+					trace(code); 
+					m['matched_code'] = code
+				}
+			}
+			
+			public function uploadTestFile():void { 
+				fileSvc.send({method:"uploadTestFile", 
+					file_name: fileGrid.selectedItem.@name,
+				    date_taken: defaultDateTakenInput.text, 
+					mode: defaultTestMode.selectedValue, 
+				    test_code: defaultTestCodeSelect.selectedValue,
+				    bldg_code: defaultBuildingSelect.selectedValue,
+				    grade_level: defaultGradeSelect.selectedValue}); 
+				PopUpManager.removePopUp(testDefaults); 
+			}
+			
+			public function onUploadFilesReturn():void { 
+			   tabNav.selectedChild = testTab; 
+			   refresh(); 
+			}
+			
+		]]>
+	</fx:Script>
+	<services:DataService id="testSvc" defaultService="ImportControl" defaultMethod="tests" showProgress="true" preload="false"/>
+	<services:DataService id="testListSvc" defaultService="ImportControl" defaultMethod="listTests" /> 
+	<services:DataService id="fileSvc" defaultService="ImportControl" defaultMethod="listFiles" includeInLayout="false"
+						 showProgress="true" preload="true"/> 
+	<services:FlexApp id="app"/> 
+    <mx:TabNavigator id="tabNav" width="100%" height="100%">
+		<s:NavigatorContent id="fileTab" label="Files" width="100%" height="100%">
+			<s:Panel title="Import Files" width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+				<s:controlBarContent>
+					<s:Button label="Import Tests" enabled="{fileGrid.selectedItem}" click="setImportTestDefaults()"/> 
+				</s:controlBarContent>
+			    <mx:AdvancedDataGrid id="fileGrid" height="100%" width="100%" dataProvider="{fileSvc.xml.file}">
+					<mx:columns>
+						<mx:AdvancedDataGridColumn headerText="Name" dataField="@name"/> 
+					</mx:columns>
+				</mx:AdvancedDataGrid>
+			</s:Panel>
+		</s:NavigatorContent>
+		<s:NavigatorContent  id="testTab" label="Tests" width="100%" height="100%">
+			<s:Panel id="testPanel" width="100%" height="100%">
+				<s:layout>
+					<s:VerticalLayout/> 
+				</s:layout>
+				<s:controlBarContent>
+					<s:Button label="Refresh" click="refresh()"/> 
+					<s:Button label="Save Translations" click="saveTranslations()"/> 
+					<s:Button label="Translate" click="translateScores()"/> 
+					<s:Button label="Import Test Scores" click="importScores()"/> 
+					<s:Button label="Edit Test Definition" click="gotoTest()"/>
+				</s:controlBarContent>
+				<s:DataGrid id="testGrid" width="100%" height="100%" doubleClick="selectMeasure()" doubleClickEnabled="true"  >
+					<s:dataProvider>
+						<s:XMLListCollection source="{testSvc.xml.row}"/> 
+					</s:dataProvider>
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn headerText="Test" dataField="test_code" width="90"/> 
+							<s:GridColumn headerText="Measure" dataField="measure_code"/>
+							<s:GridColumn headerText="Matches" dataField="matched_code"/> 
+							<s:GridColumn headerText="Desc" dataField="description"/> 
+							<s:GridColumn headerText="Schedule" dataField="label" width="90"/> 
+							<s:GridColumn headerText="Max Date" dataField="max_date" width="90"/> 
+							<s:GridColumn headerText="Min Date" dataField="min_date" width="90"/> 
+							<s:GridColumn headerText="Scores" dataField="scores" width="60"/>
+							<s:GridColumn headerText="Min" dataField="min_score" width="60"/>
+							<s:GridColumn headerText="Max" dataField="max_score" width="60"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+			</s:Panel>
+			</s:NavigatorContent>
+		</mx:TabNavigator>
+
+</s:Application>

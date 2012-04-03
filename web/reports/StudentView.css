@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+.test-scores tr.odd, .test-scores tr.even {
+  background-color: white; 
+}
+
+
+.test-scores td.test { 
+	font-weight: bold; 
+	}
+	
+.test_scores td.test {
+	}

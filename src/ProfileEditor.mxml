@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:services="services.*" xmlns:components="components.*"
+			   creationComplete="init()" xmlns:tests="tests.*">
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.validators.Validator; 
+			private var profileId:String;
+			private var validators:Array = new Array(); 
+			private var loadedXML:String; 
+			private var doClose:Boolean = false; 
+			[Bindable]private var offsetXML:XML = XML(<offsets><offset value="0" label="Current Year"/><offset value="-1" label="Prior Year"/></offsets>); 
+		
+			private function initProfile():void { 
+				if (profileId != '-1') { 
+					profileSvc.send({profile_id:profileId}); 
+				}
+				else {
+					profileSvc.xml = new XML(<profile id='-1' name="" min_grade="" max_grade="" weight="0" analysis_only="Y">
+						  <measures/>
+						</profile>); 
+					loadedXML = profileSvc.xml.toXMLString(); 
+				}	
+			}
+			
+			/**
+			 * Initialize profile xml
+			 */ 
+			private function init():void {
+			  if (!profileId) 
+			    profileId = FlexGlobals.topLevelApplication.parameters['profile_id']; 
+			  
+			  if (!profileId) profileId = '-1'; 
+			  initProfile(); 
+
+			  
+			  validators.push(nameValidator); 
+			  validators.push(minGradeValidator); 
+			  validators.push(maxGradeValidator); 
+			  validators.push(weightValidator); 
+			}
+			
+			protected function validProfile():Boolean {
+				var ve:Array = new Array(); 
+				ve = Validator.validateAll(validators); 
+				if (ve.length > 0) {
+					return false; 
+				}
+				return true; 
+			}			
+			/**
+			 * Save the profile
+			 */ 
+			private function saveProfile(close:Boolean = false):void { 
+		      if (validProfile()) { 
+				  profileSvc.send({method:"saveProfile", xml: profileSvc.xml.toXMLString()}); 
+				  doClose = close;
+			  }
+			}
+			/**
+			 * Add a single measure to the profile
+			 */ 
+			private function addMeasures(p:String = ''):void { 
+				var tx:XML = XML(testSelect.selectedItem); 
+				var xl:XMLList; 
+				var s:String = '';
+				var sx:Vector.<Object>; 
+				if (p != 'all') { 
+					s = srcMeasuresGrid.selectedItem[p]; 
+					sx = srcMeasuresGrid.selectedItems.reverse(); 
+					
+				}
+				if (p) { 
+					switch (p) {
+						case '@subject': {
+						  xl = tx.measures.measure.(@subject==s); 
+						  break; 
+						}
+						case '@parent': { 
+						  xl = tx.measures.measure.(@parent==s); 
+						  break; 
+						}
+						case '@measure_id': { 
+						  xl = tx.measures.measure.(@measure_id==s); 
+						  break; 
+						}
+						case 'all': {
+						  xl = tx.measures.measure; 
+						}
+	
+					}
+					sx = new Vector.<Object>; 
+					// Convert into selected items style array. 
+					for each (var node:XML in xl) {
+						sx.push(node); 
+					}
+				}
+				// Loop through all the items and add them
+				if (sx.length > 0) {
+					// If the thesers a selected item add it before 
+					var m:XML = profileSvc.xml.measures[0];
+					for each (var o:Object in sx) { 
+						var x:XML = XML(o); 
+						var nm:XML = x.copy(); 
+						nm['@seq'] = schedSelect.selectedValue; 
+						nm['@sched'] = schedSelect.selectedItem.@label; 
+						if (measuresGrid.selectedItem) { 
+						  var i:int = measuresGrid.selectedIndex; 
+					      m.insertChildBefore(measuresGrid.selectedItem, nm); 
+						  measuresGrid.selectedIndex = i + 1; 	
+						}
+						// Otherwise add to the end. 
+						else  { 
+						  m.appendChild(nm);  
+						}
+					}
+				}
+			    measuresGrid.refresh(); 
+			} 
+			
+			
+			private function preview():void { 
+				previewSvc.send({profile_id:profileId}); 
+			}
+			
+			private function onProfileRcv(event:FlexXMLEvent):void {
+				if (event.xml) {
+					loadedXML = event.xml.toXMLString(); 
+					profileId = event.xml.@profile_id; 
+					if (doClose) app.close(true); 
+				}
+
+			}
+			
+			
+			private function unCheck():void {
+				measuresGrid.selectedIndex=-1; 
+			}
+			
+			private function onDeleteConfirm(event:CloseEvent):void { 
+				if (event.detail == Alert.YES) { 
+					doClose = true; 
+				    profileSvc.send({method:'deleteProfile', id:profileId}); 
+				}
+			}
+			
+			private function deleteProfile():void { 
+				Alert.show('Are you sure you want to delete this profile?  This action cannot be undone.', 'Confirm Delete', Alert.YES+Alert.NO, this, onDeleteConfirm); 
+			}
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:VerticalLayout/> 
+	</s:layout>
+	<fx:Declarations>
+		<mx:StringValidator id="nameValidator" maxLength="60" required="true" source="{nameInput}" property="text"/> 
+		<mx:NumberValidator id="minGradeValidator" maxValue="12" minValue="-1" source="{minGradeInput}" property="text" required="true"/> 
+		<mx:NumberValidator id="maxGradeValidator" maxValue="12" minValue="-1" source="{maxGradeInput}" property="text" required="true"/> 
+		<mx:NumberValidator id="weightValidator" minValue="-100" maxValue="100ß" source="{weightInput}" property="text" required="true"/> 
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+		<services:DataService id="profileSvc" defaultService="ProfileEditor" flexXMLChange="onProfileRcv(event)" defaultMethod="profile"/>
+		<services:DataService id="bldgSvc" defaultService="ProfileEditor" defaultMethod="buildings" preload="true" debug="false"/>
+		<services:DataService id="testSvc" defaultService="ProfileEditor" defaultMethod="tests" preload="true" debug="false"/>
+	    <services:DataService id="previewSvc" defaultService="ProfileEditor" defaultMethod="preview" debug="false"/> 
+    <s:Panel title="Profile Editor" width="100%" height="100%">
+        <s:controlBarContent>
+            <s:Button label="Save" click="saveProfile(false)"/>
+			<s:Button label="Save and Close" click="saveProfile(true)"/> 
+			<s:Button label="Reset" click="initProfile()"/> 
+			<s:Button label="Delete" click="deleteProfile()"/> 
+			<s:Button label="Close" click="{app.close(true)}" visible="{app.isBrowserPopUp}"/> 
+            <services:FlexApp id="app" title="Edit Profile - {nameInput.text}"/> 
+        </s:controlBarContent>
+		<mx:TabNavigator height="100%" width="100%">
+			
+		<s:NavigatorContent width="100%" height="100%" label="General">
+			
+		<s:Form height="100%" width="100%">
+				
+			<s:FormItem label="Name">
+				<s:TextInput id="nameInput" text="@{profileSvc.xml.@name}" width="210"/>
+			</s:FormItem>
+			<s:FormItem label="Weight">
+				<s:TextInput id="weightInput" text="@{profileSvc.xml.@weight}" width="50"/>
+			</s:FormItem>
+			<s:FormItem label="Shool Year">
+				<components:BindingDropDown XML="{offsetXML.offset}" selectedValue="@{profileSvc.xml.@school_year_offset}" dataField="@value" labelField="@label" width="210"/> 
+				
+			</s:FormItem>
+			<s:FormItem label="Min Grade">
+				<s:TextInput id="minGradeInput" text="@{profileSvc.xml.@min_grade}" width="50"/>
+			</s:FormItem>
+			<s:FormItem label="Max Gade">
+				<s:TextInput id="maxGradeInput" text="@{profileSvc.xml.@max_grade}" width="50"/>
+			</s:FormItem>
+			<s:FormItem label="Building">
+				<components:BindingDropDown id="bldgSelect" selectedValue="@{profileSvc.xml.@bldg_id}" XML="{bldgSvc.xml.row}" dataField="bldg_id" labelField="name" prompt="Select Building Scope" width="210"/>
+			</s:FormItem>
+			<s:FormItem label="Analysis Only">
+				<components:TrueFalseCheckBox text="@{profileSvc.xml.@analysis_only}"/>
+			</s:FormItem>
+		  </s:Form>
+		</s:NavigatorContent >
+	    <s:NavigatorContent label="Measures" width="100%" height="100%">
+			<s:layout>
+				<s:HorizontalLayout/>
+			</s:layout>	
+		<tests:MeasuresGrid id="measuresGrid" xml="{profileSvc.xml.measures[0]}" editable="true" height="95%" width="100%">
+			<tests:columns>
+				<s:ArrayList>
+					<s:GridColumn headerText="Name" dataField="@name" editable="false" itemRenderer="tests.MeasureLabelRenderer" width="150"/>
+					<s:GridColumn headerText="Sched" dataField="@sched" editable="false" width="150"/> 
+					<s:GridColumn headerText="Label Ovr" dataField="@label" />
+				</s:ArrayList>
+			</tests:columns>
+		</tests:MeasuresGrid>
+		<s:VGroup height="100%" verticalAlign="middle">
+			<s:Button label="up" enabled="{measuresGrid.selectedItem}" click="measuresGrid.moveUp()"/>
+			<s:Button label="remove" enabled="{measuresGrid.selectedItem}" click="measuresGrid.removeSelected()"/> 
+			<s:Button label="down" enabled="{measuresGrid.selectedItem}" click="measuresGrid.moveDown()"/>
+			<s:Button label="desleect" click="unCheck()"/>
+		</s:VGroup>
+
+	    <s:Panel title="Select Measures" height="100%" >
+	        <s:controlBarContent>
+					<s:Button id="add" label="Add" enabled="{srcMeasuresGrid.selectedItem}" click="addMeasures()"/>
+					<s:Button id="addSubject" label="Add Subject" enabled="{srcMeasuresGrid.selectedItem &amp;&amp; srcMeasuresGrid.selectedItem.@subject!=''}" click="addMeasures('@subject')"/>
+					<s:Button id="addAllStrand" label="Add All Strands" enabled="{srcMeasuresGrid.selectedItem}" click="addMeasures('@parent')"/> 
+					<s:Button id="addAllButton" label="Add all" click="addMeasures('all')"  />
+				
+			</s:controlBarContent>
+			<s:layout>
+				<s:VerticalLayout/> 
+			</s:layout>
+				
+			<s:Form height="100%" width="100%"  >
+				<s:FormItem label="Test">
+					<components:BindingDropDown id="testSelect" XML="{testSvc.xml.row}" dataField="test_id" labelField="name" defaultSelect="true" width="200"/>
+				</s:FormItem>
+				<s:FormItem label="Schedule">
+					<components:BindingList id="schedSelect"  defaultSelect="true" XML="{XML(testSelect.selectedItem).schedules.schedule}" dataField="@seq" labelField="@label" width="200"/>
+				</s:FormItem>
+	
+						
+					<s:DataGrid id="srcMeasuresGrid" height="100%" width="100%" selectionMode="multipleRows" sortableColumns="false" >
+						
+						<s:dataProvider>
+							<s:XMLListCollection source="{XML(testSelect.selectedItem).measures.measure}"/> 
+						</s:dataProvider>
+						<s:columns>
+							<s:ArrayList>	
+							<s:GridColumn headerText="Name" dataField="@name" itemRenderer="tests.MeasureLabelRenderer"/>
+							<s:GridColumn headerText="Abbrev" dataField="@abbrev"/> 
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+
+            </s:Form>
+		</s:Panel>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Preview" height="100%" width="100%" show="preview()">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+				<tests:TestScoresGrid measuresXML="{previewSvc.xml.row[0].measures[0]}" measureField="@profile_sort"  height="95%">
+					<tests:groupedColumns>
+						<mx:AdvancedDataGridColumn headerText="First"/>
+						<mx:AdvancedDataGridColumn headerText="Last"/> 
+					</tests:groupedColumns>
+				</tests:TestScoresGrid>
+		</s:NavigatorContent>
+		</mx:TabNavigator>
+	</s:Panel>
+	
+</s:Application>

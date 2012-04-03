@@ -1,0 +1,1 @@
+\i profiles/a_profile_delete.sql;

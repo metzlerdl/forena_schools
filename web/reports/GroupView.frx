@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:fields>
+  <frx:field id="name" link="index.php?q=GroupView.web&amp;profile_id={profile_id}&amp;group_id={group_id}"/> 
+   <frx:field id="last_name" link="index.php?q=Student&amp;person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
+   <frx:field id="export" link="index.php?q=GroupView.csv&amp;profile_id={parm.profile_id}&amp;group_id={parm.group_id}">Export to .csv</frx:field> 
+</frx:fields>
+<title>Group View</title>
+</head>
+<body>
+  <div id="profile-list-block" frx:block="ims/group/group_profiles">
+    <ul class="nav hnav">
+     <li frx:foreach="*">{name}</li>
+    </ul>
+  </div>
+  <div id="profile-block" frx:block="ims/group/group_profile">
+    <div frx:foreach="*" id="profile">
+      <h3>{name}</h3>
+      <div class="pedagoggle-scores" frx:block="ims/group/group_profile_scores">
+      <table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{last_name}</td>
+            <td>{first_name}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  <div id="footer-block" >
+    <ul class="nav hnav">
+     <li>{export}</li>
+    </ul>
+  </div>
+</body>
+</html>

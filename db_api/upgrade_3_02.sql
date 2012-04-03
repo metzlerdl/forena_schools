@@ -1,0 +1,10 @@
+ALTER TABLE a_profiles ADD COLUMN analysis_only boolean NOT NULL DEFAULT false;
+ALTER TABLE a_tests ADD COLUMN allow_data_entry boolean NOT NULL DEFAULT true;
+\i profiles/a_profile_assessment_scores.sql; 
+\i profiles/a_profile_strand_scores.sql;
+\i profiles/a_profile_student_scores.sql; 
+\i profiles/a_profile_save.sql; 
+\i profiles/a_profile_xml.sql; 
+\i utils/extractbool.sql; 
+\i test_definition/a_test_save_xml.sql; 
+\i test_defnintion/a_test_xml.sql; 

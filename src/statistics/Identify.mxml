@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:tests="tests.*" xmlns:services="services.*"
+			   width = "800" height="600" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+			import mx.events.CloseEvent;
+			[Bindable] public var profileId:String;
+			private var newCollection:Boolean = false; 
+			public function identfyStudents(data:Object):void { 
+				profileId = data['profile_id']; 
+				profileSvc.send(data); 
+				data.method='scores'; 
+				scoreSvc.send(data); 
+				
+
+			}
+			
+			/**
+			 * Navigate to student
+			 */ 
+			public function gotoStudent():void { 
+				if (scoresGrid.selectedItem) { 
+					var s:String = scoresGrid.selectedItem.student_id; 
+					nav.popUp('index.php?q=StudentView&student_id='+s +  '&profile_id=' + profileId); 
+				}
+			}
+			
+			/**
+			 * Add the selected members to a student group
+			 **/
+			public function addToGroup():void {
+				if (groupSelect.selectedItem) {
+					if (groupSelect.selectedValue == '-1') { 
+						newCollection = true; 
+					}
+					memberSvc.send({
+						xml:scoreSvc.xml.toXMLString(),
+						group_id:groupSelect.selectedValue
+					    }); 
+				}
+			}
+			
+			/**
+			 * Respond to the group add events.  If we created one
+			 * We need to set that new group id as the context of this
+			 * id.
+			 */ 
+			public function onAddGroupReturn(event:FlexXMLEvent):void {
+		      var gid:String; 
+			  if (event.xml) { 
+				  gid = event.xml.row.group_id[0]; 
+				  groupSelect.selectedValue = gid; 
+				  trace ('Group Id: ' + gid); 
+				  if (newCollection) { 
+					  nav.goto('index.php?q=GroupEditor&group_id='+gid); 
+				  }
+			  }
+				
+			}
+			
+			private function closeWindow():void {
+				if (this.isPopUp) {
+					var event:CloseEvent = new CloseEvent(CloseEvent.CLOSE); 
+					this.dispatchEvent(event); 
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:controlBarContent>
+		<s:Button label="Close" click="closeWindow()"/>
+		<components:BindingDropDown id="groupSelect" XML="{groupSvc.xml.row}" dataField="group_id" labelField="name" defaultSelect="true"/>
+		<s:Button label="Add to" click="addToGroup()"/> 
+	</s:controlBarContent>
+	<services:RestXMLService id="profileSvc" defaultService="Identify" defaultMethod="profile"/> 
+	<services:RestXMLService id="scoreSvc" defaultService="Identify" defaultMethod="scores" showProgress="true" />
+	<services:RestXMLService id="groupSvc" defaultService="Identify" defaultMethod="groups" preload="true"/> 
+	<services:RestXMLService id="memberSvc" defaultService="Identify" defaultMethod="addGroupMembers" flexXMLChange="onAddGroupReturn(event)"/> 
+	<services:Navigator id="nav"/>
+    <s:Scroller height="100%" width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="on">
+		<s:Group>
+		<tests:TestScoresGrid id="scoresGrid" height="100%" 
+							  measuresXML="{profileSvc.xml.row.measures[0]}" 
+							  dataProvider="{scoreSvc.xml.row}" 
+							  measureField="@profile_sort"
+							  doubleClickEnabled="true"
+							  doubleClick="gotoStudent()" >
+			<tests:groupedColumns>
+				<mx:AdvancedDataGridColumn headerText="first" dataField="first_name"/>
+				<mx:AdvancedDataGridColumn headerText="last" dataField="last_name"/> 
+			</tests:groupedColumns>
+		</tests:TestScoresGrid>
+		</s:Group>
+	</s:Scroller>		   
+</s:TitleWindow>

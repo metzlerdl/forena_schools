@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>Connecting to External Databases</title>
+    <frx:category/>
+    <frx:options hidden="1" form=""/>
+    <frx:parameters>
+    </frx:parameters>
+    <frx:docgen>
+    </frx:docgen>
+<frx:fields>
+      <frx:field id="title" link="reports/{name}"/>
+    </frx:fields>
+  </head>
+<body>
+<p>In forena, all reports are created from data blocks which are organized into repositories.&#xA0; Forena comes with two pre-defined
+repositories.&#xA0; The drupal repository contains some handy data blocks for doing reporting from data within your drupal site. The
+forena_help repository defines some static XML data blocks that are used both for sample reports, as well as to provide the online
+help that you're reading now.</p>
+<p>Additional data block repositories can be created to allow forena to report against most applications. To create repositories
+you'll need to perform the following basic steps:</p>
+<p>1. Edit your drupal site's settings.php to specificy the locations of the additional data block repositories.</p>
+<p>2. Manually create the directory</p>
+<p>2. Create a settings.php file in the repository's directory to tell forena how to interpret the data blocks for that
+repository.&#xA0;</p>
+<p>3. Create new data block files as necessary to be used in reports.</p>
+<h2>Editing your drupal site's settings.php file</h2>
+<p>The list of additional repositories is stored in a php gobal variable called $_forena_repositories.&#xA0; The following example
+code illustrates the lines that would need to be added to your drupal site's settings.php file to create a new data block
+repository.</p>
+<pre>
+global $_forena_repositories;
+<br/>$_forena_repositories['local'] = array('path' =&gt; 'sites/default/local_blocks', 'title' =&gt; 'Site Specific Data Blocks');
+<br/>
+<br/>
+</pre>
+<h2>Creating the settings.php file in the repository directory</h2>
+<p>In the above example, to finish the 
+<em>local</em>repository, we'd need to create a settings.php in the sites/default/local_blocks directory.&#xA0; An easy way to do this
+would be to make a copy of the settings.php file delivered with forena in the repos/drupal sub-directory of the forena, and modify the
+appropriate settings.&#xA0; The settings.php should set all of the appropriate configuration settings for the repository, and is
+generally of the form:</p>
+<p>$conf[' 
+<em>parameter name</em>'] = 
+<em>value</em>;</p>
+<p>where 
+<em>parameter name</em>and 
+<em>value</em>are replaced according to the configuration setting you wish to change. (Again, see the settings.php files in the
+repostiories directory provided with forena)</p>
+<p>The following table illustrates the options provided</p>
+<table border="0" cellpadding="2">
+<tbody>
+<tr>
+<th style="width: 30%;" align="left" valign="top">data provider</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">The name of the class that will be used to&#xA0; provide the data
+blocks.&#xA0; Data engine plugins delivered with forena include: FrxDrupal, FrxOracle, FrxPDO orFrxFiles</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">access callback</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">The function that will be used check permissions.&#xA0; To use drupal
+security access rights specify a value of user_access.&#xA0; Custom modules may provide their own functions for testing security. 
+<br/></td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">user callback</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">The function that will be used to determine the current
+user.&#xA0;&#xA0; The current_user argument is passed to all data blocks so that you can write queries that are specific to the user
+logged in.</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">debug</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">Set to TRUE to write the raw data queries and their results to the
+watchdog log.&#xA0; This can be useful for debugging data blocks in a development environment.</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">uri</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">The connection uri for the datablock.&#xA0; This is data engine
+specific.</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">user</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">The user name used to establish the connection to the data provider
+(specific data engines only)</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">password</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">The password used to establish a connection to data provider (specific
+data engines only)</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">oracle_xml</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">Set to true, when you want to use oracles native xml functions.&#xA0; In
+order to use this you must first install a function called f_forena_xml into your database schema.&#xA0; You'll find the .sql file
+which can be used to install this function included in the forena distribution.</td>
+</tr>
+</tbody>
+</table>
+<h2>Creating Data Blocks</h2>
+<p>Once your repository is created you can build data block files.&#xA0; Although the most common format of these files are
+.sql.&#xA0; The actual format of these files is dependent on which data engine is being used for the repository.</p>
+<ul id="forena-1" frx:block="forena_help/admin_topics">
+<li id="forena-2" frx:foreach="*">
+<span>{title}</span>
+</li>
+</ul>
+</body></html>

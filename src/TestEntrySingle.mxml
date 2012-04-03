@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" 
+			   xmlns:components="components.*" xmlns:services="services.*" xmlns:testentry="testentry.*"
+			   creationComplete="init()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+			<fx:Array id="validators">
+				<mx:DateValidator id="dateTakenValid" source="{dateInput}" property="text" required="true"/> 
+				<mx:StringValidator source="{testSelect}" property="selectedValue" required="true"/> 
+			</fx:Array>
+	
+		<s:TitleWindow id="newAssessmentWindow" title="addTest">
+			<s:controlBarContent>
+				<s:Button label="Ok" click="confirmAddAssessment()"/> 
+				<s:Button label="Close" click="cancelAdd()"/> 
+			</s:controlBarContent>
+			<s:Form>
+				<s:FormItem label="Grade">
+					<components:BindingDropDown id="gradeSelect" XML="{gradeSvc.xml.row}" dataField="grade_level" labelField="name" selectedValue="@{gradeLevel}"/> 
+				</s:FormItem>
+				<s:FormItem label="Test">
+					<components:BindingDropDown id="testSelect" XML="{testSvc.xml.row}" dataField="test_id" labelField="name" selectedValue="@{testId}"
+												 enabled="{gradeSelect.selectedIndex>=0}"/> 
+				</s:FormItem>		
+				<s:FormItem label="Schedule">
+					<components:BindingDropDown id="scheduleSelect" XML="{scheduleSvc.xml.row}" dataField="seq" labelField="label" selectedValue="@{testSched}"
+												enabled="{testSelect.selectedIndex>=0}"/> 
+				</s:FormItem>
+				<s:FormItem label="Date Taken">
+					<mx:DateField id="dateInput" editable="true" text="@{dateTaken}" enabled="{scheduleSelect.selectedIndex>=0 &amp;&amp; scheduleSelect.enabled}"/> 
+				</s:FormItem>
+				<s:FormItem label="School">
+					<components:BindingDropDown id="bldgSelect" XML="{bldgSvc.xml.row}" dataField="bldg_id" labelField="name"/> 
+				</s:FormItem>
+			</s:Form>
+		</s:TitleWindow>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.controls.TextInput;
+			import mx.core.FlexGlobals;
+			import mx.events.AdvancedDataGridEvent;
+			import mx.events.CloseEvent;
+			import mx.events.DataGridEvent;
+			import mx.managers.PopUpManager;
+			import mx.validators.Validator; 
+		
+			
+			[Bindable] private var personId:String; 
+			private var toRemove:Array =  new Array(); 
+			private var doSave:Boolean; 
+			private var _dateTaken:String; 
+			private var _testId:String; 
+			private var _gradeLevel:String; 
+			private var _testSched:String; 
+			
+			[Bindable]
+			private function set dateTaken(value : String):void { 
+			  _dateTaken = value; 
+			  if (!dateTakenValid.validate().results) { 
+				 newAssessmentSvc.send({person_id:personId, test_id:_testId, grade_level: _gradeLevel}); 
+			  }
+			}
+			
+			private function get dateTaken():String { 
+			  return _dateTaken; 	
+			}
+			
+			[Bindable]
+			private function set testId(value:String):void { 
+			  _testId = value; 
+			  scheduleSvc.send({test_id:_testId}); 
+			  //newAssessmentSvc.send({person_id:personId, test_id:_testId, grade_level: _gradeLevel}); 
+			  
+			}
+			
+			private function get testId():String { 
+			  return _testId; 
+			}
+			
+			[Bindable]
+			private function set gradeLevel(value:String):void { 
+				_gradeLevel = value; 
+				bldgSvc.send({person_id:personId,grade_level:_gradeLevel}); 
+				testSvc.send({grade_level:_gradeLevel}); 
+			}
+			
+			private function get gradeLevel():String { 
+				return _gradeLevel; 
+			}
+			
+			[Bindable]
+			private function set testSched(value:String):void {
+				_testSched = value; 
+				dateInput.text = scheduleSelect.selectedItem.start_date; 
+			}
+			
+			private function get testSched():String { 
+				return _testSched; 
+			}
+
+			
+			public function init():void { 
+			  personId = FlexGlobals.topLevelApplication.parameters.person_id; 
+			  assessmentSvc.send({person_id: personId}); 
+		      gradeSvc.send({person_id: personId});
+			}
+			
+			/**
+			 * Custom item editor event handler that pushes the score from
+			 * the item editor back into the XML
+			 */ 
+			private function saveScore(event:AdvancedDataGridEvent):void {
+				// Disable copying data back to the control.
+				var editor:TextInput = TextInput(event.currentTarget.itemEditorInstance); 
+				var s:String = editor.text; 
+				
+				
+				// Save the score
+				var score:XML = XML(scoreGrid.selectedItem); 
+				var exceedsMax:Boolean = false; 
+				
+				if (score) { 
+					if (score.@score!=s) {
+						assessmentsGrid.selectedItem['@modified'] = '*'; 
+					}
+					//score.@score = s; 
+					// Set style to indicate the normal range for the test.
+					if (s != '' && Number(s)>Number(score['@max_score'])) {
+						exceedsMax = true; 
+					}
+					if(s == "") {
+						score.@norm_score="";
+					}
+					else if(score.@l_4.toString() && Number(s) >= Number(score.@l_4))
+					{
+						score.@norm_score = "4.0"
+					}
+					else if (score.@l_3.toString() && Number(s) >= Number(score.@l_3)) { 
+						score.@norm_score = "3.0"
+					}
+					else if (score.@l_2.toString() && Number(s) >= Number(score.@l_2)){
+						score.@norm_score = "2.0"
+					} else { 
+						score.@norm_score = "1.0"
+					}
+				}
+								
+
+			}
+			
+			public function checkEditable(event:AdvancedDataGridEvent):void {
+			   if (scoreGrid.selectedIndex>=0) { 
+				   var s:XML = XML(scoreGrid.selectedItem); 
+				   if (s['@entry'] == 'false') event.preventDefault(); 
+				   
+			   }
+			}
+			
+			/**
+			 * Perform Remove action
+			 */
+			public function removeAssessment():void { 
+				if (assessmentsGrid.selectedIndex>=0) {
+				  var ax:XML = XML(assessmentsGrid.selectedItem); 
+				  Alert.show("Are you sure you want to delete the " + ax.test_name + " assessment taken on " + ax.date_taken + "?","Delete Assessemnt", Alert.YES + Alert.NO,this, confirmRemove); 
+				}
+			}
+			
+			public function confirmRemove(event:CloseEvent):void { 
+				if (event.detail == Alert.YES) {
+					toRemove.push(assessmentsGrid.selectedItem.assessment_id.toString()); 
+					var x:XML = XML(assessmentsGrid.selectedItem); 
+					delete assessmentSvc.xml.children()[x.childIndex()];
+				}
+			}
+			
+			private function saveScores():void { 
+				var o:Object; 
+				var x:XML = new XML(<table/>); 
+				var xl:XMLList = assessmentSvc.xml.row.(attribute('modified')=='*'); 
+				var s:XML; 
+				for each (var t:XML in xl) {
+					s = t.scores[0]; 
+					s['@student_id'] = t.student_id[0]; 
+					s['@date_taken'] = t.date_taken[0]; 
+					s['@test_id'] = t.test_id; 
+					x.appendChild(s.copy()); 
+				}
+				doSave = true; 
+				o = {method:"saveScores", xml: x.toXMLString(), person_id: personId}; 
+				if (toRemove.length>0) {
+					o['to_remove[]'] = toRemove; 
+				}
+				assessmentSvc.send(o);  
+				toRemove = new Array(); 
+			}
+			
+			private function addAssessment():void { 
+			    PopUpManager.addPopUp(newAssessmentWindow, this, true); 
+				
+			}
+			
+			private function confirmAddAssessment():void { 
+				
+				PopUpManager.removePopUp(newAssessmentWindow); 
+				
+			}
+			
+			private function cancelAdd():void { 
+				PopUpManager.removePopUp(newAssessmentWindow); 
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<services:DataService id="assessmentSvc" defaultService="TestEntrySingle" defaultMethod="studentAssessments" /> 
+	<services:DataService id="testSvc" defaultService="TestEntrySingle" defaultMethod="tests" /> 
+	<services:DataService id="newAssessmentSvc" defaultService="TestEntrySingle" defaultMethod="newAssessment"/> 
+	<services:DataService id="bldgSvc" defaultService="TestEntrySingle" defaultMethod="buildings"/> 
+	<services:DataService id="gradeSvc" defaultService="TestEntrySingle" defaultMethod="gradeLevels"/> 
+	<services:DataService id="scheduleSvc" defaultService="TestEntrySingle" defaultMethod="schedules"/> 
+	<s:Panel title="Test Entry" height="100%" width="100%">
+		<s:layout>
+			<s:HorizontalLayout/> 
+		</s:layout>			
+		<s:controlBarContent>
+			<s:Button label="Save" click="saveScores()"/> 
+			<s:Button label="Delete" enabled="{assessmentsGrid.selectedIndex>=0}" click="removeAssessment()"/> 
+			<s:Button label="Add Assessment" click="addAssessment()"/> 
+		</s:controlBarContent>
+		<s:DataGrid id="assessmentsGrid" height="100%" width="30%" >
+			<s:dataProvider>
+				<s:XMLListCollection source="{assessmentSvc.xml.row}"/> 
+			</s:dataProvider>
+		    <s:columns>
+				<s:ArrayList>
+					<s:GridColumn headerText="test" dataField="test_name"/> 
+					<s:GridColumn headerText="schedule" dataField="sched_label"/> 
+					<s:GridColumn headerText="date" dataField="date_taken"/> 
+				</s:ArrayList>
+  		    </s:columns>
+		</s:DataGrid>
+		<s:Panel title="Test" height="100%" width="70%"  enabled="{assessmentsGrid.selectedItem}" >
+			<s:layout>
+				<s:VerticalLayout/> 
+			</s:layout>
+
+					<s:Form>
+					   <s:layout>
+						   <s:HorizontalLayout/> 
+					   </s:layout>
+						<s:FormItem label="Minimum">
+							<s:Label text="{scoreGrid.selectedItem.@l_1}"/>
+						</s:FormItem>
+						<s:FormItem label="Below Expectations">
+							<s:Label text="{scoreGrid.selectedItem.@l_2}"/>
+						</s:FormItem>
+						<s:FormItem label="Meets Expections">
+							<s:Label text="{scoreGrid.selectedItem.@l_3}"/>
+						</s:FormItem>
+						<s:FormItem label="Exceeds Expectations">
+							<s:Label text="{scoreGrid.selectedItem.@l_4}"/>
+						</s:FormItem>
+						<s:FormItem label="Maximum">
+							<s:Label text="{scoreGrid.selectedItem.@max_score}"/>
+						</s:FormItem>
+					</s:Form>
+			
+				<mx:AdvancedDataGrid id="scoreGrid" dataProvider="{assessmentsGrid.selectedItem.scores.measure}" width="50%" height="100%" showHeaders="false" editable="true" designViewDataType="flat" 
+								 itemEditBeginning="checkEditable(event)" itemEditEnd="saveScore(event)">
+					<mx:columns>
+						<mx:AdvancedDataGridColumn dataField="@abbrev" editable="false">
+							<mx:itemRenderer>
+								<fx:Component>
+									<mx:Text verticalCenter="0" paddingTop="2" paddingLeft="5" text="{data.@abbrev}" fontWeight="{(data.@is_strand!='true') ? 'bold' : 'normal'}"/> 
+								</fx:Component>
+							</mx:itemRenderer>
+						</mx:AdvancedDataGridColumn>
+						<mx:AdvancedDataGridColumn dataField="@score" editable="true" itemRenderer="tests.SimpleScoreRenderer" />
+					</mx:columns>
+				</mx:AdvancedDataGrid>
+			</s:Panel>		
+	</s:Panel>
+</s:Application>

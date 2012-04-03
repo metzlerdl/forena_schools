@@ -1,0 +1,156 @@
+/* CSS file */
+body { 
+    margin: 0; 
+	padding:0; 
+	width: 100%; 
+	height:100%; 
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; 
+	font-size: 1.0em; 
+}
+
+#header { 
+	height: 30px; 
+}
+#h_container {
+	background-color:#B97E2E;
+	height: 40px; 
+	width: 100%; 
+	border-bottom: 5px solid; 
+	margin-bottom: 10px; 
+}
+
+#header_text {
+	margin-top: 5px; 
+}
+
+img.pedalogo {
+	width: 100%; 
+}
+
+
+
+#header h1 {
+	font-size: 1.2em; 
+	padding-bottom:0px; 
+	margin: 0; 
+}
+
+.container_12 { 
+}
+
+h2 {
+  font-size: 1.0em;  
+}
+
+ul.nav  { 
+	list-style:none;
+	margin: 5px 0 0 0; 
+	padding: 0; 
+	}
+	
+ul.hnav li {
+	display: inline; 
+	margin-right: 10px; 
+	}
+	
+#header ul: {
+	}
+
+#primary-nav {
+	   margin-top: 4px;  
+	}
+
+#header ul.hnav li a{
+    font-weight:bold;
+    text-decoration:none;
+    font-color: black; 
+}   
+    
+#header ul.hnav li a:hover.hnav{
+	  font-color: black; 
+	
+}
+
+.nav ul { 
+	list-style:none; 
+	padding: 0; 
+	margin: 0;
+} 
+
+div.content {
+	clear:left; 
+
+}
+
+
+html, body { 
+  height: 100%; 
+  }
+  
+.page-wrap { 
+    width: 100%; 
+    margin: 0 auto -45px; 
+    position: relative; 
+    height: auto !important;    
+    background-color: #FFFFFF; 
+    min-height: 100%; 
+}
+
+
+.footer { 
+	margin-top: 20px; 
+  background-color:#B97E2E;
+  border-top: 5px solid #000;
+}
+
+.footer, .push {
+  height: 40px; 
+  clear: both;
+  position: relative;
+  width:100%; 
+  
+}
+
+
+
+a  { 
+  color: #643812;   
+}
+
+.selected { 
+  font-weight: bold; 
+}
+table {
+  border-spacing: 0px;  
+}
+td { 
+  border: solid 1px; 
+  border-color: #999;
+}
+
+tr.odd { 
+  background: #EAD4A0; 
+}
+
+tr.even {
+  background: #fff; 
+}
+
+th {
+  text-align: left; 
+}
+
+th h3{
+	margin-top: 1em;  
+	}
+
+.legend {
+	border: solid 1px;
+	padding: 10px;  
+	}
+
+.legend table th{ 
+	border: none; 
+	padding: 5px; 
+	text-align: left; 
+	}

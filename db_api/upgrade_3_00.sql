@@ -1,0 +1,12 @@
+DROP FUNCTION a_profile_grouped_scores(bigint, integer);
+\i groups/s_group_members_v.sql;
+\i profiles/a_profile_student_scores.sql; 
+\i profiles/a_profile_grouped_scores.sql; 
+\i profiles/a_profile_measures_xml.sql; 
+\i utils/extractvalue.sql; 
+\i groups/s_group_add_members.sql; 
+UPDATE s_groups SET group_type='assessment' WHERE group_type<>'course'; 
+ALTER TABLE a_scores DROP CONSTRAINT a_score_assessment_fk;
+ALTER TABLE a_scores ADD CONSTRAINT a_score_assessment_fk FOREIGN KEY (assessment_id) REFERENCES a_assessments (assessment_id) ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE a_scores ADD CONSTRAINT a_score_measure_fk FOREIGN KEY (measure_id) REFERENCES a_test_measures (measure_id) ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE a_assessments ADD CONSTRAINT a_assessments_test_fk FOREIGN KEY (test_id) REFERENCES a_tests (test_id) ON UPDATE NO ACTION ON DELETE CASCADE;

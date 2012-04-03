@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--ACCESS=administer site configuration -->
+<root>
+  <row><title>Overview</title><name>help.development</name></row>
+  <row><title>Forena provided hooks</title><name>help.forena_hooks</name></row>
+  <row><title>Implementing Data Plugins</title><name>help.plugins</name></row>
+  <row><title>Implementing Field Formatters</title><name>help.formats</name></row>
+  <row><title>Implementing Templates</title><name>help.templates</name></row>
+</root>

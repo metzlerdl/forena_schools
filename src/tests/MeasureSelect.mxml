@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   close="onClose(event)"
+			   creationComplete="init()"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="400" xmlns:services="services.*">
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center"/>
+	</s:layout>
+	<fx:Metadata>
+		[Event(name="select", type="events.FlexXMLEvent")]
+	</fx:Metadata>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager; 
+			
+			private var _testId:String; 
+			[Bindable]public var selectPrompt:String; 
+		    
+			[Bindable]
+			public function get testId():String { 
+				return _testId; 
+			}
+			
+			public function set testId(value:String):void { 
+				if (value){
+				  _testId = value; 
+				  if (measureSvc) measureSvc.send({test_id:_testId}); 
+				}
+			}
+			
+			private function init():void {
+				if (_testId) { 
+					measureSvc.send({test_id:_testId}); 
+				}
+				measureGrid.selectedIndex=0; 
+			}
+			
+			public static function selectMeasure(parent:DisplayObject, test:String, prompt: String, selectHandler:Function):void { 
+				var win:MeasureSelect = new MeasureSelect(); 
+				win.testId = test; 
+				win.selectPrompt = prompt; 
+				win.addEventListener("select",selectHandler); 
+				PopUpManager.addPopUp(win, parent, true); 
+				PopUpManager.centerPopUp(win); 
+				win.measureGrid.setFocus(); 
+
+				
+			}
+			
+			public function doSelectMeasure():void { 
+				if (measureGrid.selectedItem) { 
+					var e:FlexXMLEvent = new FlexXMLEvent("select", XML(measureGrid.selectedItem)); 
+					this.dispatchEvent(e); 
+					doClose(); 
+				}
+			}
+			
+			public function doClose():void {
+				var e:CloseEvent = new CloseEvent(CloseEvent.CLOSE); 
+				this.dispatchEvent(e); 
+			}
+			
+			private function onClose(event:CloseEvent):void { 
+				if (this.isPopUp) { 
+					PopUpManager.removePopUp(this); 
+				}
+			}
+			
+
+		]]>
+	</fx:Script>
+	<s:controlBarContent>
+		<s:Button label="Ok" click="doSelectMeasure()"/>
+		<s:Button label="Cancel" click="doClose()"/> 
+	</s:controlBarContent>
+	<services:RestXMLService id="measureSvc" defaultService="Lookup" defaultMethod="measures"  includeInLayout="false"/> 
+	<s:Label text="{selectPrompt}" width="100%"/> 
+    <s:DataGrid id="measureGrid" width="100%" height="100%" doubleClickEnabled="true" doubleClick="doSelectMeasure()">
+		<s:dataProvider>
+			<s:XMLListCollection source="{measureSvc.xml.row}"/> 
+		</s:dataProvider>
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn headerText="Name" dataField="name"/> 
+				<s:GridColumn headerText="Abbrev" dataField="abbrev"/>
+				<s:GridColumn headerText="Code" dataField="code"/> 
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	
+</s:TitleWindow>

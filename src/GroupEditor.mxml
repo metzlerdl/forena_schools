@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:services="services.*"
+			   creationComplete="init()" xmlns:students="students.*" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent; 
+			import mx.validators.Validator; 
+			
+			private var closeOnLoad:Boolean = false; 
+			[Bindable] private var groupId:String=''; 
+			[Bindable] private var groupType:String;
+			[Bindable] private var _bldgId:String; 
+			
+			
+			
+			private function init():void {
+			    groupId = FlexGlobals.topLevelApplication.parameters.group_id; 
+				groupType = FlexGlobals.topLevelApplication.parameters.group_type;
+				bldgId = FlexGlobals.topLevelApplication.parameters.bldg_id; 
+				var personId:String = FlexGlobals.topLevelApplication.parameters.person_id; 
+				groupSvc.send({group_id:groupId, group_type:groupType, bldg_id:bldgId, person_id:personId}); 
+			}
+			
+			[Bindable]
+			private function set bldgId(value:String):void { 
+				if (value!=_bldgId && value) ownerSvc.send({bldg_id:value}); 
+				_bldgId = value; 
+			}
+			
+			private function get bldgId():String { 
+				return _bldgId; 
+			}
+			
+			/**
+			 * Add a student to the list of members
+			 */
+			private function addStudent():void {
+			  if (searchCtl.selectedItem) { 
+				  var m:XML = groupSvc.xml.row[0].members[0]; 
+				  var sid:String = searchCtl.selectedItem.@student_id; 
+				  if (m.student.(@student_id==sid).length()==0) { 
+				  //@TODO: Search the control so that we only add if the student doesn't exist.
+					  m.appendChild(searchCtl.selectedItem.copy()); 
+				  }
+			  }
+			}
+			
+			/**
+			 * Remove the selected student from this collection
+			 */ 
+			private function removeStudent():void {
+				if (membersGrid.selectedItem) {
+					var m:XML = groupSvc.xml.row[0].members[0]; 
+					var i:int = membersGrid.selectedIndex; 
+					delete m.children()[i]; 
+				}
+			}
+			
+			
+			
+			/**
+			 * Save the group and its members
+			 */ 
+			private function saveGroup():void { 
+				var x:XML = groupSvc.xml.row[0]; 
+				if (validGroup()) { 
+				  closeOnLoad=true; 
+				  groupSvc.send({method:"save", group_id:groupId, xml: x.toXMLString()}); 
+				}
+				
+			}
+			
+			private function onLoadGroup(event:FlexXMLEvent):void {
+				if (event.xml && closeOnLoad) { 
+					app.close(true); 
+				}
+				else { 
+					bldgId = groupSvc.xml.row.bldg_id; 
+					groupId = groupSvc.xml.row.group_id
+				}
+			}
+			
+			private function deleteGroup():void { 
+				Alert.show("Are you sure you want to delete this group?  This operation cannot be undone.","Confirm Delete",Alert.YES+Alert.NO,this, confirmDelete); 
+			}
+			
+			private function confirmDelete(event:CloseEvent):void { 
+				if (event.detail == Alert.YES) { 
+					closeOnLoad = true; 
+					groupSvc.send({method:"delete", group_id:groupId}); 
+				}
+			}
+			
+			private function validGroup():Boolean { 
+
+				return Validator.validateAll(validators).length==0; 
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:Array id="validators">
+			<mx:StringValidator source="{nameInput}" property="text" maxLength="128" required="true"/> 
+			<mx:StringValidator source="{codeInput}" property="text" maxLength="25" required="false"/> 
+			<mx:StringValidator source="{ownerSelect}" property="selectedValue" required="true" requiredFieldError="You must select an owner" /> 
+			<s:NumberValidator source="{membersGrid}" property="rowCount" minValue="1" lessThanMinError="You must have at least one group member"/> 
+		</fx:Array>
+		<fx:XML id="defaultGroup" xmlns="">
+			<row>
+				<name/> 
+				<code/> 
+				<members/>
+			</row>
+		</fx:XML>
+	</fx:Declarations>
+	<services:DataService id="groupSvc" defaultService="GroupEditor" defaultMethod="group" flexXMLChange="onLoadGroup(event)"/>
+	<services:FlexApp id="app" title="Edit Group - {nameInput.text}"/>
+	<services:DataService id="ownerSvc" defaultService="GroupEditor" defaultMethod="staff"/>
+	<s:TitleWindow title="Group Editor {nameInput.text}" width="100%" height="100%" >
+		<s:controlBarContent>
+			<s:Button label="Save" click="saveGroup()"/>
+			<s:Button label="Close" click="app.close(true)"/> 
+			<s:Button label="Delete" click="deleteGroup()" enabled="{groupId}"/> 
+		</s:controlBarContent>
+		<s:HGroup height="100%" width="100%" paddingLeft="10" paddingTop="10" paddingBottom="10" paddingRight="10">
+			
+	        <s:Form height="100%" width="50%" enabled="{groupSvc.xml.children().length()>0}">
+	        	<s:FormItem label="Name" required="true" width="100%">
+	        		<s:TextInput id="nameInput" width="50%" text="@{groupSvc.xml.row[0].name}"/>
+	        	</s:FormItem>
+				<s:FormItem label="Code" width="100%">
+					<s:TextInput  id="codeInput" text="@{groupSvc.xml.row[0].code}"/> 
+					<s:helpContent>
+						<s:Label text="Leave blank for courses that are not to be imported from another source."/> 
+					</s:helpContent>
+				</s:FormItem>
+				<s:FormItem label="Owner" required="true" width="100%">
+					<components:BindingDropDown id="ownerSelect" selectedValue="@{groupSvc.xml.row.owner_id}" XML="{ownerSvc.xml.row}" labelField="name" dataField="person_id" width="200"/> 
+				</s:FormItem>
+	        	<s:FormItem label="Students" required="true" width="100%">
+					
+	        		<s:layout>
+						<s:HorizontalLayout/>
+					</s:layout>
+						
+	        	</s:FormItem>
+				<s:HGroup width="100%" height="100%">
+					
+	        		<mx:AdvancedDataGrid id="membersGrid" height="100%"  width="100%" dataProvider="{groupSvc.xml.row[0].members.student}">
+
+	        			<mx:columns>
+	        				  <mx:AdvancedDataGridColumn headerText="Grade" dataField="@grade" width="50"/>
+	        				  <mx:AdvancedDataGridColumn headerText="First Name" dataField="@first_name" width="90"/>
+	        				  <mx:AdvancedDataGridColumn headerText="Last Name"  dataField="@last_name"/>
+	        			</mx:columns>
+	        		</mx:AdvancedDataGrid>
+				    <s:VGroup width="35" verticalAlign="middle" height="100%" >
+						
+					  <s:Button label="-" width="30" enabled="{membersGrid.selectedItem}" click="removeStudent()"/>
+					</s:VGroup>
+				</s:HGroup>
+				
+			</s:Form>
+	      <s:TitleWindow title="Add Students" height="100%" width="50%">
+			
+			<s:controlBarContent>
+				<s:Button label="Add" click="addStudent()"/>
+			</s:controlBarContent>					
+			<students:StudentSearch id="searchCtl" bldgId="{this.bldgId}" height="100%" width="100%" doubleClickEnabled="true" doubleClick="addStudent()"/>
+
+		  </s:TitleWindow>
+		</s:HGroup>
+	</s:TitleWindow>
+</s:Application>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" height="122" width="396">
+    <mx:Script>
+    	<![CDATA[
+    		[Bindable] public var message:String = "Processing... Please Wait"; 
+    	]]>
+    </mx:Script>
+	<mx:Text x="10" y="10" text="{message}" width="100%" fontSize="17" textAlign="center"/>
+	<mx:ProgressBar x="10" y="45" width="350" indeterminate="true" label="" height="14"/>
+	
+</mx:Panel>

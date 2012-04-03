@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>Implementing Data Provider Plugins</title>
+    <frx:category/>
+    <frx:options hidden="1" form=""/>
+    <frx:parameters>
+    </frx:parameters>
+    <frx:docgen>
+    </frx:docgen>
+    <frx:fields>
+      <frx:field id="title" link="reports/{name}"/>
+    </frx:fields>
+  </head>
+<body>
+<p>Modules may define custom data provider plugins, and register them using hook_forena_plugins.&#xA0; The following methods must be
+implemented when defining custom data providers:</p>
+<table border="0" cellpadding="5">
+<tbody>
+<tr>
+<th style="width: 30%;" align="left" valign="top">list_blocks($search)</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">List all of the blocks given a search string. Extend the FrxDataProvider
+class in order to use the default behavior for this method.</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">access($right)</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">Given a permissions string, retrun a user data block.&#xA0; Extend the
+FrxDataProvider class in order to use the default behavior for this method.</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">load_block($block_name)</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">Load the access controls and block method for the named block.&#xA0;
+Extend the FrxDataProvider class in order to use the default behavior for this method.</td>
+</tr>
+<tr>
+<th style="width: 30%;" align="left" valign="top">data($block_name)</th>
+<td style="width: 70%;" align="left" valign="top" scope="col">Retrieve and return the XML for a specified data block.&#xA0; XML should
+be a SimpleXMLElement object.</td>
+</tr>
+</tbody>
+</table>
+<p>&#xA0;</p>
+<p>&#xA0;</p>
+<div id="nav" frx:block="forena_help/development_topics">
+<ul>
+<li id="nav-row" frx:foreach="*">
+<span>{title}</span>
+</li>
+</ul>
+</div>
+</body></html>

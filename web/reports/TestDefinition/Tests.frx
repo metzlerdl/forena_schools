@@ -1,0 +1,29 @@
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Tests</title>
+<frx:fields>
+  <frx:field id="name" link="index.php?q=TestDefinition&amp;test_id={test_id}"/>
+  <frx:field id="add" link="index.php?q=TestDefinition">Add Test</frx:field>
+</frx:fields>
+</head>
+<body>
+  <div>
+  <p>{add}</p>
+  </div>
+  <div frx:block="ims/TestDefinition/tests">
+    <h2>Tests</h2>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Min Grade</th><th>Max Grade</th></tr>
+      </thead>
+      <tbody>
+        <tr frx:foreach="*">
+          <td>{name}</td>
+          <td>{min_grade}</td>
+          <td>{max_grade}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>  
+</body>
+</html>

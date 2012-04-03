@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Student Assessment Profile</title>
+<frx:category>Student</frx:category>
+<frx:options />
+<frx:fields>
+  <frx:field id="@date_taken" format="iso_date" format-string="F d, Y"/> 
+  <frx:field id="all_grades" link="index.php?q=Student&amp;person_id={parm.person_id}&amp;subject={parm.subject}">All</frx:field>
+  <frx:field id="grade" link="index.php?q=Student&amp;grade_level={grade_level}&amp;subject={parm.subject}&amp;person_id={parm.person_id}"/> 
+  <frx:field id="all_subjects" link="index.php?q=Student&amp;person_id={parm.person_id}&amp;grade_level={parm.grade_level}">All</frx:field>
+  <frx:field id="subject" link="index.php?q=Student&amp;person_id={parm.person_id}&amp;grade_level={parm.grade_level}&amp;subject={subject}"/>
+</frx:fields>
+<frx:parameters>
+	<frx:parm id="student_id" />
+	<frx:parm id="profile_id"/>
+</frx:parameters>
+<frx:docgen />
+</head>
+<body>
+  <div class="grid_12" >
+	<div id="person" frx:block="ims/student/person_info" frx:foreach="*"  >
+	  <table class="form-header" width="100%">
+        <tr> 
+         <td width="70%">{last_name}, {first_name}</td><td width="15%">{sis_id}</td><td width="15%">{state_student_id}</td>
+        </tr>
+        <tr>
+          <th>name</th><th >SIS ID</th><th >state student ID</th>
+        </tr> 
+    </table> 
+    <table class="form-header" width="100%">
+        <tr>
+         <td width="35%">{address_street}</td><td width="35%">{address_city}</td><td width="15%">{address_state}</td><td width="15%">{address_zip}</td>
+        </tr>
+        <tr>
+          <th>address</th><th>city</th><th>state</th><th>zip</th>
+        </tr>
+    </table>
+    <table class="form-header" width="100%">
+      <tr>
+          <td width="33%">{email}</td>
+          <td width="33%">{phone}</td>
+          <td width="33%">{login}</td>
+      </tr>
+      <tr>
+          <th>E-Mail</th>
+          <th>Phone</th>
+          <th>Login</th>
+      </tr>
+    </table>
+  </div>
+  <div id="enrollment" frx:block="ims/student/enrollment"  >
+      <p>filter by grade</p>
+      <ul class="hnav nav">
+        <li>{all_grades}</li>
+        <li frx:foreach="*" class="{selected}" >{grade}</li>
+      </ul>
+  </div>
+  <div id="subjects" frx:block="ims/subjects">
+      <p>filter by subject</p>
+      <ul class="hnav nav">
+        <li>{all_subjects}</li>
+        <li frx:foreach="*" class="{selected}">{subject}</li>
+      </ul>
+  </div>
+	</div>
+  <div id="assessments" frx:block="ims/student/assessments" frx:foreach="*">
+    <div class="grid_12">
+    <h4 class="hrule">{grade_name} {sched_label} {test_name}</h4>
+    <p>Assessment Date: {date_taken}</p>
+    <div class="vgap" frx:foreach="scores[test/@strand_count='0']">
+    <table width="32%" class="test-scores">
+      <tbody>
+      <tr frx:foreach="test">
+        <th>{@name}</th><td class="l{@level}" width="50">{@score}</td>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+    <div frx:foreach="scores[test/strand]" >
+      <div frx:foreach="test[strand]" class="vgap grid_4">
+        <table class="test-scores" width="100%">
+          <tbody>
+          <tr>
+            <th>{@name}</th><td width="50" class="l{@level}">{@score}</td>
+          </tr>
+          <tr frx:foreach="strand">
+            <td>{@name}</td><td class="l{@level}">{@score}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

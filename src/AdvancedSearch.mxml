@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   height="100%" width="100%"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:services="services.*" xmlns:components="components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:Array id="validators">
+		</fx:Array>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+	    public function searchSend():void { 
+			var object:Object = {
+				name: nameInput.text, 
+				bldg_id: buildingSelect.selectedValue,
+	            min_grade: minGradeSelect.selectedValue,
+				max_grade: maxGradeSelect.selectedValue
+			}; 
+			searchSvc.send(object); 			
+		}
+			
+	    /**
+		 * Handle the current search results return.  Change state if we get data. 
+		 */ 
+		public function onSearchResults(event:FlexXMLEvent):void { 
+			if (event.xml) { 
+				this.currentState = 'results'; 
+			}
+		}
+			
+		public function addAny(event:FlexXMLEvent):void { 
+			if (event.xml) { 
+				var x:XML = new XML(<row><data/><label>any</label></row>); 
+				event.xml.prependChild(x); 
+			}
+		}
+			
+			
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:VerticalLayout/> 
+	</s:layout>
+	<s:states>
+		<s:State name="critera" />
+		<s:State name="results" />
+	</s:states>
+	<services:DataService id="searchSvc" defaultService="AdvancedSearch" defaultMethod="search"/>
+	<services:DataService id="bldgSvc" defaultService="AdvancedSearch" defaultMethod="buildings" preload="true" flexXMLChange="addAny(event)"/>
+	<services:DataService id="yearSvc" defaultService="AdvancedSearch" defaultMethod="schoolYears" preload="true" flexXMLChange="addAny(event)"/> 
+	<services:DataService id="gradeSvc" defaultService="AdvancedSearch" defaultMethod="gradeLevels" preload="true" flexXMLChange="addAny(event)"/> 
+	<s:TitleWindow title="Advanced Search" height="100%" width="100%">
+		<s:layout>
+			<s:VerticalLayout/> 
+		</s:layout>
+		<s:controlBarContent>
+			<s:Button label="Search" click="searchSend()"/>
+			<s:Button label="Criteria" click="this.currentState = 'criteria'"/>
+		</s:controlBarContent>
+		<s:Panel title="Critera" height="100%" width="100%">
+			<s:layout>
+				<s:VerticalLayout/> 
+			</s:layout>		
+			<s:Form id="criteraForm">
+				<s:FormItem label="Name">
+					<s:TextInput id="nameInput" /> 
+				</s:FormItem>
+				<s:FormItem label="Building">
+					<components:BindingDropDown id="buildingSelect" XML="{bldgSvc.xml.row}" /> 
+				</s:FormItem>
+				<s:FormItem label="Grade">
+					<components:BindingDropDown id="minGradeSelect" XML="{gradeSvc.xml.row}" /> 
+					<s:Label text="and"/> 
+					<components:BindingDropDown id="maxGradeSelect" XML="{gradeSvc.xml.row}" /> 
+				</s:FormItem>
+			</s:Form>
+		</s:Panel>
+		<s:Panel title="Results" height="30" width="100%">
+			<s:layout>
+				<s:VerticalLayout/> 
+			</s:layout>
+			<mx:AdvancedDataGrid id="personGrid" dataProvider="{searchSvc.xml.row}" >
+			  <mx:columns>
+				  <mx:AdvancedDataGridColumn headerText="last" dataField="last_name"/>
+				  <mx:AdvancedDataGridColumn headerText="first" dataField="first_name"/> 
+				  <mx:AdvancedDataGridColumn headerText="grade" dataField="grade_abbrev"/> 
+				  <mx:AdvancedDataGridColumn headerText="school" dataField="bldg_id"/> 
+			  </mx:columns>
+			</mx:AdvancedDataGrid>
+		</s:Panel>
+	</s:TitleWindow>
+</s:Application>

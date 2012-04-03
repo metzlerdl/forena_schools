@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:fields>
+  <frx:field id="name" 
+  link="index.php?q=building/MeasureStatistics&amp;measure_id={measure_id}&amp;school_year={school_year}&amp;seq={seq}">
+  </frx:field>
+</frx:fields>
+<title>Measure Statistics</title>
+</head>
+<body>
+  <div class="grid_12">
+    <div id="test" frx:block="ims/tests/test" frx:foreach="*">
+      <h3>{test.name}</h3>
+    </div>
+    <div id="schedule" frx:block="ims/building/stat_schedules" frx:foreach="*">
+      <h4>{sched_label} {year_label}</h4>
+      <div id="test_stats" frx:block="ims/building/schedule_stats">
+        <table>
+          <thead>
+            <tr><th>measure</th><th>building average</th><th>district average</th><th>percent met standard</th></tr>
+          </thead>
+          <tbody>
+            <tr frx:foreach="*">
+              <td>{name}</td><td>{b_score}</td><td>{d_score}</td><td>{b_percent_met}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

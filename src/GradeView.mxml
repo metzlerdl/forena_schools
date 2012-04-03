@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:components="components.*" xmlns:services="services.*" xmlns:tests="tests.*"
+			   width="100%" height="100%"
+			   creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals; 
+			
+			private var groupId:String; 
+			private var _profileId:String; 
+			[Bindable]private var buildingId:String; 
+			[Bindable]private var gradeLevel:String; 
+			private var _schoolYear:String; 
+			
+			[Bindable]
+			public function set profileId(value:String):void {
+				_profileId = value; 
+				refreshScores(); 
+			}
+			public function get profileId():String { 
+				return _profileId; 
+			}
+			
+			[Bindable]
+			private function set schoolYear(value:String):void {
+				_schoolYear = value; 
+				refreshScores(); 
+			}
+			private function get schoolYear():String {
+				return _schoolYear; 
+			}
+			
+			
+			
+			private function init():void { 
+				profileId = FlexGlobals.topLevelApplication.parameters.profile_id; 
+				buildingId = FlexGlobals.topLevelApplication.parameters.bldg_id; 
+				bldgSvc.send({bldg_id:buildingId}); 
+				gradeLevel = FlexGlobals.topLevelApplication.parameters.grade_level; 
+				profileSvc.send({bldg_id:buildingId, grade_level: gradeLevel}); 
+				schoolYear = FlexGlobals.topLevelApplication.parameters.school_year; 
+				refreshScores(); 
+			}
+			
+			/**
+			 * Refresh the test scores
+			 */ 
+			private function refreshScores():void { 
+				if (profileSvc.xml && yearSvc.xml) {
+					scoreSvc.send({profile_id: profileId, bldg_id:buildingId, grade_level: gradeLevel, school_year: schoolYear});
+				}
+			}
+			
+			// Goto Student View
+			public function gotoStudent():void { 
+				if (scoresGrid.selectedItem) { 
+					var s:String = scoresGrid.selectedItem.person_id; 
+					app.popUp('index.php?q=Student&person_id='+s +  '&profile_id=' + profileId); 
+				}
+			}
+			
+			public function exportFile(format:String):void { 
+				app.goto('GradeView.'+format, {profile_id: profileId, bldg_id: buildingId, grade_level:gradeLevel, school_year: schoolYear}); 
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<services:DataService id="bldgSvc" defaultService="Lookup" defaultMethod="buildingInfo"/> 
+	<services:DataService id="yearSvc" defaultService="Lookup" defaultMethod="schoolYears"  preload="true" /> 
+	<services:DataService id="profileSvc" defaultService="GradeView" defaultMethod="profiles" /> 
+	<services:DataService id="scoreSvc" defaultService="GradeView" defaultMethod="scores" showProgress="false" />
+	<services:FlexApp id="app" title="{main.title}"/>
+	<s:TitleWindow id="main" title="Assessments {bldgSvc.xml.name}" width="100%" height="100%">
+		<s:controlBarContent>
+		  <s:Button label="Refresh" click="refreshScores()"/> 
+		  <s:Button label="Export to .csv" click="exportFile('csv')"/> 
+		</s:controlBarContent>
+		<s:VGroup width="100%" height="100%">
+			<components:BindingList id="yearSelect" XML="{yearSvc.xml.row}" dataField="school_year" labelField="label" width="100%" selectedValue="@{schoolYear}" change="refreshScores()">
+				<components:layout>
+					<s:TileLayout requestedRowCount="1"/> 
+				</components:layout>
+			</components:BindingList>
+		    <components:BindingList id="profileSelect" XML="{profileSvc.xml.row}" dataField="profile_id" labelField="name" width="100%" selectedValue="@{profileId}" 
+				 change="refreshScores()">
+				<components:layout>
+					<s:TileLayout requestedRowCount="1"/>
+				</components:layout>
+			</components:BindingList>
+			<s:Group width="100%" height="100%" id="testGroup">
+			<s:layout>
+				<s:VerticalLayout /> 
+			</s:layout>
+			<tests:TestScoresGrid id="scoresGrid"
+								  dataProvider="{scoreSvc.xml.row}" measuresXML="{XML(profileSelect.selectedItem).measures[0]}" 
+								  doubleClickEnabled="true"
+								  doubleClick="gotoStudent()"
+								  measureField="@profile_sort" height="100%" width="100%">
+				<tests:groupedColumns>
+					<mx:AdvancedDataGridColumn headerText="First" dataField="first_name" width="100"/>
+					<mx:AdvancedDataGridColumn headerText="Last" dataField="last_name" width="150"/>
+				</tests:groupedColumns>
+			</tests:TestScoresGrid>
+			</s:Group>
+
+		</s:VGroup>
+	</s:TitleWindow>
+</s:Application>

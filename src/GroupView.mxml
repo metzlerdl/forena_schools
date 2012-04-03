@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   height="100%" width="100%"
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:components="components.*" xmlns:services="services.*" xmlns:tests="tests.*"
+			   creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals; 
+			
+			private var groupId:String; 
+			[Bindable]private var profileId:String; 
+			
+			private function init():void { 
+				profileId = FlexGlobals.topLevelApplication.parameters.profile_id; 
+				var o:Object = FlexGlobals.topLevelApplication.parameters; 
+				groupId = FlexGlobals.topLevelApplication.parameters.group_id; 
+				profileSvc.send({group_id:groupId}); 
+				refreshScores(); 
+			}
+			
+			/**
+			 * Refresh the test scores
+			 */ 
+			private function refreshScores():void { 	
+				scoreSvc.send({group_id:groupId, profile_id: profileId}); 
+			}
+			
+			// Goto Student View
+			public function gotoStudent():void { 
+				if (scoresGrid.selectedItem) { 
+					var s:String = scoresGrid.selectedItem.person_id; 
+					app.popUp('index.php?q=Student&person_id='+s +  '&profile_id=' + profileId); 
+				}
+			}
+			
+			public function exportToFile(format:String):void {
+			   app.goto('GroupView.'+format, {group_id:groupId, profile_id:profileId}); 
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<services:DataService id="profileSvc" defaultService="GroupView" defaultMethod="profiles"/> 
+	<services:DataService id="scoreSvc" defaultService="GroupView" defaultMethod="scores"/>
+	<services:FlexApp id="app"/>
+	<s:TitleWindow title="Assessments" width="100%" height="100%">
+		<s:controlBarContent>
+		  <s:Button label="Refresh" click="refreshScores()"/> 
+		  <s:Button label="Export .csv" click="exportToFile('csv')"/> 
+		</s:controlBarContent>
+		<s:VGroup width="100%" height="100%" paddingBottom="10">
+		    <components:BindingList id="profileSelect" XML="{profileSvc.xml.row}" dataField="profile_id" labelField="name" width="100%" selectedValue="@{profileId}" 
+				 change="refreshScores()">
+				<components:layout>
+					<s:TileLayout requestedColumnCount="9" clipAndEnableScrolling="false"/>
+				</components:layout>
+			</components:BindingList>
+
+				
+			<tests:TestScoresGrid id="scoresGrid" 
+								  dataProvider="{scoreSvc.xml.row}" measuresXML="{XML(profileSelect.selectedItem).measures[0]}" 
+								  doubleClickEnabled="true"
+								  doubleClick="gotoStudent()"
+								  measureField="@profile_sort" height="100%" width="100%">
+				<tests:groupedColumns>
+					<mx:AdvancedDataGridColumn headerText="First" dataField="first_name" width="100"/>
+					<mx:AdvancedDataGridColumn headerText="Last" dataField="last_name" width="150"/>
+				</tests:groupedColumns>
+			</tests:TestScoresGrid>
+		</s:VGroup>
+	</s:TitleWindow>
+</s:Application>

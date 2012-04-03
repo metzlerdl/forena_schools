@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>Forena Report XML (frx) Reference</title>
+    <frx:category>Help</frx:category>
+    <frx:options hidden="1"/>
+    <frx:parameters>
+    </frx:parameters>
+    <frx:docgen>
+    </frx:docgen>
+    <frx:fields>
+      <frx:field id="title" link="reports/{name}"/>
+    </frx:fields>
+  </head>
+<body>
+  <ul id="forena-1" frx:block="forena_help/design_topics">
+    <li id="forena-2" frx:foreach="*">
+      <span>{title}</span>
+    </li>
+  </ul>
+  <h3>Report Definition - Overview</h3>
+  <p>Forena reports are defined using the Forena Report Xml template format
+  (frx).&#xA0; The template format is largely an XHTML document which is
+  extended by some custom HTML tags and attributes.&#xA0; The result should be
+  something familiar to anyone that uses html.</p>
+  <p>
+    <strong>Where are reports stored?</strong>
+  </p>
+  <p>Reports are stored as files on your reporting server, and may be edited
+  with a text editor directly, or via a user interface provided by forena.</p>
+  <p>
+    <strong>A Simple Report:</strong>
+  </p>
+  <p>The following example illustrates a very simple report:</p>
+  <p>&lt;html xmlns:frx="urn:FrxReports"&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &lt;head&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &lt;title&gt;A Sample
+  Report&lt;/title&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &lt;/head&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &lt;body &gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &lt;div
+  frx:block="forena_help/sampleXML"&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &lt;div
+  frx:foreach="*"&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0;
+  &#xA0;&#xA0;&#xA0; &lt;p&gt;this is a test report for {first_name}&lt;/p&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &lt;/div&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0; &lt;/div&gt; 
+  <br/>&#xA0;&#xA0;&#xA0; &lt;/body&gt; 
+  <br/>&lt;/html&gt;</p>
+  <p>There are basically three custom tags that appear in the simplest version
+  of the report:</p>
+  <p>
+  <strong>xmlns:frx element</strong>- This defines the document as a Forena
+  Report XML template document.&#xA0; It should appear exactly this way in the
+  document.</p>
+  <p>
+  <strong>frx:block attribute</strong>&#xA0; - This tells forena to load data
+  from the defined data block (in this case sample/sampleXML.&#xA0; Data blocks
+  are usually parameterized queries.&#xA0; If you are a developer, you might
+  want to read more about defining data blocks in the Forena Data source.</p>
+  <p>
+  <strong>frx:foreach attribute</strong>- This will cause the containing tag to be
+  repeated for every row returned in the data block.  The attribute value can be any 
+  valid xpath expression, but is often simply '*', which would imply creating a a repeating 
+  pattern for every row or element returned by the query. </p>
+  <h3>Report fields</h3>
+  <p>each field in the report is referenced by an xpath expression enclosed by curly braces.  
+  In its simplest form the xpath xpression can be thought of as the name of the field in the
+  database, but when using more complex data sources, there is a lot that can be done using this syntax.
+  In some cases, the field name may be used using a '.' syntax to reference fields in other blocks 
+  as report parameters.   
+  </p>
+</body></html>

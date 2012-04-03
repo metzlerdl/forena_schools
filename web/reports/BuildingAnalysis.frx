@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Building Statistics</title>
+<frx:category>District</frx:category>
+<frx:options hidden="0" form="" />
+<frx:parameters>
+	<frx:parm id="expired" default="Y" />
+</frx:parameters>
+<frx:fields>
+		<frx:field id="@title"
+		link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
+	<frx:field id="@grade_name"
+		link="index.php?q=BuildingAnalysis&amp;bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
+	<frx:field id="profile.name"
+	  link="index.php?q=BuildingAnalysis&amp;bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}">
+	</frx:field>
+	<frx:field id="test_name"
+	  link="index.php?q=building/TestStatistics&amp;bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
+	</frx:field>
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+	<div id="menu-1" class="nav grid_4">
+		<h3>Building</h3>
+		<ul frx:block="menus/building">
+			<li frx:foreach="*"><span>{@title}</span>
+			</li>
+		</ul>
+		<h3>Performance by Grade</h3>
+		<div frx:block="ims/building/grade_levels" id="buildings">
+		 <div  id="bldg" frx:foreach="*">
+			<h4>{bldg_name}</h4>
+			<p>
+			<ul>
+				<li frx:foreach="grades/*" id="forena-2"><span class="{@selected}">{@grade_name}</span>
+				</li>
+			</ul>
+			</p>
+			</div>
+		</div>  
+	</div>
+	<div class="grid_8">
+	  <div id="test_stats" frx:block="ims/building/test_stats" parameters="bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}">
+	    <h3>Test Statistics</h3>
+	    <p>The following table shows the most recent calculated statistics for all tests available for your school.  Select a test to view statistics available 
+	      for that test. </p>
+	    <table>
+	      <thead>
+	        <tr><th>Test</th><th></th></tr>
+	      </thead>
+	      <tbody>
+	        <tr frx:foreach="*">
+	          <td>{test_name}</td><td>{sched_label} {year_label}</td>
+	        </tr>
+	      </tbody>
+	    </table>
+	  </div>
+	</div>
+</body>
+</html>

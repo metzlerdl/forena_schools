@@ -1,0 +1,1 @@
+\i import/etl_set_translation.sql;
