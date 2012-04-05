@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>PedaGoggle Administration</title>
+    <frx:category>District</frx:category>
+    <frx:options hidden="0" form=""/>
+    <frx:fields>
+      <frx:field id="@title" link="index.php?q={@path}"/>
+      <frx:field id="name" link="index.php?q=BuildingDashboard&amp;bldg_id={bldg_id}"/>
+    </frx:fields>
+    <frx:parameters>
+    </frx:parameters>
+    <frx:docgen>
+    </frx:docgen>
+
+  </head>
+<body>
+<div frx:block="menus/admin" class="grid_3 nav">
+<h2>Admin</h2>
+ <ul>
+ <li frx:foreach="*"><span>{@title}</span></li>
+ </ul>
+</div>
+<div frx:block="ims/buildings" id="forena-1" class="grid_8 nav">
+<h2>Schools</h2>
+<ul>
+    <li frx:foreach="*" id="forena-2"><span>{name}</span></li>
+</ul>
+</div>
+</body></html>

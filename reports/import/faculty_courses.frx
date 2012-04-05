@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Courses In Import</title>
+<frx:category>IMS</frx:category>
+<frx:options />
+<frx:fields>
+	<frx:field id="bldg_code" link="index.php?q=import/courses&amp;bldg_code={bldg_code}"
+		format="" format-string="" target="" />
+	<frx:field id="teachers" link="" format="" format-string="" target="" />
+  <frx:field id="courses" link="index.php?q=import/faculty_courses&amp;sis_id={sis_id}&amp;bldg_code={bldg_code}" format="" format-string="" target="" />
+	<frx:field id="min_grade" link="" format="" format-string="" target="" />
+	<frx:field id="sis_id" link="" format="" format-string="" target="" />
+	<frx:field id="last_name" link="" format="" format-string="" target="" />
+	<frx:field id="first_name" link="" format="" format-string="" target="" />
+	<frx:field id="min_level" link="" format="" format-string="" target="" />
+	<frx:field id="max" link="" format="" format-string="" target="" />
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+
+
+	<div frx:block="ims/import/course_summary">
+	  <h3>{parm.bldg_code}</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>bldg_code</th>
+					<th>sis_id</th>
+					<th>last_name</th>
+					<th>first_name</th>
+					<th>courses</th>
+					<th>min_level</th>
+					<th>max</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr frx:foreach="*">
+					<td>{bldg_code}</td>
+					<td>{sis_id}</td>
+					<td>{last_name}</td>
+					<td>{first_name}</td>
+					<td>{courses}</td>
+					<td>{min_level}</td>
+					<td>{max}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+  <div frx:block="ims/import/faculty_courses">
+    <h3>{parm.bldg_code}</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>bldg_code</th>
+          <th>course_code</th>
+          <th>description</th>
+          <th>sis_id</th>
+          <th>min_grade_level</th>
+          <th>max_grade_level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr frx:foreach="*">
+          <td>{bldg_code}</td>
+          <td>{course_code}</td>
+          <td>{description}</td>
+          <td>{faculty_sis_id}</td>
+          <td>{min_grade_level}</td>
+          <td>{max_grade_level}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

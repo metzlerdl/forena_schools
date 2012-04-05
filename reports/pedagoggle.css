@@ -1,0 +1,85 @@
+
+th { 
+	  text-align: center; 
+	  border: 1px solid; 
+	  border-color: 999; 
+	}
+	
+td { padding: 5px; }
+
+td.l1{
+	background-color: #E3B5B5; 
+	
+}
+
+td.l2{
+	background-color: #E3E288;
+	}
+	
+td.l3{
+	background-color: #BBE3B5; 
+	}
+	
+td.l4{ 
+	background-color: #B5C0E3; 
+	}
+	
+td.score { 
+	text-align: right; 
+}
+
+.pedagoggle-scores td, .pedagoggle-scores th { 
+	font-size: 0.8em; 
+}
+
+/* Styles for test score grids */ 
+.test-scores tr.odd, .test-scores tr.even {
+  background-color: white; 
+}
+
+
+.test-scores td.test { 
+  font-weight: bold; 
+  padding: 5px; 
+  }
+  
+ .test-scores th { 
+   text-align: left; 
+   padding: 5px; 
+ }
+  
+.test_scores td.test {
+  }
+
+/* Styles for laying out tables as convensional forms. */ 
+table.form-header { 
+	border-collapse: collapse; 
+	border-style: none;
+	}
+	
+
+
+table.form-header td, table.form-header th { 
+	border-style: none;
+	padding: 0; 
+	}
+	
+table.form-header th { 
+	padding-bottom: 5px; 
+	border-top: 1px solid; 
+	text-align: left; 
+	font-weight: normal; 
+	font-size: 10px;  
+	}
+	
+.vgap {
+	margin-top: 10px; 
+	}
+	
+	.hrule { 
+	  border-bottom: solid 1px; 
+	}
+	
+	.selected { 
+	  font-weight: bold; 
+	}
