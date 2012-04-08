@@ -1,0 +1,92 @@
+<?php
+function forena_schools_menu() {
+	$items['myshool'] = array(
+	  'type' => MENU_NORMAL_ITEM,
+	  'title' => t('My School'),
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('teacher'),
+	  'page callback' => 'forena_schools_myschool',
+	);
+
+	$items['pedaflex'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => TRUE,
+	  'page callback' => 'forena_schools_flex',
+	);
+
+	$items['pedadata'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => TRUE,
+	  'page callback' => 'forena_schools_data',
+	);
+
+	return $items;
+}
+
+function forena_schools_access() {
+	return TRUE;
+}
+
+function forena_schools_myschool($mode='teacher') {
+	return forena_report('DistrictDashboard');
+}
+
+/**
+ * Renders a flex applciation in a popup window without theme
+ * @param unknown_type $a
+ */
+function forena_schools_flex($app) {
+
+}
+
+function forena_schools_forena_report_directory() {
+	return drupal_get_path('module', 'forena_schools') . '/reports';
+}
+
+/**
+ * Data service for flex applications.
+ */
+function forena_schools_data() {
+  // Determine if the include file is in the path.
+$class = $_REQUEST['service'];
+$method = $_REQUEST['method'];
+$class_file = 'services/'.$class.'.data.php';
+
+// Only load the file if the file name exists
+if (file_exists($class_file)) {
+  include_once($class_file);
+  if(class_exists($class)) {
+  	$handler = new $class;
+  }
+  else {
+    $handler = new DataBroker();
+  }
+  $auth = true;
+  if (method_exists($handler,'auth')) {
+  	$auth = call_user_func(array($handler,'auth'));
+  }
+
+  if ($auth) {
+	  if (method_exists($handler,$method)) {
+	    //header('Content-type: text/xml');
+	    $data = call_user_func(array($handler,$method));
+	    if ($data_debug==true && $class!='LogViewer') {
+	    	watchdog('Data '. $class . '.' . $method, htmlspecialchars(print_r($_REQUEST,1)). "\n" . htmlspecialchars($data));
+	    }
+	    print $data;
+	  }
+	  else {
+	    watchdog('error', 'Method Not Found',print_r($_REQUEST,1));
+	    print "<pre>$method: Method Not Found</pre>";
+	  }
+  } else {
+  	watchdog('error', 'Data Service Access Denied',"Service: $class \n Method:$method \n User: \n" . print_r(current_user(),1));
+  	print "<pre>Access Denied</pre>";
+  }
+}
+else {
+    watchdog('debug Data Service',  'Data Service  Not Found',print_r($_REQUEST,1));
+	print "<pre>$class: Service Not Found</pre>";
+}
+
+}
