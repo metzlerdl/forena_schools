@@ -1,11 +1,11 @@
 <?php
-class DataBroker {
+class Analysis extends ForenaSchools {
 	public $title = 'Assessment Analysis';
 	public function auth() {
-		return access_level('teacher');
+		return $this->access_level('teacher');
 	}
   public function profiles() {
-		return db_query_xml(
+		return $this->db->query_xml(
 		  'SELECT p.profile_id, p.name,  a_profile_measures_xml(profile_id) AS measures from a_profiles p
 		    WHERE :grade_level BETWEEN min_grade AND max_grade
 		      AND school_year_offset=0
@@ -16,14 +16,14 @@ class DataBroker {
 	}
 
 	public function gradeLevels() {
-    return db_query_xml(
+    return $this->db->query_xml(
       'SELECT grade_level,name FROM i_grade_levels order by grade_level',
       $_POST
     );
 	}
 
 	public function schoolYears() {
-		return db_query_xml(
+		return $this->db->query_xml(
 		  'SELECT school_year, label FROM i_school_years'
 		);
 	}
@@ -53,7 +53,7 @@ FROM
 	}
 
 	public function buildingScores() {
-	  return db_query_xml(
+	  return $this->db->query_xml(
 	    "SELECT pm.profile_id,
       s.*,
       g.name AS grade,

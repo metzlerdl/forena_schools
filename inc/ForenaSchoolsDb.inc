@@ -5,74 +5,42 @@
 
 
 /**
- * factory for getting the applicatioins database connection.
+ * Database abstraction class for postgres
  */
-function db_get() {
-  static $db = '';
-  if (!$db) {
-    $db = new pg_database();
+class ForenaSchoolsDB {
+
+protected $c;
+protected $sql_cmd;
+protected $bind_order;
+protected $rs;
+protected $token_exp = '/:([a-z]|[0-9]|{A-Z]|[-_])+/';
+
+/**
+ * Connect to databse using global connect string
+ * return object Database connection object.
+ */
+function __construct() {
+
+  if (!$this->c) {
+    $this->c = pg_connect(forena_schools_connection_string());
+    if ($this->c) pg_query($this->c,"SET search_path=public,import");
   }
-  return $db;
-}
-
-
-function db_query($sql,$values=array()) {
- GLOBAL $db_debug;
- $db = db_get();
- if ($db) return $db->query($sql,$values);
-}
-
-function db_query_xml($sql,$values = array(),$root_tag='',$message='') {
- $db = db_get();
- if ($db) return $db->query_xml($sql,$values,$root_tag,$message);
-}
-
-function db_call($fn_call,$values = array()) {
-
-  $db = db_get();
-  if ($db) return $db->call($fn_call,$values);
 }
 
 /**
- * Generate insert statment from table.
- * Returns empty string if the table is not found.
- * @param $table string table to use for insert generation
- * @return string Sql insert statement
+ * Factory instance
+ * Use to return instance of connection.
  */
-function db_gen_insert($table, &$tab_columns) {
-  $rs = db_query('SELECT column_name FROM information_schema.columns WHERE table_name=:table ',array('table'=>$table));
-  $col_list='';
-  $val_list='';
-  while ($row = pg_fetch_row($rs)) {
-  	 $col_name = strtolower($row[0]);
-  	 $col_list .= $col_name . ',';
-  	 $val_list .= ':'.$col_name.',';
-  	 $tab_columns[]=$col_name;
-  }
-  $sql = '';
-  if ($col_list) {
-    $sql = 'INSERT INTO '.$table.' ('.trim($col_list,',') .') VALUES ('.trim($val_list,',') .')';
-  }
-  return $sql;
+static function instance() {
+	static $db = '';
+	if (!$db) {
+		$db = new ForenaSchoolsDB();
+	}
+	return $db;
 }
 
-/**
- * Generate the list of columns from a table
- * @param $table string Name of table to introspect
- * @return array Array of column names
- */
-function db_column_list($table) {
-  $rs = db_query('SELECT column_name FROM information_schema.columns WHERE table_name ={table}',array('table'=>$table));
-  $col_list=array();
 
-  while ($row = pg_fetch_row($rs)) {
-  	 $col_list[] = strtolower($row[0]);
-  }
-
-  return $col_list;
-}
-
-function db_first_row($rs) {
+function first_row($rs) {
    if ($rs) {
      $row = pg_fetch_assoc($rs);
      $retvar = $row;
@@ -81,77 +49,38 @@ function db_first_row($rs) {
   }
 
 
-function db_first_column($rs) {
+function first_column($rs) {
 if ($rs) {
     $row = pg_fetch_row($rs);
     $retvar = $row[0];
   }
   return $retvar;
 }
-function db_query_foreach($xml,$xpath,$sql,$test_xpath='',$false_query='') {
-  $db = db_get();
-  if ($db) $db->query_foreach($xml,$xpath,$sql,$test_xpath,$false_query);
-}
-/**
- * Check database connection returning the error message if it fails.
- *
- */
-function db_check_connection_failed() {
-	global $install_step;
-	ob_start();
-	// Execute a simple select 'x' to test the connection
-	$db = db_get();
-    $result = $db->test_connection();
-	$error_text = ob_get_contents();
-	ob_end_clean();
-	if ($result === NULL) {
-		$error_text .= 'Database Connection Failed';
+
+function all_rows($rs) {
+	$ret = array();
+	if ($rs) {
+		$ret = pg_fetch_all($rs);
 	}
-  $install_step=$result;
-
-	return $error_text;
+	return $ret;
 }
+
 /**
- * Database logging procedure.  Writes a log entry to the database.
  *
- * @param String $title Short title of this log message
- * @param String $message Full tet of message
- * @param String $type Defaults to error
+ * Load a file and execute ...
+ * @param String $filename
  */
-function db_log($title,$message='',$type='error') {
-	$user=current_user();
-    ob_start();
-    $db = db_get();
-    $db->log($type,$user['user_id'],$title,substr($_SERVER['REMOTE_ADDR'],-15),$message);
-    $error_text = ob_get_contents();
-    ob_end_clean();
-    if ($error_text) {
-    	print "<pre>";
-    	print "Failed to write to database logs";
-    	print $error_text;
-    	print "</pre>";
-    }
-}
-/**
- * Database abstraction class for postgres
- */
-class pg_database {
+public function executeFile($filename) {
+	$filename = drupal_get_path('module', 'forena_schools') . '/' . $filename;
 
-protected $c;
-protected $sql_cmd;
-protected $bind_order;
-protected $token_exp = '/:([a-z]|[0-9]|{A-Z]|[-_])+/';
-
-/**
- * Connect to databse using global connect string
- * return object Database connection object.
- */
-function __construct() {
-  global $db_connection_string;
-  if (!$this->c) {
-    $this->c = pg_connect($db_connection_string);
-    if ($this->c) pg_query($this->c,"SET search_path=public,import");
-  }
+	if (file_exists($filename)) {
+    $sql = file_get_contents($filename);
+    //$sql = trim($sql,';');
+    $this->exec_query($sql);
+	}
+	else {
+		drupal_set_message('File not found: ' .  $filename, 'error');
+	}
 }
 
 /**
@@ -243,7 +172,7 @@ protected function get_bind_values($values) {
  * @param  array   $params A key/value array of parameter replacements
  * @return object  postgres recordset otbject
  */
-public function query($sql,$values=array()) {
+public function exec_query($sql,$values=array()) {
   // Look for all parameter names and send back sql
   GLOBAL $db_debug;
   $sql = $this->prepare($sql);
@@ -254,6 +183,10 @@ public function query($sql,$values=array()) {
   return pg_query_params($this->c,$sql,array_values($param_values));
 }
 
+public function query($sql, $values=array()) {
+	return $this->all_rows($this->exec_query($sql, $values));
+}
+
 /**
  * Performs a single function call expecting a single stream of data to be returned
  * This is usefull for getting xml data back from function calls.
@@ -261,7 +194,7 @@ public function query($sql,$values=array()) {
 public function call($f_call,$values=array()) {
   $sql = 'select '.$f_call.';';
   $retvar = '';
-  $rs = $this->query($sql,$values);
+  $rs = $this->exec_query($sql,$values);
   if ($rs) {
     $row = pg_fetch_row($rs);
     $retvar = $row[0];
@@ -390,7 +323,7 @@ public function query_foreach($xml,$xpath,$sql,$test_xpath='',$else_query='') {
 
       // If we've still got sql after the test, execute it.
       if ($sql_cmd)
-        $this->query($sql_cmd,$row_xml);
+        $this->exec_query($sql_cmd,$row_xml);
     } // foreach
   }
 }

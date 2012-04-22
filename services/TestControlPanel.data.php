@@ -1,20 +1,20 @@
 <?php
-class DataBroker {
+class TestControlPanel extends ForenaSchools {
 	public $title = 'Testing Control Panel';
 
 	public function auth() {
-		return access_level('dist_admin');
+		return $this->access_level('dist_admin');
 	}
 
 
 	public function scoreStats() {
-		RETURN db_query_xml('
+		RETURN $this->db->query_xml('
 			SELECT
 			  s.label AS schedule, b.abbrev AS building, b.name as building_name, g.abbrev AS grade, c.grade_level, c.total_students, ss.stat_scores,
 			  building_students, CASE WHEN c.total_students<=bc.building_students THEN CAST(100.00*c.total_students/bc.building_students AS NUMERIC(4,1)) END as coverage,
 			  min_date_taken, max_date_taken
 			FROM a_test_schedules s JOIN
-			 (select bldg_id,test_id,school_year, grade_level,seq, min(date_taken) AS min_date_taken, max(date_taken) AS max_date_taken, count(distinct person_id) as total_students 
+			 (select bldg_id,test_id,school_year, grade_level,seq, min(date_taken) AS min_date_taken, max(date_taken) AS max_date_taken, count(distinct person_id) as total_students
 			  FROM a_assessments
 			  where test_id=:test_id
 			    AND school_year=:school_year
@@ -42,12 +42,12 @@ class DataBroker {
 	}
 
 	public function recalcStats() {
-		db_call('a_calc_score_stats(:school_year, :test_id)', $_POST);
+		$this->db->call('a_calc_score_stats(:school_year, :test_id)', $_POST);
 		return $this->scoreStats();
 	}
-	
-	public function renormalizeScores() { 
-	  $message = db_call('a_renormalize_scores(:test_id, :school_year)', $_POST); 
-	  return '<message>' . htmlspecialchars($message) . '</message>'; 
+
+	public function renormalizeScores() {
+	  $message = $this->db->call('a_renormalize_scores(:test_id, :school_year)', $_POST);
+	  return '<message>' . htmlspecialchars($message) . '</message>';
 	}
 }

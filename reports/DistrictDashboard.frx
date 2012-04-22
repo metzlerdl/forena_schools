@@ -5,8 +5,8 @@
     <frx:category>District</frx:category>
     <frx:options hidden="0" form=""/>
     <frx:fields>
-      <frx:field id="@title" link="index.php?q={@path}"/>
-      <frx:field id="name" link="index.php?q=BuildingDashboard&amp;bldg_id={bldg_id}"/>
+      <frx:field id="@title" link="assessments/{@path}"/>
+      <frx:field id="name" link="reports/BuildingDashboard?bldg_id={bldg_id}"/>
     </frx:fields>
     <frx:parameters>
     </frx:parameters>

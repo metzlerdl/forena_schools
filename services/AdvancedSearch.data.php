@@ -1,8 +1,7 @@
 <?php
-require_once('forena/forena.standalone.inc');
-class DataBroker {
+class AdvancedSearch extends ForenaSchools {
 	public function auth() {
-		return access_level('teacher');
+		return $this->access_level('teacher');
 	}
 
 	public function search() {
@@ -26,7 +25,7 @@ class DataBroker {
 			  p_staff s ON b.bldg_id=s.bldg_id JOIN p_people on s.person_id=p.person_id
 			  WHERE login=:current_user';
 		}
-		return db_query_xml($sql);
+		return $this->db->query_xml($sql);
 	}
 
 	public function gradeLevels() {
@@ -39,10 +38,10 @@ class DataBroker {
 			$sql = 'select grade_level AS data, abbrev AS label FROM i_grade_levels
 			  ORDER BY grade_level';
 		}
-		return db_query_xml($sql);
+		return $this->db->query_xml($sql);
 	}
 
 	public function schoolYears() {
-		return db_query_xml('SELECT school_year AS data, label FROM i_school_years ORDER BY start_date desc ');
+		return $this->db->query_xml('SELECT school_year AS data, label FROM i_school_years ORDER BY start_date desc ');
 	}
 }

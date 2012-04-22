@@ -1,8 +1,8 @@
 <?php
-class DataBroker {
+class Search extends ForenaSchools {
 
 	public function auth() {
-		return access_level('teacher');
+		return $this->access_level('teacher');
 	}
 
 	public function search() {
@@ -24,7 +24,7 @@ class DataBroker {
 			);
 		}
 
-		$result = db_call('p_student_search(:last_name, :first_name, :bldg_id)', $parms);
+		$result = $this->db->call('p_student_search(:last_name, :first_name, :bldg_id)', $parms);
 
     return $result;
 	}

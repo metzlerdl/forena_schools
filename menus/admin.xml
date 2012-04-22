@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ACCESS=sys_admin -->
+<menus>
+    <item title="System Settings" path="SystemSettings"/>
+    <item title="Application Logs" path="LogViewer" type="flex"/> 
+    <item title="User Management" path="UserManager" type="flex"/> 
+    <item title="Inspect SIS Import" path="import/courses"/> 
+</menus>

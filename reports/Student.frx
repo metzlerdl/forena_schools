@@ -9,10 +9,10 @@
 <frx:options />
 <frx:fields>
   <frx:field id="@date_taken" format="iso_date" format-string="F d, Y"/> 
-  <frx:field id="all_grades" link="index.php?q=Student&amp;person_id={parm.person_id}&amp;subject={parm.subject}">All</frx:field>
-  <frx:field id="grade" link="index.php?q=Student&amp;grade_level={grade_level}&amp;subject={parm.subject}&amp;person_id={parm.person_id}"/> 
-  <frx:field id="all_subjects" link="index.php?q=Student&amp;person_id={parm.person_id}&amp;grade_level={parm.grade_level}">All</frx:field>
-  <frx:field id="subject" link="index.php?q=Student&amp;person_id={parm.person_id}&amp;grade_level={parm.grade_level}&amp;subject={subject}"/>
+  <frx:field id="all_grades" link="reports/Student?person_id={parm.person_id}&amp;subject={parm.subject}">All</frx:field>
+  <frx:field id="grade" link="reports/Student?grade_level={grade_level}&amp;subject={parm.subject}&amp;person_id={parm.person_id}"/> 
+  <frx:field id="all_subjects" link="reports/Student?person_id={parm.person_id}&amp;grade_level={parm.grade_level}">All</frx:field>
+  <frx:field id="subject" link="reports/Student?person_id={parm.person_id}&amp;grade_level={parm.grade_level}&amp;subject={subject}"/>
 </frx:fields>
 <frx:parameters>
 	<frx:parm id="student_id" />

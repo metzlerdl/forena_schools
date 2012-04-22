@@ -1,16 +1,16 @@
 <?php
-class DataBroker {
+class TestEntry extends ForenaSchools {
 	public $title='Test Entry';
 
 	public function auth() {
-		return access_level('teacher');
+		return $this->access_level('teacher');
 	}
 
 	public function groupMembers() {
 		$test_date = @$_POST['date_taken'];
 		$test_id = @$_POST['test_id'];
 		if ($test_date && $test_id) {
-		  $xml = db_query_xml('
+		  $xml = $this->db->query_xml('
 	    SELECT * FROM
 		   (SELECT
 		      row_number() OVER (partition by g.person_id,
@@ -41,7 +41,7 @@ class DataBroker {
 		  ', $_POST);
 		}
 		else {
-			$xml = db_query_xml('SELECT g.* from s_group_members_v g WHERE group_id = :group_id', $_POST);
+			$xml = $this->db->query_xml('SELECT g.* from s_group_members_v g WHERE group_id = :group_id', $_POST);
 		}
 		return $xml;
 	}
@@ -50,7 +50,7 @@ class DataBroker {
 	 * Get the tests that are possible for this collection
 	 */
 	public function tests() {
-	  return db_query_xml ('
+	  return $this->db->query_xml ('
 	    SELECT t.test_id, t.name, a_test_entry_measures_xml(t.test_id) AS measures
 	      FROM s_groups g JOIN a_tests t ON (g.min_grade_level BETWEEN t.min_grade AND t.max_grade )
 	        OR (g.max_grade_level BETWEEN t.min_grade AND t.max_grade)
@@ -61,12 +61,12 @@ class DataBroker {
 	}
 
 	public function saveScores() {
-		db_call('a_test_entry_save_xml(:xml)', $_POST);
+		$this->db->call('a_test_entry_save_xml(:xml)', $_POST);
 		return $this->groupMembers();
 	}
 
 	public function schedules() {
-		return db_query_xml('
+		return $this->db->query_xml('
 		  SELECT sign(i_calc_school_day(CAST (now() as DATE)) - start_day) AS future,
 		    abs(i_calc_school_day(CAST (now() as DATE)) - target_day) AS days_away,
 		    s.*,

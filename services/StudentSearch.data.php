@@ -1,5 +1,6 @@
 <?php
-class DataBroker {
+class StudentSearch extends ForenaSchools
+ {
 	public $title = 'Student Search';
 	public function auth() {
 		$bldg_id = $_REQUEST['bldg_id'];

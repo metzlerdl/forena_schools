@@ -9,15 +9,15 @@
 </frx:parameters>
 <frx:fields>
   <frx:field id="year_label" 
-    link="index.php?q=TeacherDashboard&amp;school_year={school_year}&amp;staff_id={parm.staff_id}&amp;"
+    link="reports/TeacherDashboard?school_year={school_year}&amp;staff_id={parm.staff_id}&amp;"
   /> 
 	<frx:field id="@title" link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}" />
 	<frx:field id="@grade_name"
-		link="index.php?q=GradeView&amp;bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
+		link="reports/GradeView?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="@name"
-		link="index.php?q=GroupView&amp;group_id={@group_id}&amp;name={@name}&amp;school_Year={parm.school_year}" />
+		link="reports/GroupView?group_id={@group_id}&amp;name={@name}&amp;school_Year={parm.school_year}" />
 	<frx:field id="@editable"
-		link="index.php?q=CollectionEditor&amp;stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
+		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
 	<frx:field id="test_entry" default="test entry" link="index.php?q=TestEntry&amp;group_id={@group_id}">test entry</frx:field>
 </frx:fields>
 <frx:parameters />

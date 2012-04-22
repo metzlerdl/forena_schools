@@ -1,12 +1,16 @@
 <?php
-class DataBroker {
+class Identify extends ForenaSchools {
+
+	public function auth() {
+		return $this->access_level('teacher');
+	}
 
 	/**
 	 * Retrieve profile
 	 * Get the profile that has been requested for identification.
 	 */
 	public function profile() {
-		return db_query_xml(
+		return $this->db->query_xml(
 		  'SELECT profile_id, name,  a_profile_measures_xml(profile_id) AS measures from a_profiles where profile_id=:profile_id',
 		  $_POST
 		);
@@ -40,12 +44,12 @@ class DataBroker {
     	  AND TRUNC(norm_score) = :norm_score
     	ORDER BY last_name, first_name
     ";
-   return db_query_xml($sql, $_POST);
+   return $this->db->query_xml($sql, $_POST);
 	}
 
 	public function groups() {
 		//@TDODO: Verify permissions on groups
-		return db_query_xml("
+		return $this->db->query_xml("
 		  SELECT -1 as group_id, 'Create Group' AS name, 9999 AS school_year
 		  UNION ALL
 		  SELECT group_id, name, school_year
@@ -56,8 +60,8 @@ class DataBroker {
 	}
 
 	public function addGroupMembers() {
-    $group_id = db_call('s_group_add_members(:group_id, :xml)', $_POST);
-    RETURN db_query_xml('select group_id, name FROM s_groups WHERE group_id=:group_id', array('group_id' => $group_id));
+    $group_id = $this->db->call('s_group_add_members(:group_id, :xml)', $_POST);
+    RETURN $this->db->query_xml('select group_id, name FROM s_groups WHERE group_id=:group_id', array('group_id' => $group_id));
 
 	}
 }

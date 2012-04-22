@@ -9,7 +9,7 @@
 <frx:options />
 <frx:fields>
   <frx:field id="@date_taken" format="iso_date" format-string="F d, Y"/> 
-  <frx:field id="name" link="index.php?q=StudentView&amp;profile_id={profile_id}&amp;student_id={parm.student_id}"/> 
+  <frx:field id="name" link="reports/StudentView?profile_id={profile_id}&amp;student_id={parm.student_id}"/> 
 </frx:fields>
 <frx:parameters>
 </frx:parameters>

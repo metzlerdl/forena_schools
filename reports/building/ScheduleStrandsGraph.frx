@@ -6,7 +6,7 @@
 <head>
 <frx:fields>
   <frx:field id="name" 
-  link="index.php?q=building/MeasureStatistics&amp;measure_id={measure_id}&amp;school_year={school_year}&amp;seq={seq}">
+  link="reports/MeasureStatistics?measure_id={measure_id}&amp;school_year={school_year}&amp;seq={seq}">
   </frx:field>
 </frx:fields>
 <title>Test Statistics</title>

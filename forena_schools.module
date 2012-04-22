@@ -1,41 +1,168 @@
 <?php
 function forena_schools_menu() {
-	$items['myshool'] = array(
+	$items['assessments'] = array(
 	  'type' => MENU_NORMAL_ITEM,
-	  'title' => t('My School'),
+	  'title' => t('Assessments'),
 	  'access callback' => 'forena_schools_access',
 	  'access arguments' => array('teacher'),
-	  'page callback' => 'forena_schools_myschool',
+	  'page callback' => 'forena_schools_assessments',
+	  'file' => 'inc/common.inc',
 	);
 
-	$items['pedaflex'] = array(
+	$items['flex'] = array(
 	  'type' => MENU_CALLBACK,
 	  'access callback' => TRUE,
 	  'page callback' => 'forena_schools_flex',
+	  'file' => 'inc/common.inc',
 	);
 
-	$items['pedadata'] = array(
+	$items['flexServices'] = array(
 	  'type' => MENU_CALLBACK,
 	  'access callback' => TRUE,
 	  'page callback' => 'forena_schools_data',
+	  'file' => 'inc/common.inc',
 	);
 
 	return $items;
 }
 
-function forena_schools_access() {
-	return TRUE;
+function forena_schools_access($security) {
+	require_once 'inc/common.inc';
+	return ForenaSchools::instance()->access($security);
 }
 
-function forena_schools_myschool($mode='teacher') {
-	return forena_report('DistrictDashboard');
+/**
+ *
+ * Enter description here ...
+ * @param unknown_type $app
+ */
+function forena_schools_assessments($app='') {
+	$args = func_get_args();
+	$app = implode('/', $args);
+	drupal_set_message($app);
+  $m_path = drupal_get_path('module', 'forena_schools');
+	$flexfile = $m_path . '/flex/'.$app . '.swf';
+
+	drupal_add_js($m_path . '/flex/swfobject.js');
+  $fs = ForenaSchools::instance();
+	if (!$app)  {
+		if ($fs->access('dist_admin')) {
+			$app = 'DistrictDashboard';
+		}
+		elseif ($fs->access('bldg_admin')) {
+			$app = 'BuidingDashboard';
+		}
+		elseif ($fs->access('teacher')) {
+			$app = 'TeacherDashboard';
+		}
+		else {
+			drupal_access_denied();
+		}
+	}
+  if (file_exists($flexfile)) {
+  	$output = forena_schools_flex($app);
+  }
+  else {
+		$output = forena_report($app);
+  }
+  return $output;
+}
+
+function forena_schools_connection_string() {
+	global $databases;
+	$db = $databases['default']['default'];
+	$db_name = $db['database'];
+	$user_name = $db['username'];
+	$password = $db['password'];
+	$host = $db['host'];
+	$port = $db['port'];
+	$uri = "dbname=$db_name user=$user_name password=$password";
+	if ($port) $uri .= " port=$port";
+	return $uri;
+}
+
+function forena_schools_forena_repos_alter(&$repos) {
+	$m_path = drupal_get_path('module', 'forena_schools');
+	$repos['ims'] = array(
+	  'path' => $m_path . '/data_blocks',
+	  'title' => 'Forena Schools',
+		'uri' => forena_schools_connection_string(),
+	  'data provider' => 'FrxPostgres',
+	  'debug' => @$_GET['debug'],
+	  'access callback' => 'user_access',
+	  'user callback' => 'forena_schools_current_user',
+	  'search path' => 'public,import',
+  );
+
+  $repos['menus'] = array(
+    'path' => $m_path . '/menus',
+    'title' => 'Forena Schools Menus',
+    'uri' => "file://$m_path/menus",
+    'data provider' => 'FrxFiles',
+    'access callback' => 'user_access',
+  );
+
+}
+
+function forena_schools_current_user() {
+  global $user;
+  $parms = array('email' => $user->mail);
+}
+
+function forena_schools_render_partial($template,$vars='',$extract=true) {
+	$m_path = drupal_get_path('module', 'forena_schools');
+  if (is_array($vars) && $extract==true)  {
+    extract($vars);
+  }
+  ob_start();
+  include($m_path . "/" . $template.".tpl.php");
+  $output = ob_get_contents();
+  ob_end_clean();
+  return $output;
+}
+
+function forena_schools_service($service) {
+	$object = null;
+	$include_file = drupal_get_path('module', 'forena_schools') . "/services/$service.data.php";
+	if (file_exists($include_file)) {
+		require_once $include_file;
+		if (class_exists($service)) {
+			$object = new $service;
+		}
+	}
+	return $object;
 }
 
 /**
  * Renders a flex applciation in a popup window without theme
  * @param unknown_type $a
  */
-function forena_schools_flex($app) {
+function forena_schools_flex($application, $popup=false) {
+
+  global $base_url;
+  $m_path = drupal_get_path('module', 'forena_schools');
+
+  drupal_add_js($m_path . '/inc/pedaflex.js');
+
+  $fvar = $_GET;
+  $fvar['dataService'] =  $base_url . '/flexServices';
+  $fvar['basePath'] = rtrim($base_url,'/');
+  $flexPath = $m_path . "/flex/";
+  if (@$_GET['debug']=='true') {
+  	$flexPath = "bin-debug/";
+  }
+  $vars['flexPath'] = $m_path . '/' . $flexPath;
+  unset($fvar['q']);
+  $flashfile = $flexPath . $application . '.swf';
+  $vars['flashfile'] = $flashfile . '?d=' . filemtime($flashfile);
+  $vars['application'] = $application;
+  $vars['div_id'] = $application. '_div';
+  $vars['flashvars'] = http_build_query($fvar);
+  $vars['flashvars_json'] = json_encode($fvar, JSON_FORCE_OBJECT);
+  if ($popup) $vars['height']='100%'; else $vars['height']='85%';
+  if (!$popup) $output = '<div class="flex-application grid_12" style="height: 700px;">';
+  if (!$popup) $output .= '</div>';
+  return forena_schools_render_partial('flex',$vars);
 
 }
 
@@ -48,45 +175,62 @@ function forena_schools_forena_report_directory() {
  */
 function forena_schools_data() {
   // Determine if the include file is in the path.
-$class = $_REQUEST['service'];
-$method = $_REQUEST['method'];
-$class_file = 'services/'.$class.'.data.php';
+	$class = $_REQUEST['service'];
+	$method = $_REQUEST['method'];
+	$class_file = 'services/'.$class.'.data.php';
 
-// Only load the file if the file name exists
-if (file_exists($class_file)) {
-  include_once($class_file);
-  if(class_exists($class)) {
-  	$handler = new $class;
-  }
-  else {
-    $handler = new DataBroker();
-  }
-  $auth = true;
-  if (method_exists($handler,'auth')) {
-  	$auth = call_user_func(array($handler,'auth'));
-  }
-
-  if ($auth) {
-	  if (method_exists($handler,$method)) {
-	    //header('Content-type: text/xml');
-	    $data = call_user_func(array($handler,$method));
-	    if ($data_debug==true && $class!='LogViewer') {
-	    	watchdog('Data '. $class . '.' . $method, htmlspecialchars(print_r($_REQUEST,1)). "\n" . htmlspecialchars($data));
-	    }
-	    print $data;
+	// Only load the file if the file name exists
+	if (file_exists($class_file)) {
+	  include_once($class_file);
+	  if(class_exists($class)) {
+	  	$handler = new $class;
 	  }
 	  else {
-	    watchdog('error', 'Method Not Found',print_r($_REQUEST,1));
-	    print "<pre>$method: Method Not Found</pre>";
+	    $handler = new DataBroker();
 	  }
-  } else {
-  	watchdog('error', 'Data Service Access Denied',"Service: $class \n Method:$method \n User: \n" . print_r(current_user(),1));
-  	print "<pre>Access Denied</pre>";
-  }
-}
-else {
-    watchdog('debug Data Service',  'Data Service  Not Found',print_r($_REQUEST,1));
-	print "<pre>$class: Service Not Found</pre>";
-}
+	  $auth = true;
+	  if (method_exists($handler,'auth')) {
+	  	$auth = call_user_func(array($handler,'auth'));
+	  }
+
+	  if ($auth) {
+		  if (method_exists($handler,$method)) {
+		    //header('Content-type: text/xml');
+		    $data = call_user_func(array($handler,$method));
+		    if ($data_debug==true && $class!='LogViewer') {
+		    	watchdog('Data '. $class . '.' . $method, htmlspecialchars(print_r($_REQUEST,1)). "\n" . htmlspecialchars($data));
+		    }
+		    print $data;
+		  }
+		  else {
+		    watchdog('error', 'Method Not Found',print_r($_REQUEST,1));
+		    print "<pre>$method: Method Not Found</pre>";
+		  }
+	  } else {
+	  	watchdog('error', 'Data Service Access Denied',"Service: $class \n Method:$method \n User: \n" . print_r(current_user(),1));
+	  	print "<pre>Access Denied</pre>";
+	  }
+	}
+	else {
+	    watchdog('debug Data Service',  'Data Service  Not Found',print_r($_REQUEST,1));
+		print "<pre>$class: Service Not Found</pre>";
+	}
 
 }
+
+/**
+ * Implementation of hook_perm
+ *
+ * @return unknown
+ */
+function forena_schools_permission() {
+  $perms = array(
+    'administer forena schools' => array('title' => t('Administer Forena Schools')),
+    'manage profiles' => array('title' => t('Administer Forena Reports')),
+    'manage assessments' => array('title' => t('Define Assessments')),
+    'import assessments' => array('title' => t('Import Assessments')),
+    );
+  return $perms;
+}
+
+

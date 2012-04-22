@@ -1,9 +1,9 @@
 <?php
-class DataBroker {
+class UserManager extends ForenaSchools {
 
 	public $title= 'User Manager';
 	public function auth() {
-    return access_level('sys_admin');
+    return $this->access_level('sys_admin');
 	}
 
 	public function searchPeople() {
@@ -23,7 +23,7 @@ class DataBroker {
 			  'first_name' => '%'
 			);
 		}
-    $result= db_query_xml('
+    $result= $this->db->query_xml('
       SELECT first_name, last_name, middle_name, login,sis_id, state_student_id, person_id
       FROM p_people
       WHERE UPPER(last_name) like UPPER(:last_name)

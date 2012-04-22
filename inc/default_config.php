@@ -6,7 +6,7 @@ $_forena_repositories['menus'] = array(
 );
 
 $_forena_repositories['ims'] = array(
-  'path' => $install_home. '/data/ims',
+  'path' => $install_home. '/data_blocks/ims',
   'title' => 'Testing pedagoggle IMS',
   'uri' => $db_connection_string,
   'user callback' => 'current_login',

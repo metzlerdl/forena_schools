@@ -1,10 +1,10 @@
 <?php
 require_once('csvimport.inc');
-class DataBroker {
+class TestImportWizard extends ForenaSchools {
 	public $title = 'Test Import Wizard';
 	public function auth() {
 
-		$auth = access_level('dist_admin');
+		$auth = $this->access_level('dist_admin');
 		if (!$auth && !$_COOKIE && !$_SESSION) {
 			// no cookies no sessioin.  Flex UPLOAD bug so circumvent security
 			return true;
@@ -19,7 +19,7 @@ class DataBroker {
 	}
 
 	public function tests() {
-		return db_query_xml('
+		return $this->db->query_xml('
 			SELECT
 			  i.test_code,
 			  i.measure_code,
@@ -48,17 +48,17 @@ class DataBroker {
 	}
 
 	public function importScores() {
-		$result = db_call('etl_import_test_scores()');
+		$result = $this->db->call('etl_import_test_scores()');
 		return '<message>' . htmlspecialchars($result) . '</message>';
 	}
 
 	public function saveTranslations() {
-    db_call('etl_save_translations(:xml)', $_POST);
+    $this->db->call('etl_save_translations(:xml)', $_POST);
 	  return $this->tests();
 	}
 
 	public function translateScores() {
-		db_call('etl_translate_scores()');
+		$this->db->call('etl_translate_scores()');
 		return $this->tests();
 	}
 
@@ -92,14 +92,14 @@ class DataBroker {
 	}
 
 	public function testCodes() {
-		return db_query_xml('select code,name from a_tests order by name');
+		return $this->db->query_xml('select code,name from a_tests order by name');
 	}
 
 /**
  * Perform the file upload for a test import batch
  */
 public function uploadFile() {
-  db_log('test', 'debug');
+  $this->db->log('test', 'debug');
   $import_type = $_REQUEST['import_type'];
   // Testing the file upload
   $file_temp = $_FILES['Filedata']['tmp_name'];
@@ -164,7 +164,7 @@ FROM
     LEFT JOIN i_buildings b ON i.bldg_code = b.code or b.sis_code = i.bldg_school_code
     LEFT JOIN i_grade_levels g ON i.grade_level=g.grade_level
 	';
-	return db_query_xml($sql);
+	return $this->db->query_xml($sql);
 }
 
 

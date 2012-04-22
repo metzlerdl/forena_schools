@@ -1,5 +1,5 @@
 <?php
-class dataBroker {
+class SystemSettings extends ForenaSchools {
 	/*
 	 * Get District information
 	 */
@@ -11,7 +11,7 @@ class dataBroker {
 
 
 	public function buildingInfo($msg='') {
-		return db_query_xml(
+		return $this->db->query_xml(
 		  'select bldg_id,
 		    name,
 		    nts(abbrev) AS abbrev,
@@ -28,16 +28,16 @@ class dataBroker {
 	}
 
 	public function saveBuildings() {
-		db_call('i_buildings_save_xml(:xml)',$_REQUEST);
+		$this->db->call('i_buildings_save_xml(:xml)',$_REQUEST);
 		return $this->buildingInfo('Buildings Saved.');
 	}
 
 	public function schoolYears($msg='') {
-		return db_query_xml('select * from i_school_years order by school_year desc',null,'school_years',$msg);
+		return $this->db->query_xml('select * from i_school_years order by school_year desc',null,'school_years',$msg);
 	}
 
 	public function saveYears() {
-		$xml  = db_call('i_school_years_save(:xml)',$_REQUEST);
+		$xml  = $this->db->call('i_school_years_save(:xml)',$_REQUEST);
 		return $this->schoolYears();
 	}
 }

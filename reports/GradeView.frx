@@ -5,9 +5,9 @@
 <html xmlns:frx="urn:FrxReports">
 <head>
 <frx:fields>
-  <frx:field id="name" link="index.php?q=GradeView.web&amp;profile_id={profile_id}&amp;bldg_id={bldg_id}&amp;grade_level={grade_level}"/> 
-  <frx:field id="last_name" link="index.php?q=Student&amp;person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
-  <frx:field id="export" link="index.php?q=GradeView.csv&amp;profile_id={parm.profile_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}">Export to .csv</frx:field> 
+  <frx:field id="name" link="reports/GradeView.web?profile_id={profile_id}&amp;bldg_id={bldg_id}&amp;grade_level={grade_level}"/> 
+  <frx:field id="last_name" link="reports/Student?person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
+  <frx:field id="export" link="reports/GradeView.csv?profile_id={parm.profile_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}">Export to .csv</frx:field> 
 </frx:fields>
 <title>Grade View</title>
 </head>

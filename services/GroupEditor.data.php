@@ -1,5 +1,5 @@
 <?php
-class DataBroker {
+class GroupEditor extends ForenaSchools {
   public $title = 'Group Editor';
   public $group_id;
 
@@ -10,7 +10,7 @@ class DataBroker {
   }
 
   public function auth() {
-  	return access_level('dist_admin');
+  	return $this->access_level('dist_admin');
   }
 
   /**
@@ -50,18 +50,18 @@ class DataBroker {
   		    COALESCE(CAST(:school_year AS integer), i_school_year()) as school_year
   		  ";
   	}
-  	return db_query_xml($sql, $parms);
+  	return $this->db->query_xml($sql, $parms);
   }
 
   public function delete() {
     if (access_level('bldg_admin')) {
-  	   db_query('DELETE FROM s_groups WHERE group_id=:group_id', $_POST);
+  	   $this->db->query('DELETE FROM s_groups WHERE group_id=:group_id', $_POST);
     }
     else {
     	$user = current_user();
     	$parms = array('group_id'=> $_POST['group_id'],
     	  'person_id' => $user['person_id']);
-    	db_query('DELETE FROM s_groups WHERE group_id=:group_id AND owner_id = :person_id', $parms);
+    	$this->db->query('DELETE FROM s_groups WHERE group_id=:group_id AND owner_id = :person_id', $parms);
     }
     return $this->group();
 
@@ -73,7 +73,7 @@ class DataBroker {
    * Enter description here ...
    */
   public function save() {
-     $group_id = db_call('s_group_save(:xml)', $_POST);
+     $group_id = $this->db->call('s_group_save(:xml)', $_POST);
      // Toss back in the id of any inserted group_id
      if ($group_id) $_POST['group_id'] = $group_id;
      return $this->group();
@@ -83,7 +83,7 @@ class DataBroker {
   	$user = current_user();
     $parms = array('bldg_id' => $_POST['bldg_id'],
         'person_id' => $user['person_id'],);
-  	return db_query_xml("
+  	return $this->db->query_xml("
   	  SELECT p.person_id, p.last_name || ', ' || p.first_name AS name
   	    FROM p_staff s JOIN p_people p on s.person_id = p.person_id
   	    WHERE s.bldg_id = :bldg_id

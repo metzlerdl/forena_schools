@@ -1,17 +1,17 @@
 <?php
-class DataBroker {
+class GroupView extends ForenaSchools {
 	// Verify authentication
 	public $title='Group View';
 	public function __construct() {
-		$_POST['school_year'] = db_call('i_school_year()');
+		$_POST['school_year'] = $this->db->call('i_school_year()');
 	}
 
 	public function auth() {
-		return access_level('teacher');
+		return $this->access_level('teacher');
 	}
 
 	public function profiles() {
-		return db_query_xml(
+		return $this->db->query_xml(
 		  'SELECT p.profile_id, p.name,  a_profile_measures_xml(p.profile_id) AS measures from a_profiles p
 		    JOIN s_groups g ON (g.bldg_id=p.bldg_id OR p.bldg_id=-1)
 		      AND (
@@ -36,7 +36,7 @@ class DataBroker {
 			}
 		}
 
-		return db_query_xml(
+		return $this->db->query_xml(
 
 		  'SELECT g.student_id, g.person_id, g.first_name, g.last_name, a_profile_student_scores(person_id,:profile_id, g.school_year) AS scores FROM s_group_members_v g
 		    JOIN a_profiles p ON p.profile_id=:profile_id

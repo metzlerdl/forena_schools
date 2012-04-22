@@ -1,9 +1,9 @@
 <?php
 require_once('csvimport.inc');
-class DataBroker {
+class ImportControl extends ForenaSchools {
 	public $title = 'Import Control';
 	public function auth() {
-		return access_level('dist_admin');
+		return $this->access_level('dist_admin');
 	}
 
 	public function __construct() {
@@ -13,7 +13,7 @@ class DataBroker {
 	}
 
 	public function tests() {
-		return db_query_xml('
+		return $this->db->query_xml('
 			SELECT
 			  i.test_code,
 			  i.measure_code,
@@ -42,17 +42,17 @@ class DataBroker {
 	}
 
 	public function importScores() {
-		$result = db_call('etl_merge_test_scores()');
+		$result = $this->db->call('etl_merge_test_scores()');
 		return '<message>' . htmlspecialchars($result) . '</message>';
 	}
 
 	public function saveTranslations() {
-    db_call('etl_save_translations(:xml)', $_POST);
+    $this->db->call('etl_save_translations(:xml)', $_POST);
 	  return $this->tests();
 	}
 
 	public function translateScores() {
-		db_call('etl_translate_scores()');
+		$this->db->call('etl_translate_scores()');
 		return $this->tests();
 	}
 
@@ -86,7 +86,7 @@ class DataBroker {
 	}
 
 	public function testCodes() {
-		return db_query_xml('select code,name from a_tests order by name');
+		return $this->db->query_xml('select code,name from a_tests order by name');
 	}
 
 }

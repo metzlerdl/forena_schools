@@ -11,12 +11,12 @@
 		<frx:field id="@title"
 		link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
 	<frx:field id="@grade_name"
-		link="index.php?q=BuildingAnalysis&amp;bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
+		link="reports/BuildingAnalysis?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="profile.name"
-	  link="index.php?q=BuildingAnalysis&amp;bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}">
+	  link="reports/BuildingAnalysis?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}">
 	</frx:field>
 	<frx:field id="test_name"
-	  link="index.php?q=building/TestStatistics&amp;bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
+	  link="reports/building/TestStatistics?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
 	</frx:field>
 </frx:fields>
 <frx:parameters />

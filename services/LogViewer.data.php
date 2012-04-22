@@ -1,16 +1,16 @@
 <?php
-class DataBroker {
+class LogViewer extends ForenaSchools {
 	public $title= 'Log Viewer';
 	public function auth() {
-    return access_level('sys_admin');
+    return $this->access_level('sys_admin');
 	}
 
 	public function recentLogs() {
-		return db_query_xml('select * from logs ORDER BY log_time DESC LIMIT 1000');
+		return $this->db->query_xml('select * from logs ORDER BY log_time DESC LIMIT 1000');
 	}
 
 	public function clearLogs() {
-		db_query('delete from logs');
+		$this->db->query('delete from logs');
 		return $this->recentLogs();
 	}
 

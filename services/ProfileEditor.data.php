@@ -1,11 +1,11 @@
 <?php
-class DataBroker {
+class ProfileEditor extends ForenaSchools {
 	public $title = 'Profile Editor';
 	public $id;
 
 
 	public function auth() {
-		return access_level('dist_admin');
+		return $this->access_level('dist_admin');
 	}
 
 	public function __construct() {
@@ -14,20 +14,20 @@ class DataBroker {
 
 	public function profile() {
 		$parms = array('id' => $this->id);
-		return db_call('a_profile_xml(:id)', $parms);
+		return $this->db->call('a_profile_xml(:id)', $parms);
 	}
 
 	public function saveProfile() {
-		return db_call('a_profile_save(:xml)', $_POST);
+		return $this->db->call('a_profile_save(:xml)', $_POST);
 	}
 
 	public function deleteProfile() {
-	 db_call('a_profile_delete(:id)', $_POST);
+	 $this->db->call('a_profile_delete(:id)', $_POST);
 	 return '<profile/>';
 	}
 
 	public function preview() {
-		return db_query_xml('SELECT name,a_profile_measures_xml(profile_id) AS measures FROM a_profiles WHERE profile_id=:profile_id', $_POST);
+		return $this->db->query_xml('SELECT name,a_profile_measures_xml(profile_id) AS measures FROM a_profiles WHERE profile_id=:profile_id', $_POST);
 	}
 
 	/**
@@ -51,7 +51,7 @@ class DataBroker {
 			$sql = 'SELECT t.*, a_profile_test_schedules(test_id) AS schedules,
 			  a_profile_test_measures(test_id) AS measures FROM a_tests t ORDER BY name';
 		}
-    return db_query_xml($sql, $_POST);
+    return $this->db->query_xml($sql, $_POST);
 	}
 
 
@@ -63,6 +63,6 @@ class DataBroker {
 		$sql = "SELECT bldg_id, name FROM i_buildings
 		  UNION ALL
 		    SELECT -1,'District'";
-		return db_query_xml($sql);
+		return $this->db->query_xml($sql);
 	}
 }
