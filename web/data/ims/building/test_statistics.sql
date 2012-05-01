@@ -1,6 +1,7 @@
 --ACCESS=teacher
 select 
   t.name as test_name, t.abbrev as test_abbrev, tmv.name,  tmv.abbrev, COALESCE(tmv.subject, pm.subject) subject,y.label as year_label, ts.label as sched_label, gl.abbrev AS grade, 
+  tmv.measure_id, bss.school_year, bss.seq, 
   bss.norm_score AS b_norm_score, dss.norm_score AS d_norm_score, 
   bss.score as b_score, dss.score as d_score,
   ROUND(100.0 * (bss.l3_count + bss.l4_count)/bss.total) b_percent_met,  ROUND(100.0 * (dss.l3_count + dss.l4_count)/dss.total) d_percent_met, 
@@ -13,11 +14,14 @@ JOIN i_school_years y ON y.school_year = bss.school_year
 JOIN a_test_measures tmv ON bss.measure_id=tmv.measure_id
 JOIN a_tests t on tmv.test_id = t.test_id
 JOIN a_test_schedules ts on t.test_id=ts.test_id AND bss.seq=ts.seq
-JOIN a_test_measures pm ON pm.measure_id = tmv.parent_measure
 JOIN i_grade_levels gl ON gl.grade_level = bss.grade_level
 LEFT JOIN a_score_stats dss on bss.school_year = dss.school_year AND dss.bldg_id=-1 AND bss.seq=dss.seq AND bss.measure_id=dss.measure_id and bss.grade_level = dss.grade_level
+LEFT JOIN a_test_measures pm ON pm.measure_id = tmv.parent_measure
 WHERE bss.bldg_id = :bldg_id
   AND t.test_id=:test_id
   AND bss.grade_level=:grade_level
-  and tmv.measure_id=tmv.parent_measure
+  AND bss.seq = COALESCE(CAST(:seq AS int), bss.seq)
+  AND bss.school_year = COALESCE(CAST(:school_year AS int), bss.school_year)
+  and (tmv.measure_id=tmv.parent_measure OR (SELECT COUNT(DISTINCT subject) FROM a_test_measures tm2 WHERE tm2.test_id=tmv.test_id and subject is not null) <= 1)
+ 
 ORDER BY bss.school_year desc, bss.seq desc, tmv.sort_order

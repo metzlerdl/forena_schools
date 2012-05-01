@@ -11,6 +11,8 @@ class FrxPedagoggle extends FrxHostApplication {
 		                    'class' => 'FrxPedagoggleScores');
 		$controls[] = array('file' => 'plugins/FrxSVGGraph.inc',
 		  'class' => 'FrxSVGGraph');
+		$controls[] = array('file' => 'plugins/FrxXMLSource.inc',
+		  'class' => 'FrxXMLSource');
 		return $controls;
 	}
 

@@ -5,23 +5,17 @@
 <html xmlns:frx="urn:FrxReports">
 <head>
 <frx:fields>
+  <frx:field id="grade_name" link="index.php?q=BuildingAnalysis&amp;bldg_id={bldg_id}&amp;grade_level={grade_level}"/> 
+  <frx:field id="test_name" link="index.php?q=building%2FTestStatistics&amp;bldg_id=6&amp;grade_level=4&amp;test_id=11"/> 
+  
 </frx:fields>
 <title>Test Statistics</title>
 </head>
 <body>
 	<div class="grid_8">
-		<div id="building" frx:block="ims/building/building_grade"
+		<div id="bldg" frx:block="ims/building/building_grade"
 			frx:foreach="*">
-			<h2>{building.name} - {grade_name}</h2>
-			   <p>The graphs below demonstrate the average normalized according to the following scale:
-			   <blockquote>
-			     1 - below expectations<br/>
-			     2 - struggling<br/>
-			     3 - meets expectations<br/>
-			     4 - exceeds expectations<br/> 
-			   </blockquote>
-			   </p>
-			   
+			<h2>{bldg.name} - {grade_name}</h2>
 		</div>
 	</div>
 	<div class="grid_3 legend">
@@ -41,29 +35,40 @@
 			<h3>{test_name}: {measure.name}</h3>
 
 		</div>
-			<div id="strand_stats" frx:block="ims/building/schedule_strand_stats">
+		<div id="strand_stats" frx:block="ims/building/schedule_strand_stats">
 			<div
 				frx:src="building/ScheduleStrandsGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
 				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
-				<table>
-					<thead>
-						<tr>
-							<th>measure</th>
-							<th>building average</th>
-							<th>district average</th>
-							<th>percent met standard</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr frx:foreach="*">
-							<td>{name}</td>
-							<td>{b_score}</td>
-							<td>{d_score}</td>
-							<td>{b_percent_met}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+      <p><strong>Performance Distribution:</strong>  The above graph demonstrates the percentage of students tested performing at each level.</p>
+      <hr/> 
+
+			<table>
+				<thead>
+					<tr>
+						<th>measure</th>
+						<th>building average</th>
+						<th>district average</th>
+						<th>struggling</th>
+						<th>below</th>
+						<th>met</th>
+						<th>exceeded</th>
+						<th>percent met standard</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr frx:foreach="*">
+						<td>{name}</td>
+						<td>{b_score}</td>
+						<td>{d_score}</td>
+						<td>{bl1_percent}</td>
+						<td>{bl2_percent}</td>
+						<td>{bl3_percent}</td>
+						<td>{bl4_percent}</td>
+						<td>{b_percent_met}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

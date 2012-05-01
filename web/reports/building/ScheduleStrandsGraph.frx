@@ -19,20 +19,37 @@
   <div id="schedule-stats" frx:block="ims/building/schedule_strand_stats">
 	  <svg id="test-chart"  frx:renderer="FrxSVGGraph"
 	      frx:link="../index.php?q=building/MeasureStatistics&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;school_year={parm.school_year}"
-	      frx:type="groupedbargraph" frx:xpath="*" frx:height="{parm.height}" frx:width="{parm.width}"
-	      frx:options="series[]={b_norm_score}&amp;series[]={d_norm_score}&amp;label={abbrev}&amp;colors[]=tan&amp;colors[]=olivedrab&amp;axis_max_v=5.0&amp;grid_division_v=1">
+        frx:type="stackedbargraph" frx:xpath="*" frx:height="400  "
+        frx:width="600"
+        frx:options="series[]={bl1_percent}&amp;series[]={bl2_percent}&amp;series[]={bl3_percent}&amp;series[]={bl4_percent}&amp;label={abbrev}&amp;colors[]=#E3B5B5&amp;colors[]=#E3E288&amp;colors[]=#BBE3B5&amp;colors[]=#B5C0E3&amp;axis_max_v=100.0&amp;grid_division_v=10">
 	  </svg>
-	  <table>
-	    <thead>
-	      <tr><th>measure</th><th>building average</th><th>district average</th><th>percent met standard</th></tr>
-	    </thead>
-	    <tbody>
-	      <tr frx:foreach="*">
-	        <td>{name}</td><td>{b_score}</td><td>{d_score}</td><td>{b_percent_met}</td>
-	      </tr>
-	    </tbody>
-	  </table>
-  </div>
+			<table>
+				<thead>
+					<tr>
+						<th>measure</th>
+						<th>building average</th>
+						<th>district average</th>
+						<th>struggling</th>
+						<th>below</th>
+						<th>met</th>
+						<th>exceeded</th>
+						<th>percent met standard</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr frx:foreach="*">
+						<td>{name}</td>
+						<td>{b_score}</td>
+						<td>{d_score}</td>
+						<td>{bl1_percent}</td>
+						<td>{bl2_percent}</td>
+						<td>{bl3_percent}</td>
+						<td>{bl4_percent}</td>
+						<td>{b_percent_met}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
   </div>
 </body>
 </html>

@@ -17,7 +17,7 @@ JOIN a_test_measures pm ON pm.measure_id = tmv.parent_measure
 JOIN i_grade_levels gl ON gl.grade_level = bss.grade_level
 LEFT JOIN a_score_stats dss on bss.school_year = dss.school_year AND dss.bldg_id=-1 AND bss.seq=dss.seq AND bss.measure_id=dss.measure_id and bss.grade_level = dss.grade_level
 WHERE bss.bldg_id = :bldg_id
-  AND tmv.parent_measure=:measure_id
+  AND (tmv.parent_measure=:measure_id or tmv.measure_id=:measure_id)
   AND bss.grade_level=:grade_level
   AND bss.seq = :seq
 ORDER BY bss.school_year desc, bss.seq desc, tmv.sort_order

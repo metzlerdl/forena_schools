@@ -1,5 +1,9 @@
 --ACCESS=teacher
-SELECT V.*, y.label AS year_label, ts.label AS sched_label FROM 
+SELECT V.*, y.label AS year_label, ts.label AS sched_label, ts.label || ' ' || y.label AS label, 
+  CASE WHEN :school_year = v.school_year AND :seq = v.seq THEN 'selected'
+    WHEN :seq is null AND seq_order=1 THEN 'selected'
+    end AS selected
+FROM 
 (
 select 
   bldg_id, 
@@ -7,6 +11,7 @@ select
   grade_level,
   school_year, 
   seq,
+  row_number() over (partition by test_id order by school_year desc, seq desc) seq_order,
   max(total) total
   FROM a_score_stats bss
     JOIN a_test_measures m ON m.measure_id=bss.measure_id

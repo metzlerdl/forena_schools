@@ -13,13 +13,13 @@
 </head>
 <body>
   <div class="grid_12">
-    <div id="test" frx:block="ims/tests/measure" frx:foreach="*">
-      <h3>{test_name}: {name}</h3>
+    <div id="meas" frx:block="ims/tests/measure" frx:foreach="*">
+      <h3>{test_name}: {name} {max_value}</h3>
     </div>
       <div id="measure_stats" frx:block="ims/building/measure_statistics">
       <svg id="measure-chart"  frx:renderer="FrxSVGGraph"
         frx:type="groupedbargraph" frx:xpath="*" frx:height="{parm.height}" frx:width="{parm.width}"
-        frx:options="series[]={b_score}&amp;series[]={d_score}&amp;label={year_label}+{sched_label}&amp;colors[]=tan&amp;colors[]=olivedrab&amp;">
+        frx:options="series[]={b_score}&amp;series[]={d_score}&amp;label={year_label}+{sched_label}&amp;colors[]=tan&amp;colors[]=olivedrab&amp;axis_max_v={meas.max_value}">
     </svg>
         <table>
           <thead>
