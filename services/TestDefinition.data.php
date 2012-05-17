@@ -2,7 +2,7 @@
 class TestDefinition extends ForenaSchools {
 	public $title = 'Test Definition';
 	public function auth() {
-		return $this->access_level('dist_admin');
+		return $this->access('dist_admin');
 	}
 
 	public function getTest() {

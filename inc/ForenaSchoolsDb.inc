@@ -14,6 +14,7 @@ protected $sql_cmd;
 protected $bind_order;
 protected $rs;
 protected $token_exp = '/:([a-z]|[0-9]|{A-Z]|[-_])+/';
+public $debug = TRUE;
 
 /**
  * Connect to databse using global connect string
@@ -174,12 +175,11 @@ protected function get_bind_values($values) {
  */
 public function exec_query($sql,$values=array()) {
   // Look for all parameter names and send back sql
-  GLOBAL $db_debug;
   $sql = $this->prepare($sql);
   //print "$sql\n";
   // Extract values into single params variable
   $param_values = $this->get_bind_values($values);
-  if ($db_debug) db_log('Query Executeed',$sql . "\n" . print_r($param_values,1),'debug');
+  if ($this->debug) $this->log('Query Executeed',$sql . "\n" . print_r($param_values,1),'debug');
   return pg_query_params($this->c,$sql,array_values($param_values));
 }
 
@@ -250,7 +250,6 @@ public function prepare_xml($sql,$values)
 * @param string $root_tag  The root tag to use to replace the table tag with
 */
 public function query_xml($sql, $values=array(),$root_tag='',$message='') {
-  GLOBAL $db_debug;
   $retvar='';
 
   // Prepend select * so that full table queries are easy
@@ -261,7 +260,7 @@ public function query_xml($sql, $values=array(),$root_tag='',$message='') {
   $sql = $this->prepare_xml($sql,$values);
 
   // Execute the query using query_to_xml
-  if ($db_debug) db_log('Query Executeed',$sql . "\n" . print_r($param_values,1),'debug');
+  if ($this->debug) $this->log('Query Executeed',$sql . "\n" . print_r($param_values,1),'debug');
 
   $rs = pg_query_params($this->c,'select query_to_xml($1,true,false,$2);',array($sql,''));
   if ($rs) {
@@ -330,11 +329,8 @@ public function query_foreach($xml,$xpath,$sql,$test_xpath='',$else_query='') {
 
 public function log($type,$user_id='',$title='',$ip='',$message='') {
 
-  $sql = 'insert into logs(msg_type,user_id,title,ip,message) VALUES ($1,$2,$3,$4,$5)';
+  watchdog($type, $title . '<br/>'. $message);
   // Extract values into single params variable
-  $param_values = array($type,$user_id,$title,$ip,$message);
-  //print_r($param_values);
-  if ($this->c) pg_query_params($this->c,$sql,array_values($param_values));
 }
 
 public function test_connection() {

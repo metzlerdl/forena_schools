@@ -2,8 +2,8 @@
 <head>
 <title>Tests</title>
 <frx:fields>
-  <frx:field id="name" link="index.php?q=TestDefinition&amp;test_id={test_id}"/>
-  <frx:field id="add" link="index.php?q=TestDefinition">Add Test</frx:field>
+  <frx:field id="name" link="flex/TestDefinition?&amp;test_id={test_id}"/>
+  <frx:field id="add" link="flex/TestDefinition">Add Test</frx:field>
 </frx:fields>
 </head>
 <body>

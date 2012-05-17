@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ACCESS=dist_admin -->
 <menus>
-    <item title="District Assessment Analysis" path="Analysis" /> 
     <item title="Define Tests" path="TestDefinition/Tests" /> 
     <item title="Assessment Profile Editor" path="district/Profiles"/> 
     <item title="Testing Control Panel" path="TestControlPanel"/> 

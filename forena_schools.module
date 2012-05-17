@@ -88,9 +88,10 @@ function forena_schools_forena_repos_alter(&$repos) {
 	  'title' => 'Forena Schools',
 		'uri' => forena_schools_connection_string(),
 	  'data provider' => 'FrxPostgres',
-	  'debug' => @$_GET['debug'],
+	  'debug' => @$_GET['debug']|| @$_GET['appdebug'],
+	  'postgres_xml' => TRUE,
 	  'access callback' => 'user_access',
-	  'user callback' => 'forena_schools_current_user',
+	  'user callback' => 'forena_schools_current_login',
 	  'search path' => 'public,import',
   );
 
@@ -104,9 +105,16 @@ function forena_schools_forena_repos_alter(&$repos) {
 
 }
 
-function forena_schools_current_user() {
-  global $user;
-  $parms = array('email' => $user->mail);
+
+function forena_schools_current_login() {
+	global $user;
+	if (!$user->uid) {
+		return '';
+	}
+	$login='';
+	if (is_callable('cas_current_user')) $login = cas_current_user();
+	if (!$login) $login = $user->name;
+	return $login;
 }
 
 function forena_schools_render_partial($template,$vars='',$extract=true) {
@@ -142,19 +150,20 @@ function forena_schools_flex($application, $popup=false) {
   global $base_url;
   $m_path = drupal_get_path('module', 'forena_schools');
 
+  drupal_add_js($m_path . '/flex/swfobject.js');
   drupal_add_js($m_path . '/inc/pedaflex.js');
-
   $fvar = $_GET;
   $fvar['dataService'] =  $base_url . '/flexServices';
   $fvar['basePath'] = rtrim($base_url,'/');
-  $flexPath = $m_path . "/flex/";
+  $base_path = $GLOBALS['base_path'];
+  $flexPath = "flex/";
   if (@$_GET['debug']=='true') {
   	$flexPath = "bin-debug/";
   }
-  $vars['flexPath'] = $m_path . '/' . $flexPath;
+  $vars['flexPath'] = $flexPath;
   unset($fvar['q']);
-  $flashfile = $flexPath . $application . '.swf';
-  $vars['flashfile'] = $flashfile . '?d=' . filemtime($flashfile);
+  $flashfile = $m_path . '/' . $flexPath . $application . '.swf';
+  $vars['flashfile'] = $base_path . $flashfile . '?d=' . filemtime($flashfile);
   $vars['application'] = $application;
   $vars['div_id'] = $application. '_div';
   $vars['flashvars'] = http_build_query($fvar);
@@ -164,6 +173,15 @@ function forena_schools_flex($application, $popup=false) {
   if (!$popup) $output .= '</div>';
   return forena_schools_render_partial('flex',$vars);
 
+}
+
+function forena_schools_forena_controls() {
+	$controls = array();
+	$controls[] = array(
+    'file' => 'inc/FrxPedagoggleScores.inc',
+    'class' => 'FrxPedagoggleScores',
+  );
+  return $controls;
 }
 
 function forena_schools_forena_report_directory() {
@@ -177,8 +195,9 @@ function forena_schools_data() {
   // Determine if the include file is in the path.
 	$class = $_REQUEST['service'];
 	$method = $_REQUEST['method'];
-	$class_file = 'services/'.$class.'.data.php';
-
+	$m_path = drupal_get_path('module', 'forena_schools');
+	$class_file = $m_path . '/services/'.$class.'.data.php';
+  $data_debug = @$_GET['debug'] || @$_GET['appdebug'];
 	// Only load the file if the file name exists
 	if (file_exists($class_file)) {
 	  include_once($class_file);
@@ -192,7 +211,7 @@ function forena_schools_data() {
 	  if (method_exists($handler,'auth')) {
 	  	$auth = call_user_func(array($handler,'auth'));
 	  }
-
+    watchdog('debug', 'in here'. $auth);
 	  if ($auth) {
 		  if (method_exists($handler,$method)) {
 		    //header('Content-type: text/xml');

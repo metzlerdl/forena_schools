@@ -1,3 +1,4 @@
 name = Forena Schools
 description = Assessment tracking for k-12 schools
 core = 7.x
+dependencies[] = forena

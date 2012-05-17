@@ -2,9 +2,41 @@
 class ForenaSchools {
 
 	public $db;
+	public $user;
 
 	public function __construct() {
+		//Obtain a database connection
 		$this->db = ForenaSchoolsDB::instance();
+
+		//Determine current user
+		GLOBAL $user;
+		if ($this->db && $user->uid) {
+			$email = $user->mail;
+			$sql = 'SELECT p.*,s.role,s.bldg_id FROM p_people p JOIN p_staff s
+         ON p.person_id=s.person_id';
+			if (is_callable('cas_current_user')) {
+				$login = cas_current_user();
+			}
+			// Use cas user preferentially
+			if ($login) {
+				$sql .= ' WHERE login=:login';
+			}
+			// if no cas user then load based on email
+			else {
+				$sql .= ' WHERE email=:email';
+			}
+			$rs = $this->db->exec_query($sql, array('login' => $login, 'email' => $email));
+			if ($rs) {
+				$this->user = $this->db->first_row($rs);
+			}
+			else {
+				$this->user = array();
+			}
+
+		}
+		else {
+			$this->user = array();
+		}
 	}
 
 	// Determine whether a user has a buidling role
@@ -91,23 +123,12 @@ class ForenaSchools {
 		}
 	}
 
-	function current_user() {
-	  $user =  $_SESSION['pedagoggle_user'];
-		return $user;
-	}
 
 	/**
 	 * Return the currently logged in user
 	 * Enter description here ...
 	 */
 	function current_login() {
-    global $user;
-    $login = '';
-    if (is_callable('cas_current_user')) {
-    	$login = cas_current_user();
-    }
-    if (!$login) {
-    	if ($user->uid) $login = $user->name;
-    }
+    return @$this->user['login'];
 	}
 }

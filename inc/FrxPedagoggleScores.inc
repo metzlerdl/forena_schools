@@ -1,5 +1,4 @@
 <?php
-require_once('FrxRenderer.inc');
 class FrxPedagoggleScores extends FrxRenderer {
 
 	private $headers = array();
@@ -106,6 +105,7 @@ class FrxPedagoggleScores extends FrxRenderer {
   // Put out the scores that we find.
   private function renderScores($xml) {
   	$d = FrxData::instance();
+  	$o='';
   	foreach($this->columns AS $col) {
   		// Xpath out the score based on the data passed.
   		$x = $xml->xpath($col);
