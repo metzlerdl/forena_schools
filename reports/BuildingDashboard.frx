@@ -11,7 +11,7 @@
 	<frx:field id="year_label"
 		link="reports/BuildingDashboard?school_year={school_year}&amp;bldg_id={parm.bldg_id}&amp;" />
 	<frx:field id="@title"
-		link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
+		link="assessments/{@path}?bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
 	<frx:field id="@grade_name"
 		link="reports/GradeView?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="collection_name"
@@ -19,15 +19,15 @@
 	<frx:field id="@course_name"
 		link="reports/GroupView?group_id={@group_id}&amp;name={@course_name}" />
 	<frx:field id="edit"
-		link="reports/TestEntry?group_id={@group_id}&amp;name={@course_name}">Test Entry</frx:field>
+		link="flex/TestEntry?group_id={@group_id}&amp;name={@course_name}">Test Entry</frx:field>
 	<frx:field id="@teacher_name"
 		link="reports/TeacherDashboard?staff_id={@staff_id}&amp;name={@teacher_name}" />
 	<frx:field id="manage" 
-		link="pedaflex/GroupEditor?group_id={@group_id}&amp;popup=true" target="popup_{@group_id}" >Manage</frx:field>
+		link="flex/GroupEditor?group_id={@group_id}&amp;popup=true" target="popup_{@group_id}" >Manage</frx:field>
 	<frx:field id="student_search"
-	  link="reports/StudentSearch?bldg_id={bldg_id}">Student Search</frx:field>
+	  link="flex/StudentSearch?bldg_id={bldg_id}">Student Search</frx:field>
 	<frx:field id="add_course"
-	  link="reports/GroupEditor?group_type=course&amp;bldg_id={bldg.bldg_id}&amp;school_year={parm.school_year}&amp;popup=true" target="popup_add_course">Add Course</frx:field>
+	  link="flex/GroupEditor?group_type=course&amp;bldg_id={bldg.bldg_id}&amp;school_year={parm.school_year}&amp;popup=true" target="popup_add_course">Add Course</frx:field>
 </frx:fields>
 <frx:parameters />
 <frx:docgen />

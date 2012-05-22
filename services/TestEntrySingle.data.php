@@ -3,7 +3,7 @@ class TestEntrySingle extends ForenaSchools {
 	public $title='Test Entry';
 
 	public function auth() {
-		return $this->access_level('teacher');
+		return $this->access('teacher');
 	}
 
 	public function studentAssessments() {

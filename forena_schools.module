@@ -39,7 +39,6 @@ function forena_schools_access($security) {
 function forena_schools_assessments($app='') {
 	$args = func_get_args();
 	$app = implode('/', $args);
-	drupal_set_message($app);
   $m_path = drupal_get_path('module', 'forena_schools');
 	$flexfile = $m_path . '/flex/'.$app . '.swf';
 
@@ -106,15 +105,12 @@ function forena_schools_forena_repos_alter(&$repos) {
 }
 
 
+
 function forena_schools_current_login() {
-	global $user;
-	if (!$user->uid) {
-		return '';
-	}
-	$login='';
-	if (is_callable('cas_current_user')) $login = cas_current_user();
-	if (!$login) $login = $user->name;
-	return $login;
+	require_once('inc/ForenaSchools.inc');
+	$o =  ForenaSchools::instance();
+	$user = $o->user;
+	return @$user['login'];
 }
 
 function forena_schools_render_partial($template,$vars='',$extract=true) {

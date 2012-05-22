@@ -3,7 +3,7 @@ class TestControlPanel extends ForenaSchools {
 	public $title = 'Testing Control Panel';
 
 	public function auth() {
-		return $this->access_level('dist_admin');
+		return $this->access('dist_admin');
 	}
 
 

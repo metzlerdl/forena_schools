@@ -8,10 +8,10 @@
 <frx:category>IMS</frx:category>
 <frx:options />
 <frx:fields>
-	<frx:field id="bldg_code" link="index.php?q=import/courses&amp;bldg_code={bldg_code}"
+	<frx:field id="bldg_code" link="reports/import.courses?bldg_code={bldg_code}"
 		format="" format-string="" target="" />
 	<frx:field id="teachers" link="" format="" format-string="" target="" />
-  <frx:field id="courses" link="index.php?q=import/faculty_courses&amp;sis_id={sis_id}&amp;bldg_code={bldg_code}" format="" format-string="" target="" />
+  <frx:field id="courses" link="reports/import.faculty_courses?sis_id={sis_id}&amp;bldg_code={bldg_code}" format="" format-string="" target="" />
 	<frx:field id="min_grade" link="" format="" format-string="" target="" />
 	<frx:field id="sis_id" link="" format="" format-string="" target="" />
 	<frx:field id="last_name" link="" format="" format-string="" target="" />

@@ -2,7 +2,7 @@
 class Search extends ForenaSchools {
 
 	public function auth() {
-		return $this->access_level('teacher');
+		return $this->access('teacher');
 	}
 
 	public function search() {

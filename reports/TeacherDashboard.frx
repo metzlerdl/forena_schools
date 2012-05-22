@@ -18,7 +18,7 @@
 		link="reports/GroupView?group_id={@group_id}&amp;name={@name}&amp;school_Year={parm.school_year}" />
 	<frx:field id="@editable"
 		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
-	<frx:field id="test_entry" default="test entry" link="index.php?q=TestEntry&amp;group_id={@group_id}">test entry</frx:field>
+	<frx:field id="test_entry" default="test entry" link="flex/TestEntry?group_id={@group_id}">test entry</frx:field>
 </frx:fields>
 <frx:parameters />
 <frx:docgen />
@@ -52,9 +52,6 @@
 					<td>{@name}</td>
 					<td>{test_entry}</td>
 				</tr>
-			</tbody>
-			<tbody frx:block="ims/roles">
-			  <tr frx:foreach="*"><td>hi</td></tr>
 			</tbody>
 		</table>
 		<h3>Collections</h3>

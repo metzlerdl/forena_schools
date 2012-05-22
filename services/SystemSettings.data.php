@@ -6,7 +6,7 @@ class SystemSettings extends ForenaSchools {
 	public $title = 'System Settings';
 
 	public function auth() {
-		return access_level('sys_admin');
+		return $this->access('sys_admin');
 	}
 
 

@@ -1,5 +1,10 @@
 <?php
 class PersonEditor extends ForenaSchools {
+
+	public function auth() {
+		return $this->access('dist_admin');
+	}
+
 	public function getPerson() {
 		return $this->db->query_xml('select p.*, p_staff_xml(person_id) AS staff_info, p_student_xml(person_id) AS student_info FROM p_people p WHERE person_id=:person_id', $_POST);
 	}

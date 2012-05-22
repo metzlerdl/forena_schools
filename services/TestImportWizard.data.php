@@ -1,10 +1,9 @@
 <?php
-require_once('csvimport.inc');
 class TestImportWizard extends ForenaSchools {
 	public $title = 'Test Import Wizard';
 	public function auth() {
 
-		$auth = $this->access_level('dist_admin');
+		$auth = $this->access('dist_admin');
 		if (!$auth && !$_COOKIE && !$_SESSION) {
 			// no cookies no sessioin.  Flex UPLOAD bug so circumvent security
 			return true;
@@ -13,9 +12,8 @@ class TestImportWizard extends ForenaSchools {
 	}
 
 	public function __construct() {
-    GLOBAL $import_directory;
-    $import_directory = $import_directory ? $import_directory : 'scripts/import';
-    $this->import_directory = rtrim($import_directory,'/');
+		$m_path = drupal_get_path('module', 'forena_schools');
+    require_once("$m_path/inc/csvimport.inc");
 	}
 
 	public function tests() {
@@ -66,7 +64,8 @@ class TestImportWizard extends ForenaSchools {
 	 * Generate a listing of files that need to be uploaded.
 	 */
 	public function listFiles() {
-    $import_directory = $this->import_directory;
+    $import_directory = $this->import_directory();
+    $this->verify_directory($import_directory);
     $d = @dir($import_directory);
     if (!$d) {
     	return '<error> Could not read ' . htmlspecialchars($import_directory) . '.</error>';
@@ -87,7 +86,7 @@ class TestImportWizard extends ForenaSchools {
 	  unset($defaults['file_name']);
 	  unset($defaults['service']);
 	  unset($defaults['method']);
-    $file_path = $this->import_directory . '/' . $file_name;
+    $file_path = $this->import_directory() . '/' . $file_name;
 		return '<message>' . htmlspecialchars(table_from_csv('imp_test_scores', $file_path,true, $defaults)). '</message>';
 	}
 
@@ -104,7 +103,7 @@ public function uploadFile() {
   // Testing the file upload
   $file_temp = $_FILES['Filedata']['tmp_name'];
   $file_name = $_FILES['Filedata']['name'];
-  $file_path = $this->import_directory . '/' . $file_name;
+  $file_path = $this->import_directory() . '/' . $file_name;
    // Complete upload
   $filestatus = move_uploaded_file($file_temp, $file_path);
    if ($filestatus) {
@@ -116,18 +115,18 @@ public function uploadFile() {
 }
 
 public function fileStats() {
-	$file_path = $this->import_directory;
+	$file_path = $this->import_directory();
 	if (is_writable($file_path)) {
-		$xml = '<filepath>' . htmlspecialchars($filepath) . '</filepath>';
+		$xml = '<filepath>' . htmlspecialchars($file_path) . '</filepath>';
 	}
 	else {
-		$xml = "<message>Upload directory $filepath is not writable.  You will be unable to upload files.  Contact your system administrator if you believe this to be in error</message>";
+		$xml = "<message>Upload directory $file_path is not writable.  You will be unable to upload files.  Contact your system administrator if you believe this to be in error</message>";
 	}
 	return $xml;
 }
 
 public function removeFile() {
-	$file_path = $this->import_directory . '/' . $_POST['file_name'];
+	$file_path = $this->import_directory() . '/' . $_POST['file_name'];
 	unlink($filename);
 	return $this->listFiles();
 }

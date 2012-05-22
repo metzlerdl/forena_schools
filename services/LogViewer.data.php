@@ -2,7 +2,7 @@
 class LogViewer extends ForenaSchools {
 	public $title= 'Log Viewer';
 	public function auth() {
-    return $this->access_level('sys_admin');
+    return $this->access('sys_admin');
 	}
 
 	public function recentLogs() {

@@ -1,5 +1,4 @@
 <?php
-require_once('db.inc');
 include_once('import_preprocessors.php');
 function preview_csv($file_name,$max_lines=10) {
   // open the file

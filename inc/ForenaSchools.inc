@@ -1,4 +1,5 @@
 <?php
+require_once('ForenaSchoolsDb.inc');
 class ForenaSchools {
 
 	public $db;
@@ -131,4 +132,43 @@ class ForenaSchools {
 	function current_login() {
     return @$this->user['login'];
 	}
+
+  function verify_directory($fullpath) {
+	  static $path='';
+	  $success = TRUE;
+
+	  @list($dir, $file) = explode('/', $fullpath, 2);
+	  if ($path) {
+		  $path .= '/' . $dir;
+	  }
+	  else {
+	  	$path = $dir;
+	  }
+ 	  // Path
+	  if (!file_exists($path)) {
+	    @mkdir($path);
+	    if (!@file_exists($path)) {
+	    	drupal_set_message($path . ' not found');
+	    	return FALSE;
+	    }
+
+	  }
+	  // Recurse to next file.
+	  if ($file) {
+	    $this->verify_directory($file);
+	  }
+	  return TRUE;
+	}
+
+	/**
+	 * Return the configured import directory
+	 */
+	public function import_directory() {
+		$dir = variable_get('forena_schools_import_dir', '');
+	  if (!$dir) {
+	    $dir = variable_get('file_' . file_default_scheme() . '_path' , conf_path() . '/files'). '/import';
+	  }
+	  return trim($dir, '/');
+	}
+
 }

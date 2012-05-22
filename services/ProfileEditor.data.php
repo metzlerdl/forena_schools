@@ -5,11 +5,12 @@ class ProfileEditor extends ForenaSchools {
 
 
 	public function auth() {
-		return $this->access_level('dist_admin');
+		return $this->access('dist_admin');
 	}
 
 	public function __construct() {
-		$this->id= $_POST['profile_id'];
+		parent::__construct();
+		$this->id= @$_POST['profile_id'];
 	}
 
 	public function profile() {

@@ -2,7 +2,7 @@
 class Analysis extends ForenaSchools {
 	public $title = 'Assessment Analysis';
 	public function auth() {
-		return $this->access_level('teacher');
+		return $this->access('teacher');
 	}
   public function profiles() {
 		return $this->db->query_xml(

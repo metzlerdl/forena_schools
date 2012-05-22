@@ -260,7 +260,7 @@ public function query_xml($sql, $values=array(),$root_tag='',$message='') {
   $sql = $this->prepare_xml($sql,$values);
 
   // Execute the query using query_to_xml
-  if ($this->debug) $this->log('Query Executeed',$sql . "\n" . print_r($param_values,1),'debug');
+  if ($this->debug) $this->log('Query Executeed',$sql . "\n" . print_r($values,1),'debug');
 
   $rs = pg_query_params($this->c,'select query_to_xml($1,true,false,$2);',array($sql,''));
   if ($rs) {

@@ -2,8 +2,8 @@
 <head>
 <title>Profile Definitions</title>
 <frx:fields>
-  <frx:field id="name" link="index.php?q=ProfileEditor&amp;profile_id={profile_id}&amp;popup=true" target="popup{profile_id}"/>
-  <frx:field id="add" link="index.php?q=ProfileEditor&amp;popup=true" target="popupNewProfile">Add Assessment Profile</frx:field>
+  <frx:field id="name" link="flex/ProfileEditor?profile_id={profile_id}&amp;popup=true" target="popup{profile_id}"/>
+  <frx:field id="add" link="flex/ProfileEditor?popup=true" target="popupNewProfile">Add Assessment Profile</frx:field>
 </frx:fields>
 </head>
 <body>

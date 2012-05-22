@@ -3,7 +3,7 @@ class UserManager extends ForenaSchools {
 
 	public $title= 'User Manager';
 	public function auth() {
-    return $this->access_level('sys_admin');
+    return $this->access('sys_admin');
 	}
 
 	public function searchPeople() {

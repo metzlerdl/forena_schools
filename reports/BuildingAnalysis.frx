@@ -9,7 +9,7 @@
 </frx:parameters>
 <frx:fields>
 		<frx:field id="@title"
-		link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
+		link="assessments/{@path}?bldg_id={parm.bldg_id}&amp;school_year={parm.school_year}" target="{@target}"/>
 	<frx:field id="@grade_name"
 		link="reports/BuildingAnalysis?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="profile.name"
