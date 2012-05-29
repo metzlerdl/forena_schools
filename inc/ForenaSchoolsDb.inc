@@ -183,6 +183,14 @@ public function exec_query($sql,$values=array()) {
   return pg_query_params($this->c,$sql,array_values($param_values));
 }
 
+/**
+ * Execute a safe SQL query and get the recordset in reponse
+ */
+public function raw_query($sql) {
+  if ($this->debug) $this->log('Query Executeed: ',$sql,'debug');
+  return pg_query($this->c,$sql);
+}
+
 public function query($sql, $values=array()) {
 	return $this->all_rows($this->exec_query($sql, $values));
 }
@@ -327,9 +335,9 @@ public function query_foreach($xml,$xpath,$sql,$test_xpath='',$else_query='') {
   }
 }
 
-public function log($type,$user_id='',$title='',$ip='',$message='') {
+public function log($title='', $message='', $type = 'debug') {
 
-  watchdog($type, $title . '<br/>'. $message);
+  watchdog($type, $title . '<br/> <pre>'.  $message . '</pre>');
   // Extract values into single params variable
 }
 

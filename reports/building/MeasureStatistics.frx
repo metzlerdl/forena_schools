@@ -36,7 +36,7 @@
 		</div>
 		<div id="measure_stats" frx:block="ims/building/measure_statistics">
 			<div
-				frx:src="building/MeasureTrendGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
+				frx:src="reports/building.MeasureTrendGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
 				frx:renderer="FrxInclude" frx:height="430" frx:width="640"></div>
 			<table>
 				<thead>

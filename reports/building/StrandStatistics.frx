@@ -43,7 +43,7 @@
 		</div>
 			<div id="strand_stats" frx:block="ims/building/schedule_strand_stats">
 			<div
-				frx:src="building/ScheduleStrandsGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
+				frx:src="reports/building.ScheduleStrandsGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
 				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
 				<table>
 					<thead>

@@ -1,4 +1,4 @@
-<div style="width: 95%; height: 700px;">
+<div style="width: 100% height: <?php print $height?>">
 
  <style type="text/css" media="screen">
             object:focus { outline:none; }

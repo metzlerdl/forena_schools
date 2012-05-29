@@ -16,6 +16,13 @@ function forena_schools_menu() {
 	  'file' => 'inc/common.inc',
 	);
 
+	$items['flexpopup'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => TRUE,
+	  'page callback' => 'forena_schools_flex',
+	  'page arguments' => array(1, TRUE),
+	);
+
 	$items['flexServices'] = array(
 	  'type' => MENU_CALLBACK,
 	  'access callback' => TRUE,
@@ -24,6 +31,13 @@ function forena_schools_menu() {
 	);
 
 	return $items;
+}
+
+function forena_schools_theme() {
+  return array( 'forena_schools_flex_popup' => array(
+      'variables' => array('item' => NULL, 'feed' => 0),
+    ),
+  );
 }
 
 function forena_schools_access($security) {
@@ -127,6 +141,7 @@ function forena_schools_render_partial($template,$vars='',$extract=true) {
 
 function forena_schools_service($service) {
 	$object = null;
+	require_once 'inc/ForenaSchools.inc';
 	$include_file = drupal_get_path('module', 'forena_schools') . "/services/$service.data.php";
 	if (file_exists($include_file)) {
 		require_once $include_file;
@@ -142,12 +157,20 @@ function forena_schools_service($service) {
  * @param unknown_type $a
  */
 function forena_schools_flex($application, $popup=false) {
-
   global $base_url;
+  $vars = array();
+  if (@$_GET['popup']) $popup = TRUE;
+  $service = forena_schools_service($application);
+  if (!$service) {
+  	drupal_not_found();
+  }
+  else {
+  	$vars['title'] = $service->title;
+  }
   $m_path = drupal_get_path('module', 'forena_schools');
-
-  drupal_add_js($m_path . '/flex/swfobject.js');
-  drupal_add_js($m_path . '/inc/pedaflex.js');
+  $js = array();
+  $js[] = $m_path .  '/flex/swfobject.js';
+  $js[] = $m_path .  '/inc/pedaflex.js';
   $fvar = $_GET;
   $fvar['dataService'] =  $base_url . '/flexServices';
   $fvar['basePath'] = rtrim($base_url,'/');
@@ -165,10 +188,27 @@ function forena_schools_flex($application, $popup=false) {
   $vars['flashvars'] = http_build_query($fvar);
   $vars['flashvars_json'] = json_encode($fvar, JSON_FORCE_OBJECT);
   if ($popup) $vars['height']='100%'; else $vars['height']='85%';
-  if (!$popup) $output = '<div class="flex-application grid_12" style="height: 700px;">';
-  if (!$popup) $output .= '</div>';
-  return forena_schools_render_partial('flex',$vars);
+  $output = forena_schools_render_partial('flex',$vars);
+  if ($popup) {
+    $variables= array('content' => $output, 'js' => $js, 'title' =>$vars['title']);
+  	$output = theme('forena_schools_flex_popup', $variables);
+  	print $output;
+  }
+  else {
+  	foreach ($js as $j) {
+     drupal_add_js($j);
+  	}
+    return $output;
+  }
+}
 
+function theme_forena_schools_flex_popup($variables) {
+	$js = '';
+	if (isset($variables['js'])) foreach($variables['js'] as $j) {
+		$js .= "\n".'  <script src="' . base_path() . $j . '" language="javascript" type="text/javascript"></script>';
+	}
+	$variables['scripts'] = $js;
+	print forena_schools_render_partial('popup', $variables);
 }
 
 function forena_schools_forena_controls() {

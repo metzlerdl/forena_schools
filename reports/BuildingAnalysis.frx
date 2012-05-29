@@ -16,7 +16,7 @@
 	  link="reports/BuildingAnalysis?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}">
 	</frx:field>
 	<frx:field id="test_name"
-	  link="reports/building/TestStatistics?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
+	  link="reports/building.TestStatistics?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
 	</frx:field>
 </frx:fields>
 <frx:parameters />

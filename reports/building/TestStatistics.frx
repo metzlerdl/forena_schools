@@ -48,7 +48,7 @@
 			frx:foreach="*">
 			<h4>{sched_label} {year_label}</h4>
 			<div
-				frx:src="building/TestStatsGraph.svg?height=400&amp;width=600&amp;test_id={test_id}&amp;school_year={school_year}&amp;seq={seq}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
+				frx:src="reports/building.TestStatsGraph.svg?height=400&amp;width=600&amp;test_id={test_id}&amp;school_year={school_year}&amp;seq={seq}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
 				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
 			<div id="test_stats" frx:block="ims/building/schedule_stats">
 				<table>
