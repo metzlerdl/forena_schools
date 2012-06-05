@@ -4,6 +4,7 @@ class GradeView extends ForenaSchools {
 	public $title='Grade View';
 
 	public function __construct() {
+		parent::__construct();
 		if (!isset($_POST['school_year'])) {
 			$_POST['school_year'] = $this->db->call('i_school_year()');
 		}

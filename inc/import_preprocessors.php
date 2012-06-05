@@ -40,8 +40,8 @@ function process_imp_test_scores($row, $tab_columns) {
   	$last_test='';
   	$row['grade_level']= $row['reportinggrade'] ? $row['reportinggrade'] : $row['grade_level'];
   	$ts = $row;
-    $ts['bldg_school_code']=$row['bldg_code_field'] ? $ts[$row['bldg_code_field']] : $row['schoolcode'];
-    $ts['sis_id']=$row['sis_id_field'] ? $ts[$row['sis_id_field']] : $ts['districtstudentcode'];
+    $ts['bldg_school_code']=@$row['bldg_code_field'] ? @$ts[$row['bldg_code_field']] : @$row['schoolcode'];
+    $ts['sis_id']= @$row['sis_id_field'] ? @$ts[$row['sis_id_field']] : @$ts['districtstudentcode'];
     foreach ($row as $key=>$value) {
     	switch ($key) {
     		case 'readingtesttype':

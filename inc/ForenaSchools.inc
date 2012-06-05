@@ -8,7 +8,6 @@ class ForenaSchools {
 	public function __construct() {
 		//Obtain a database connection
 		$this->db = ForenaSchoolsDB::instance();
-
 		//Determine current user
 		GLOBAL $user;
 		if ($this->db && $user->uid) {

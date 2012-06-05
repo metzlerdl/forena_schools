@@ -247,7 +247,6 @@ function forena_schools_data() {
 	  if (method_exists($handler,'auth')) {
 	  	$auth = call_user_func(array($handler,'auth'));
 	  }
-    watchdog('debug', 'in here'. $auth);
 	  if ($auth) {
 		  if (method_exists($handler,$method)) {
 		    //header('Content-type: text/xml');
@@ -270,7 +269,7 @@ function forena_schools_data() {
 	    watchdog('debug Data Service',  'Data Service  Not Found',print_r($_REQUEST,1));
 		print "<pre>$class: Service Not Found</pre>";
 	}
-
+  drupal_get_messages();
 }
 
 /**

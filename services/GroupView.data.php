@@ -3,6 +3,7 @@ class GroupView extends ForenaSchools {
 	// Verify authentication
 	public $title='Group View';
 	public function __construct() {
+		parent::__construct();
 		$_POST['school_year'] = $this->db->call('i_school_year()');
 	}
 

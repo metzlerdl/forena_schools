@@ -7,6 +7,7 @@ class ImportControl extends ForenaSchools {
 	}
 
 	public function __construct() {
+    parent::__construct();
     GLOBAL $import_directory;
     $import_directory = $import_directory ? $import_directory : 'scripts/import';
     $this->import_directory = rtrim($import_directory,'/');
@@ -77,6 +78,7 @@ class ImportControl extends ForenaSchools {
 
 	public function uploadTestFile() {
 		$file_name = $_POST['file_name'];
+		watchdog('debug', 'uploading test file '. $file_name);
 	  $defaults = $_POST;
 	  unset($defaults['file_name']);
 	  unset($defaults['service']);

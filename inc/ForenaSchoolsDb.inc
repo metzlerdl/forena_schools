@@ -128,7 +128,7 @@ protected function get_value($values,$key)
   $retvar = '';
   if (is_array($values))
   {
-    $retvar = $values[$key];
+    $retvar = @$values[$key];
   }
   elseif (is_object($values)) {
     $retvar =$values->$key ->asXML();
@@ -179,7 +179,7 @@ public function exec_query($sql,$values=array()) {
   //print "$sql\n";
   // Extract values into single params variable
   $param_values = $this->get_bind_values($values);
-  if ($this->debug) $this->log('Query Executeed',$sql . "\n" . print_r($param_values,1),'debug');
+  if ($this->debug) $this->log('Query:',$sql . "\n" . print_r($param_values,1),'debug');
   return pg_query_params($this->c,$sql,array_values($param_values));
 }
 
@@ -340,6 +340,30 @@ public function log($title='', $message='', $type = 'debug') {
   watchdog($type, $title . '<br/> <pre>'.  $message . '</pre>');
   // Extract values into single params variable
 }
+
+/**
+ * Generate insert statment from table.
+ * Returns empty string if the table is not found.
+ * @param $table string table to use for insert generation
+ * @return string Sql insert statement
+ */
+function gen_insert($table, &$tab_columns) {
+  $rs = $this->exec_query('SELECT column_name FROM information_schema.columns WHERE table_name=:table ',array('table'=>$table));
+  $col_list='';
+  $val_list='';
+  while ($row = pg_fetch_row($rs)) {
+  	 $col_name = strtolower($row[0]);
+  	 $col_list .= $col_name . ',';
+  	 $val_list .= ':'.$col_name.',';
+  	 $tab_columns[]=$col_name;
+  }
+  $sql = '';
+  if ($col_list) {
+    $sql = 'INSERT INTO '.$table.' ('.trim($col_list,',') .') VALUES ('.trim($val_list,',') .')';
+  }
+  return $sql;
+}
+
 
 public function test_connection() {
 	$result = pg_query($this->c,"SELECT i_install_step()");

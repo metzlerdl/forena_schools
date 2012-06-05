@@ -1,6 +1,7 @@
 <?php
 class TestImportWizard extends ForenaSchools {
 	public $title = 'Test Import Wizard';
+	public $csv;
 	public function auth() {
 
 		$auth = $this->access('dist_admin');
@@ -12,8 +13,11 @@ class TestImportWizard extends ForenaSchools {
 	}
 
 	public function __construct() {
+		parent::__construct();
 		$m_path = drupal_get_path('module', 'forena_schools');
-    require_once("$m_path/inc/csvimport.inc");
+    require_once("$m_path/inc/ForenaSchoolsCSV.inc");
+    $this->csv = ForenaSchoolsCSV::instance();
+
 	}
 
 	public function tests() {
@@ -87,7 +91,7 @@ class TestImportWizard extends ForenaSchools {
 	  unset($defaults['service']);
 	  unset($defaults['method']);
     $file_path = $this->import_directory() . '/' . $file_name;
-		return '<message>' . htmlspecialchars(table_from_csv('imp_test_scores', $file_path,true, $defaults)). '</message>';
+		return '<message>' . htmlspecialchars($this->csv->table_from_csv('imp_test_scores', $file_path,true, $defaults)). '</message>';
 	}
 
 	public function testCodes() {
