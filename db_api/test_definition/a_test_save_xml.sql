@@ -86,7 +86,7 @@ CREATE OR REPLACE FUNCTION a_test_save_xml(p_xml TEXT) RETURNS XML AS $$
            AND seq = s_rec.seq; 
        ELSE 
          INSERT INTO a_test_schedules(test_id, seq, label, start_day, end_day, target_day)
-           VALUES (v_test_id, s_rec.seq, s_rec.label,s_rec.start_day, s_rec.end_day, target_day); 
+           VALUES (v_test_id, s_rec.seq, s_rec.label,s_rec.start_day, s_rec.end_day, S_rec.target_day); 
        END IF; 
      END LOOP; 
      
