@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXAdvancedDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+								  xmlns:s="library://ns.adobe.com/flex/spark" 
+								  xmlns:mx="library://ns.adobe.com/flex/mx" 
+								  focusEnabled="true">
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.controls.dataGridClasses.DataGridListData;
+			
+			// Override the set method for the data property.
+			override public function set data(value:Object):void {
+				//super.data = value;
+				
+				if (value != null)
+				{
+					var x:XML = XML(value); 
+					var measure_id:String; 
+					var dataField:String = DataGridListData(listData).dataField;
+					var score:XML = x..measure.(@profile_sort==dataField)[0];				
+					
+					if (score && score.@score) {
+						lblData.text = score.@score; 
+					}
+					else {
+						lblData.text = ""; 
+					}
+					
+					
+					
+					// Set style to indicate the normal range for the test. 
+					if(!score || !score.@score.toString() || score.@norm_score == "") {
+						lblData.setStyle("backgroundColor", 0xEEEEEE); 
+						lblData.setStyle("borderColor", 0xDDDDDD); 
+					}
+					else if(Number(score.@norm_score) >= 4.0)
+					{
+						lblData.setStyle("backgroundColor", 0xB5C0E3);
+						lblData.setStyle("borderColor", 0xA4A9D2); 
+					}
+					else if (Number(score.@norm_score) >= 3.0) { 
+						lblData.setStyle("backgroundColor", 0xBBE3B5);
+						lblData.setStyle("borderColor", 0xAAD2A4); 
+					}
+					else if (Number(score.@norm_score) >= 2.0){
+						lblData.setStyle("backgroundColor", 0xE3E288); 
+						lblData.setStyle("borderColor", 0xD2d177); 
+					} else { 
+						lblData.setStyle("backgroundColor", 0xE3B5B5); 
+						lblData.setStyle("borderColor", 0xE3B5B5); 
+					}
+				}
+					
+				else
+				{
+					// If value is null, clear text.
+					lblData.text= "";
+					lblData.setStyle("backgroundColor", 0xEEEEEE); 
+					lblData.setStyle("borderColor", 0xEEEEEE); 
+				}
+				
+				super.invalidateDisplayList();
+			}
+			
+
+		]]>
+	</fx:Script>
+	<s:Label id="lblData" verticalAlign="middle" textAlign="right" horizontalCenter="this" height="100%" width="100%" text="{listData.label}" paddingRight="5" />
+</s:MXAdvancedDataGridItemRenderer>

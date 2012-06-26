@@ -18,7 +18,7 @@
 		link="reports/GroupView?group_id={@group_id}&amp;name={@name}&amp;school_Year={parm.school_year}" />
 	<frx:field id="@editable"
 		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
-	<frx:field id="test_entry" default="test entry" link="flex/TestEntry?group_id={@group_id}">test entry</frx:field>
+	<frx:field id="test_entry" default="test entry" link="flexpopup/TestEntry?group_id={@group_id}" target="te_{@group_id}">test entry</frx:field>
 </frx:fields>
 <frx:parameters />
 <frx:docgen />

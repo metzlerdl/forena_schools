@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 title="{bldgSvc.xml.row.(bldg_id==bldgId).name[0]}"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="300" height="300" xmlns:components="components.*" xmlns:services="services.*">
+	<s:states>
+		<s:State id="district" name="district"/>
+		<s:State id="school" name="school"/> 
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			
+			private var _staffXML:XML; 
+			private var _bldgId:String=''; 
+			[Bindable] public var roleXML:XML;
+			
+			[Bindable] public function set staffXML(value:XML):void { 
+				_staffXML = value; 
+				setRoles(); 
+			}
+			
+			public function get staffXML():XML { 
+				return _staffXML; 
+			}
+			
+			public function setRoles():void { 
+				if (_bldgId == '-1') { 
+					roleXML = XML(<table>
+                        <row><role>dist_admin</role><name>District Admin</name></row>
+                        <row><role>sys_admin</role><name>System Admin</name></row>
+                        <row><role>none</role><name>No Access</name></row>
+  					  </table>); 
+					this.currentState= "district";
+				}
+				else {
+					roleXML = XML(<table><row><role>teacher</role><name>Teacher</name></row><row><role>bldg_admin</role><name>Building Admin</name></row><row><role>none</role><name>No Access</name></row></table>);
+					this.currentState = "school"; 
+				}
+			}
+			
+			[Bindable] 
+			public function set bldgId(value:String):void { 
+				_bldgId = value; 
+				setRoles(); 
+
+			}
+			
+			public function get bldgId():String { 
+				return _bldgId;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<services:RestXMLService id="bldgSvc" defaultService="Lookup" defaultMethod="buildings" preload="true" debug="true"/>
+	<services:RestXMLService id="gradeSvc" defaultService="Lookup" defaultMethod="gradeLevels" preload="true" debug="true"/> 
+	<fx:Binding source="staffXML.@bldg_id" destination="bldgId"/>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup>
+		<s:Form>
+			<s:FormItem label="Grade Levels" includeIn="school">
+				<s:VGroup >
+					<components:BindingDropDown XML="{gradeSvc.xml.row}" selectedValue="@{staffXML.@min_grade_level}" dataField="min_grade_level" labelField="abbrev" prompt="Select"/>
+					<s:Label text="to"/>
+					<components:BindingDropDown XML="{gradeSvc.xml.row}" selectedValue="@{staffXML.@max_grade_level}" dataField="max_grade_level" labelField="abbrev" prompt="Select"/>
+				</s:VGroup>
+			</s:FormItem>
+			<s:FormItem label="Role">
+				<components:BindingDropDown XML="{roleXML.row}" selectedValue="@{staffXML.@role}" dataField="role" labelField="name"/>
+			</s:FormItem>
+			
+		    
+		</s:Form>
+	</s:VGroup>
+</s:Panel>

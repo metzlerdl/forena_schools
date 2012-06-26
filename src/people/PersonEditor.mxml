@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:services="services.*" xmlns:people="people.*" 
+			   xmlns:components="components.*"
+			   width="100%" height="100%"
+			   >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:states>
+		<s:State name="general"/>
+		<s:State name="staff"/>
+		<s:State name="student"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent; 
+			[Bindable] private var _personId:String; 
+			
+			[Bindable]
+			public function set personId(value: String):void { 
+				_personId = value; 
+				if (personId) { 
+					personSvc.send({person_id:personId}); 
+				}
+				
+			}
+			
+			public function get personId():String {
+				return _personId; 
+			}
+			
+			/**
+			 * Save the person
+			 */ 
+			public function save():void { 
+				// remove no access rows for staff
+				var x:XML = personSvc.xml.row.staff_info[0]; 
+				var i:int; 
+				if (x) { 
+					for each (var n:XML in x.staff.(@role=='none')) { 
+						i = n.childIndex(); 
+						delete x.children()[i]; 
+					}
+				}
+				personSvc.send({method:"save", xml:personSvc.xml.toXMLString(), person_id: personId}); 
+				var event:CloseEvent = new CloseEvent(CloseEvent.CLOSE);
+				this.dispatchEvent(event); 
+				
+			    
+			}
+			
+			public function hasBuildingAccess(x:XML, bldg_id:String):Boolean { 
+				if (x.row.staff_info.staff.(@bldg_id==bldg_id).length()>0) { 
+					return true; 
+				}
+				else {
+					return false; 
+				}
+			}
+			
+			public function addBuildingAccess():void { 
+				var x:XML; 
+				if (staffBldgSelect.selectedItem) { 
+					var bx:XML = XML(staffBldgSelect.selectedItem);
+					var bldg_id:String = bx.bldg_id[0]; 
+					if (personSvc.xml.row.staff_info.length()==0) {
+						x = XML(<staff_info/>); 
+					    personSvc.xml.row.appendChild(x.copy()); 
+					}
+					if (!hasBuildingAccess(personSvc.xml, bldg_id)) {
+						
+						if (bldg_id == '-1') {
+							x = XML(<staff bldg_id='' role='dist_admin'/>); 
+							x.@bldg_id = bldg_id; 
+							personSvc.xml.row.staff_info[0].appendChild(x.copy()); 
+						}
+						else { 
+							x = XML(<staff bldg_id='' role='teacher' min_grade_level='' max_grade_level=''/>);
+							x.@bldg_id = bldg_id; 
+							x.@min_grade_level = bx.min_grade_level; 
+							x.@max_grade_level = bx.max_grade_level; 
+							personSvc.xml.row.staff_info[0].appendChild(x.copy()); 
+							
+							
+						}
+						accessList.invalidateDisplayList(); 
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:controlBarContent>
+		<s:Button label="Save"  click="save()"/>
+		<components:BindingDropDown id="staffBldgSelect" XML="{bldgSvc.xml.row}" dataField="bldg_id" labelField="name" includeIn="staff" defaultSelect="true"/>
+		<s:Button label="Grant School Access" includeIn="staff" click="addBuildingAccess()"/>
+	</s:controlBarContent>
+	<services:RestXMLService id="personSvc" defaultService="PersonEditor" defaultMethod="getPerson"/>
+	<services:RestXMLService id="bldgSvc" defaultService="Lookup" defaultMethod="buildings" preload="true"/> 
+	<mx:TabNavigator height="100%" width="100%" >
+		<mx:Canvas label="General" height="100%" width="100%" show="currentState='general'">	
+			<s:VGroup height="100%" width="100%">
+				
+				<s:Form >
+					<s:HGroup>
+						
+						<s:FormItem label="First">
+							<s:TextInput id="firstNameInput"  text="@{personSvc.xml.row.first_name}"/>
+						</s:FormItem>
+						<s:FormItem label="Middle">
+							<s:TextInput text="@{personSvc.xml.row.middle}"/>
+						</s:FormItem>
+						<s:FormItem label="Last">
+							<s:TextInput id="lastNameInput" text="@{personSvc.xml.row.last_name}"/>
+						</s:FormItem>
+					</s:HGroup>
+					<s:Panel height="91" title="Identification" width="100%">
+						<s:HGroup>
+							<s:FormItem label="Login">
+								<s:TextInput id="loginInput" text="@{personSvc.xml.row.login}"/> 
+							</s:FormItem>
+							
+							<s:FormItem label="SIS ID">
+								<s:TextInput id="sisIdInput" text="@{personSvc.xml.row.sis_id}"/>
+							</s:FormItem>
+							<s:FormItem label="State Student Id">
+								<s:TextInput id="stateStudentIdInput" text="@{personSvc.xml.row.sate_student_id}"/> 
+							</s:FormItem>
+						</s:HGroup>	
+					</s:Panel>
+					<s:Panel title="Contact" width="100%">
+						<s:HGroup width="100%">
+							<s:FormItem label="email">
+								<s:TextInput text="@{personSvc.xml.row.email}"/>
+							</s:FormItem>
+							<s:FormItem label="phone">
+								<s:TextInput text="@{personSvc.xml.row.phone}"/> 
+							</s:FormItem>
+						</s:HGroup>
+					</s:Panel>
+					<s:Panel title="Address" width="100%" >
+						<s:VGroup>
+							<s:FormItem label="Street">
+								<s:TextInput text="@{personSvc.xml.row.address_street}"/>
+							</s:FormItem>
+							
+							<s:HGroup>
+								<s:FormItem label="City">
+									<s:TextInput text="@{personSvc.xml.row.address_city}"/>
+								</s:FormItem>
+								<s:FormItem label="State">
+									<s:TextInput text="@{personSvc.xml.row.address_state}"/>
+								</s:FormItem>
+								<s:FormItem label="Zip">
+									<s:TextInput text="@{personSvc.xml.row.address_zip}"/>
+								</s:FormItem>
+							</s:HGroup>
+						</s:VGroup>
+					</s:Panel>
+				</s:Form>
+				
+			</s:VGroup>
+		</mx:Canvas>
+		<mx:Canvas label="Student" height="100%" width="100%" show="currentState='student'">
+			
+		</mx:Canvas>
+		<mx:Canvas label="Staff" height="100%" width="100%" show="currentState='staff'">
+			
+			<s:VGroup height="100%" width="100%">
+				<s:List id="accessList" width="100%" height="100%">
+					<s:layout>
+						<s:TileLayout requestedColumnCount="4"/> 
+					</s:layout>
+					<s:itemRenderer>
+						<fx:Component>
+							<s:ItemRenderer>								  
+								<people:StaffEditor staffXML="{data}"/>
+							</s:ItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>
+					<s:dataProvider>
+						<s:XMLListCollection source="{personSvc.xml.row.staff_info.staff}"/>
+					</s:dataProvider>
+				</s:List>
+			</s:VGroup>
+		</mx:Canvas>
+	</mx:TabNavigator>
+</s:TitleWindow>

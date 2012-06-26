@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:AdvancedDataGrid xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx"
+			  creationComplete="init()"
+			  sortExpertMode="true"
+			  width="100%"
+			  horizontalScrollPolicy="auto"
+			  designViewDataType="flat" xmlns:services="services.*">
+	<services:FlexApp id="app"/>
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumnGroup;
+			
+			import tests.ScoreEditor;
+			import tests.ScoreGridColumn;
+			import tests.ScoreRenderer;
+			
+		
+			private var defaultColumns:Array; 
+			private var defaultWidth:int; 	
+			public var measureField:String = '@measure_id'; 
+			public var measureLabelField:String = '@abbrev'; 
+			public var groupLabel:String = '@label'; 
+			private var headerColumns:int; 
+			
+	  	  	// When the component is there we need to save away the predefined columns
+		  	public function init():void {
+				
+				defaultColumns = groupedColumns.slice(0); 
+				defaultWidth = width; 
+				headerColumns = columns.length; 
+				this.lockedColumnCount = headerColumns; 
+			  
+		  	}
+			
+			
+			private function addColumns(gc:Array, xl:XMLList):void {
+				var ctl:ScoreGridColumn; 
+				var grp:AdvancedDataGridColumnGroup; 
+				var gl:String;
+				var l:int; 
+				for each (var m:XML in xl) { 
+					//Build a new data grid column and add it. 
+					//@TODO:  Determine groupings based on strand data. create a new test group for and situations where parent id is the same 
+					gl = m[groupLabel]; 
+					if (gl) {
+						
+						grp = new AdvancedDataGridColumnGroup(); 
+						grp.headerText= m[groupLabel]; 
+						var grpCtls:Array = new Array(); 
+						addColumns(grpCtls, m.children()); 
+						grp.children = grpCtls; 
+						grp.sortable = true; 
+						gc.push(grp); 
+						
+						
+					}
+					else { 
+						ctl = new ScoreGridColumn(); 
+						ctl.dataField = m[measureField]; 
+						ctl.sortable = (editable!='item');
+						if (editable && m['@entry']=='true') {
+							ctl.editable = (editable=='item'); 
+							ctl.itemRenderer = new ClassFactory(tests.ScoreEditor);
+							ctl.itemEditor = new ClassFactory(tests.ScoreEditor); 
+						} 
+						else {
+							ctl.editable = false; 
+							if (measureField=='@measure_id') {
+							  ctl.itemRenderer = new ClassFactory(tests.ScoreRenderer);  
+							}
+							else {
+					          ctl.itemRenderer = new ClassFactory(tests.ProfileScoreRenderer); 
+							}
+						}
+						ctl.headerText = m[measureLabelField]; 
+			            l = ctl.headerText.length; 
+						if (l*8>50) ctl.width=8*l;  
+						gc.push(ctl); 
+						//width += ctl.width; 
+					}
+				}
+				
+			}
+			
+			
+			public function set measuresXML(x:XML):void { 
+
+				var cols:Array; 
+				cols = defaultColumns.slice(0); 
+				//width=defaultWidth; 
+				addColumns(cols, x.children()); 
+				var ctl2:AdvancedDataGridColumn = new AdvancedDataGridColumn(); 
+				ctl2.width= 0; 
+				ctl2.editable=false; 
+				cols.push(ctl2); 
+				this.groupedColumns = cols; 
+				this.invalidateDisplayList(); 
+				this.invalidateSize(); 
+			}
+		
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</mx:AdvancedDataGrid>

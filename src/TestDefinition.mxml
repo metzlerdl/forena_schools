@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:services="services.*" 
+			   show="validTestDef()"
+			   creationComplete="init()" xmlns:components="components.*" xmlns:tests="tests.*">
+	<s:states >
+		<s:State name="gradeRules"/>
+		<s:State name="scheduleRules"/>
+		<s:State name="measureRules"/> 
+		<s:State name="allRules"/>
+		<s:State name="rcRules"/>
+	</s:states>
+  <fx:Script>
+	  <![CDATA[
+		  import components.MeasureLabelRenderer;
+		  
+		  import events.FlexXMLEvent;
+		  
+		  import mx.controls.Alert;
+		  import mx.core.FlexGlobals;
+		  import mx.core.UIComponent;
+		  import mx.events.CloseEvent;
+		  import mx.managers.PopUpManager;
+		  import mx.validators.Validator;
+		  
+		  import spark.components.TitleWindow;
+		  
+		  import testdef.MeasurePopup;
+		  import testdef.SchedulePopup; 
+		
+
+		public var defaultTest:XML = XML(<test id="-1" name="" abbrev="" code="" min_grade="" max_grade="" allow_data_entry="N">
+			 <measures/>
+			 <schedules/> 
+			</test>); 
+		[Bindable] public var editMeasureXML:XML = XML(<measure name="" abbrev="" code=""/>);
+	 	[Bindable] private var test_id:int;
+		private var editMeasureWin:MeasurePopup; 
+		private var editScheduleWin:SchedulePopup; 
+		private var validTest:Boolean = true; 
+		private var validators:Array = new Array(); 
+		private var addAsStrand:Boolean; 
+		private var lastTestXML:String = ''; 
+
+		  
+		/**
+		 * Makes sure to save away the last copy of the xml prior to modifying the test
+		 */ 
+		private function onTestRcv(event:FlexXMLEvent):void { 
+			if (event.xml) { 
+				lastTestXML = event.xml.toXMLString(); 
+			}
+		}
+		  
+
+		/**
+		* Component Creation init
+		*/ 
+		public function init():void { 
+		 	if (this.parameters.test_id) {
+				this.test_id = FlexGlobals.topLevelApplication.parameters.test_id; 
+				testSvc.send({method:"getTest", test_id: this.test_id}); 
+			}
+			else { 
+		      this.test_id = -1; 
+			  testSvc.xml = defaultTest.copy();
+			  lastTestXML = testSvc.xml.toXMLString(); 
+			}
+			validators.push(tvName);
+			validators.push(tvAbbrev);
+			validators.push(tvMinGrade); 
+			validators.push(tvMaxGrade); 
+			testSvc.checkModified(); 
+			
+		}
+			
+		/**
+		 * Pop up a window to add a measure. 
+		 **/ 	
+	    public function editMeasure(srcXML:XML=null, strand:Boolean = false):void { 
+		  editMeasureWin = new MeasurePopup(); 
+		  editMeasureWin.existingMeasures = testSvc.xml.measures[0]; 
+		  
+		  if (!srcXML) {
+			if (strand) {
+		      if (!String(measureGrid.selectedItem.@parent)) { 
+				  Alert.show("You must save the test score prior to creating a strand","Error",Alert.OK,this); 
+				  return; 
+			  }
+			  else {
+				  editMeasureWin.strandParent = measureGrid.selectedItem.@parent; 
+				  editMeasureWin.is_strand='true'; 
+				  addAsStrand = true; 
+			  }
+			}
+			else {
+		      addAsStrand = false; 
+			}
+  		    editMeasureWin.addEventListener(CloseEvent.CLOSE, addMeasureClose);
+		  }
+		  else { 
+			editMeasureWin.srcMeasureXML = srcXML; 
+			editMeasureWin.addEventListener(CloseEvent.CLOSE, editMeasureClose);   
+		  }
+		  
+	      PopUpManager.addPopUp(editMeasureWin, this, true); 
+		  PopUpManager.centerPopUp(editMeasureWin); 		  
+	    }
+		  
+		public function editMeasureClose(event:CloseEvent):void { 
+		  var x:XML = XML(measureGrid.selectedItem); 
+		  var p:XML; 
+		  if (editMeasureWin.saveMeasure) {
+			  p = x.parent(); 
+			  //trace (editMeasureWin.measureXML.toXMLString()); 
+			  p.replace(x.childIndex(),editMeasureWin.measureXML); 
+			  testSvc.checkModified(); 
+		  }
+		  PopUpManager.removePopUp(editMeasureWin); 
+		  
+		}
+		  
+		/*
+		  * Remove a measure from the test
+		  */ 
+		protected function removeMeasure():void { 
+          Alert.show("Delete meassure" + measureGrid.selectedItem.@name, "Delete measure", Alert.YES+Alert.NO,this,confirmRemoveMeasure); 
+		}
+		  
+		protected function confirmRemoveMeasure(event:CloseEvent):void { 
+		  if (event.detail==Alert.YES) { 
+			  var x:XML = XML(measureGrid.selectedItem); 
+			  var p:XML = x.parent(); 
+			  delete p.measure[x.childIndex()];  
+			  testSvc.checkModified(); 
+			  measureGrid.refresh(); 
+		  }
+		}
+		
+		// Respond to the close event. 
+		protected function addMeasureClose(event:CloseEvent):void { 
+		  var x:XML;
+		  var m:XML; 
+		  if (editMeasureWin.saveMeasure) { 
+		      x = editMeasureWin.measureXML.copy(); 
+			  m = testSvc.xml.measures[0]; 
+			  if (m  &&  addAsStrand) {
+		        m.insertChildAfter(XML(measureGrid.selectedItem),x);
+			  } 
+			  else if (m) m.appendChild(x); 
+			  measureGrid.refresh(); 
+		  }
+		  testSvc.checkModified(); 
+		  PopUpManager.removePopUp(editMeasureWin); 	
+		}
+		  
+	    protected function removeSchedule():void { 
+		  Alert.show("Remove schedule "+scheduleGrid.selectedItem.@seq,'Remove Schedule', Alert.YES + Alert.NO, this, removeScheduleClose); 	
+		  testSvc.checkModified(); 
+		}
+		  
+		protected function editSchedule(srcXML:XML = null):void { 
+		  editScheduleWin = new SchedulePopup(); 
+		  editScheduleWin.existingSchedules = testSvc.xml.schedules[0]; 
+		  if (srcXML) {			  
+			  editScheduleWin.srcScheduleXML = srcXML; 
+			  editScheduleWin.addEventListener(CloseEvent.CLOSE, editScheduleClose);
+		  }
+		  else { 
+			  editScheduleWin.addEventListener(CloseEvent.CLOSE, addScheduleClose); 
+		  }
+		  PopUpManager.addPopUp(editScheduleWin, this, true); 
+		  PopUpManager.centerPopUp(editScheduleWin); 
+		}
+		  
+		protected function editScheduleClose(event:CloseEvent):void {
+		  if (editScheduleWin.saveSchedule) {
+			  var x:XML = XML(scheduleGrid.selectedItem); 
+			  var s:XML = x.parent(); 
+			  s.replace(x.childIndex(), editScheduleWin.scheduleXML); 
+		  }
+		  testSvc.checkModified(); 
+		  PopUpManager.removePopUp(editScheduleWin); 
+		}
+		  
+		protected function addScheduleClose(event:CloseEvent):void {
+			var x:XML; 
+			var s:XML; 
+			if (editScheduleWin.saveSchedule) { 
+				x = editScheduleWin.scheduleXML.copy(); 
+				s = testSvc.xml.schedules[0];
+				if (s) s.appendChild(x); 
+			}
+			PopUpManager.removePopUp(editScheduleWin); 
+		}
+		  
+	   protected function removeScheduleClose(event:CloseEvent):void { 
+		   if (event.detail==Alert.YES) {
+		     var x:XML = XML(scheduleGrid.selectedItem); 
+			 var p:XML = x.parent(); 
+			 delete p.schedule[x.childIndex()]; 
+		   } 
+	   }
+		  
+		protected function validTestDef():Boolean {
+			var ve:Array = new Array(); 
+            ve = Validator.validateAll(validators); 
+			if (ve.length > 0) {
+			  return false; 
+			}
+		    return true; 
+		}
+		  
+		protected function doSave():void { 
+			if (validTestDef()) { 
+				// Extract the rules and replace them
+				if (ruleSvc.xml) { 
+				  var r:XML = testSvc.xml.rules[0]; 
+				  var t:XML = r.parent(); 
+				  t.replace('rules',ruleSvc.xml.copy()); 
+				}
+				testSvc.send({method:"saveTest",xml:testSvc.xml.toXMLString()});
+			}
+		}
+		  
+		protected function initRules():void { 
+			var s:XML = testSvc.xml.schedules[0]; 
+			var m:XML = testSvc.xml.measures[0]; 
+			var r:XML = testSvc.xml.rules[0]; 
+			var mg:int = testSvc.xml.@min_grade; 
+			var mxg:int = testSvc.xml.@max_grade; 
+			if (ruleSvc.xml) {
+				r = ruleSvc.xml.copy(); 
+			}
+			ruleSvc.send(
+				{m_xml: m.toXMLString(), 
+				 s_xml: s.toXMLString(), 
+				 r_xml: r.toXMLString(),
+				 min_grade: mg, 
+				 max_grade: mxg } ); 
+		    gradeSvc.send({min_grade:mg, max_grade:mxg}); 
+			// Determine state
+			if (testSvc.xml.schedules.schedule.length() > 0) { 
+				currentState = 'scheduleRules'; 
+			}
+			else {
+				currentState = 'gradeRules'; 
+			}
+		}
+		  
+		protected function copyRule(rule: XML, list:XMLList):void {
+			for each (var x:XML in list) {
+				if (x!= rule) {
+					x.@level_1 = rule.@level_1; 
+					x.@level_2 = rule.@level_2;
+					x.@level_3 = rule.@level_3; 
+					x.@level_4 = rule.@level_4; 
+					x.@max_score = rule.@max_score; 
+				}
+			}			
+		}
+		  
+		protected function currentRules():XMLList { 
+			var xl:XMLList; 
+			switch (this.currentState) { 
+				case 'allRules':
+					xl = ruleSvc.xml.rule; 
+					break; 
+				case 'gradeRules': 
+					xl = ruleSvc.xml.rule.(@grade_level==gradeLevelDropDown.selectedValue)
+					break; 
+				case 'scheduleRules': 
+					xl = ruleSvc.xml.rule.(@grade_level==gradeLevelDropDown.selectedValue && @seq==scheduleDropDown.selectedValue);
+					break; 
+				
+			}
+			return xl; 
+		}
+		  
+		protected function copyRules():void { 
+		   var cr:XML = XML(rulesGrid.selectedItem);
+		   var xl:XMLList; 
+           copyRule(cr,currentRules());   
+		}
+		  
+		protected function makeSame():void { 
+           var ruleSet:XMLList = currentRules();
+		   var measures:XMLList; 
+		   var m:String; 
+		   for each (var cr:XML in ruleSet) { 
+			  m = cr.@id; 
+			  measures = ruleSvc.xml.rule.(@id==m); 
+			  copyRule(cr, measures); 
+		   }
+		}
+		  
+    ]]>
+  </fx:Script>
+  <fx:Declarations>
+    <!-- Place non-visual elements (e.g., services, value objects) here -->
+	<mx:StringValidator id="tvName"  source="{nameInput}" minLength="3" maxLength="60" property="text"/>
+	<mx:StringValidator id="tvAbbrev" source="{abbrevInput}" minLength="1" maxLength="25" property="text"/> 
+	<mx:NumberValidator id="tvMinGrade" source="{minGradeInput}"  property="text" minValue="-1"  maxValue="{maxGradeInput.text}" lowerThanMinError="Must be between -1 and 12" exceedsMaxError="Cannot be greater than maximum grade level" /> 
+	<mx:NumberValidator id="tvMaxGrade" source="{maxGradeInput}" property="text" minValue="{minGradeInput.text}" maxValue="12" lowerThanMinError="Must be at least the minimum grade level" /> 
+  </fx:Declarations>
+  <services:DataService id="testSvc" defaultService="TestDefinition" flexXMLChange="onTestRcv(event)" />
+  <services:DataService id="gradeSvc" defaultService="TestDefinition" defaultMethod="gradeLevels" /> 
+  <services:DataService id="ruleSvc" defaultService="TestDefinition" defaultMethod="generateRules" /> 
+	<s:TitleWindow height="100%" width="100%" title="Test Definition" >
+	  <s:controlBarContent>
+		  
+		<s:Button label="Save" click="doSave()"/> 
+		<s:Label  text="{testSvc.isChanged || ruleSvc.isChanged ? 'Modified' : ''}" fontSize="12" height="100%" y="7" verticalAlign="middle" textAlign="right"/>
+		
+	  </s:controlBarContent>
+      <s:VGroup height="100%" width="100%">
+		  
+      <mx:TabNavigator width="100%" height="100%" >
+		<s:NavigatorContent label="General" width="100%" height="100%">				
+				<s:HGroup x="0" y="0" width="100%">
+					<s:Form width="100%" >
+						<s:FormItem label="Name" required="true">
+							<s:TextInput id="nameInput" text="@{testSvc.xml.@name}" focusOut="testSvc.checkModified()"/>
+						</s:FormItem>
+						<s:FormItem label="Abbreviation" required="true">
+							<s:TextInput id="abbrevInput" text="@{testSvc.xml.@abbrev} " focusOut="testSvc.checkModified()"/>
+						</s:FormItem>
+						<s:FormItem label="Code">
+							<s:TextInput text="@{testSvc.xml.@code}" focusOut="testSvc.checkModified()"/>
+						</s:FormItem>
+						<s:FormItem label="Min Grade" required="true">
+							<s:TextInput id="minGradeInput" text="@{testSvc.xml.@min_grade}" focusOut="testSvc.checkModified()"/>
+						</s:FormItem>
+						<s:FormItem label="Max Grade">
+							<s:TextInput id="maxGradeInput" text="@{testSvc.xml.@max_grade}" focusOut="testSvc.checkModified()"/>
+						</s:FormItem>
+						<s:FormItem label="Allow Data Entry">
+							<components:TrueFalseCheckBox text="@{testSvc.xml.@allow_data_entry}" focusOut="testSvc.checkModified()"/>
+						</s:FormItem>
+					</s:Form>
+					
+				</s:HGroup>		
+		</s:NavigatorContent>
+      	<s:NavigatorContent label="Measures" width="100%" height="100%">
+				
+			<s:HGroup height="100%" width="100%">
+			<tests:MeasuresGrid id="measureGrid" height="100%" width="100%" xml="{testSvc.xml.measures[0]}" doubleClickEnabled="true" doubleClick="editMeasure(XML(measureGrid.selectedItem))" sortableColumns="false" >
+				<tests:columns>
+					<s:ArrayList>						
+					<s:GridColumn headerText="Name" dataField="@name" itemRenderer="components.MeasureLabelRenderer" width="200"/>
+					<s:GridColumn headerText="Abbreviation" dataField="@abbrev" width="90"/>
+					<s:GridColumn headerText="Code" dataField="@code" width="200"/>
+					</s:ArrayList>
+				</tests:columns>
+			</tests:MeasuresGrid>
+			<s:VGroup verticalAlign="middle" height="100%">
+				<s:Button id="moveUpButton" click="measureGrid.moveUp()" enabled="{measureGrid.selectedItem}" label="Up" width="100"/>
+				<s:Button id="moveDownButton" click="measureGrid.moveDown()" enabled="{measureGrid.selectedItem}" label="Down" width="100"/>
+				<s:Button id="addMeasureButton" click="editMeasure()" label="New" width="100"/>
+				<s:Button id="addStrandButton" click="editMeasure(null, true)" enabled="{measureGrid.selectedItem &amp;&amp; measureGrid.selectedItem.@id!='-1'}" label="Add Strand" width="100"/> 
+				<s:Button id="removeMeasureButton" click="removeMeasure()" enabled="{measureGrid.selectedItem}" label="Remove" width="100"/>	
+				<s:Button id="editMeasureButton" click="editMeasure(XML(measureGrid.selectedItem))" enabled="{measureGrid.selectedItem}" label="Edit" width="100"/>
+			</s:VGroup>
+			</s:HGroup>
+      	</s:NavigatorContent>
+      	<s:NavigatorContent label="Schedules" width="100%" height="100%">
+			<s:HGroup width="100%" height="100%">				
+			<mx:DataGrid id="scheduleGrid" sortableColumns="false" dataProvider="{testSvc.xml.schedules.schedule}" height="100%" width="100%" >
+				<mx:columns>
+					<mx:DataGridColumn headerText="seq" dataField="@seq" width="50"/> 
+					<mx:DataGridColumn headerText="label" dataField="@label"  width="200"/> 
+					<mx:DataGridColumn headerText="starts" dataField="@starts"  width="100"/> 
+					<mx:DataGridColumn headerText="ends" dataField="@ends"  width="100"/>
+					<mx:DataGridColumn headerText="target" dataField="@target" width="100"/> 
+				</mx:columns>
+			</mx:DataGrid>
+			<s:VGroup verticalAlign="middle" height="100%" width="74">
+				<s:Button id="addScheduleButton" click="editSchedule()" label="New" width="60"/>
+				<s:Button id="editScheduleButton" click="editSchedule(XML(scheduleGrid.selectedItem))" enabled="{scheduleGrid.selectedItem}"  label="Edit" width="60"/> 
+				<s:Button id="removeScheduleButton" click="removeSchedule()" enabled="{scheduleGrid.selectedItem}" label="Remove" width="60"/>				  
+			</s:VGroup>
+			</s:HGroup>
+      	</s:NavigatorContent>
+      	<s:NavigatorContent label="Validation Rules" width="100%" height="100%" show="initRules()" enabled="{!testSvc.isChanged}">
+			<s:HGroup width="100%" height="100%" >
+				<s:VGroup>
+					<s:Label text="Grade"/>
+					<components:BindingList id="gradeLevelDropDown" XML="{gradeSvc.xml.row}" labelField="name" dataField="grade_level"/>
+					<s:Label text="Schedule" includeIn="scheduleRules"/>
+				<components:BindingList id="scheduleDropDown" XML="{testSvc.xml.schedules.schedule}" dataField="@seq" labelField="@label" includeIn="scheduleRules" /> 
+					<components:BindingList id="measureDropDown" XML="{testSvc.xml.measures.measure}" dataField="@measure_id" labelField="@name" includeIn="measureRules"/>
+						<s:Button label="All Measures" enabled="{rulesGrid.selectedItem}" click="copyRules()"/>
+					<s:Button label="All Grades/Schedules" click="makeSame()"/> 
+				</s:VGroup>
+				<mx:DataGrid id="rulesGrid"  height="100%" width="100%" editable="true" itemEditEnd="ruleSvc.checkModified()"
+							 dataProvider.allRules="{ruleSvc.xml.rule}" 
+							 dataProvider.gradeRules="{ruleSvc.xml.rule.(@grade_level==gradeLevelDropDown.selectedValue)}"
+							 dataProvider.measureRules="{ruleSvc.xml.rule.(@measure_id==measureDropDown.selectedValue)}"
+							 dataProvider.scheduleRules="{ruleSvc.xml.rule.(@grade_level==gradeLevelDropDown.selectedValue &amp;&amp; @seq==scheduleDropDown.selectedValue)}" sortableColumns="false">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Name" dataField="@name" editable="false" itemRenderer="components.MxMeasureLabelRenderer"/> 
+						<mx:DataGridColumn headerText="Min Score" dataField="@level_1" /> 
+						<mx:DataGridColumn headerText="Struggling" dataField="@level_2"/> 
+						<mx:DataGridColumn headerText="Meets" dataField="@level_3"/> 
+						<mx:DataGridColumn headerText="Exceeds" dataField="@level_4"/> 
+						<mx:DataGridColumn headerText="Max Score" dataField="@max_score"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</s:HGroup>
+      	</s:NavigatorContent>
+      </mx:TabNavigator>
+	</s:VGroup>
+	</s:TitleWindow>
+</s:Application>

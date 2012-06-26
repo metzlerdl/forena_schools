@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  includeInLayout="{showClose}"
+          visible="{showClose}"
+		  initialize="init()"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import flash.external.ExternalInterface;
+			import flash.net.URLRequest;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent; 
+			
+			private var _baseURL:String   // Base url for the iste if not present
+			private var _title:String; 
+			private var _isPopUp:Boolean; 
+			[Bindable] private var showClose:Boolean=false;
+			public var app:Object; 		
+			public function set baseURL(b:String):void {
+				_baseURL = trimSlashes(b); 
+			}
+			
+			[Bindable]
+			public function get isBrowserPopUp():Boolean { 
+				return _isPopUp; 
+			}
+			
+			public function set isBrowserPopUp(value:Boolean):void { 
+				_isPopUp = value; 
+			}
+					    
+			[Bindable]
+			public function set title(value:String):void {
+				_title = value; 
+				ExternalInterface.call('flexSetTitle', _title);
+				
+			}
+			
+			public function get title():String {
+				return _title; 
+			}
+			
+			private function init():void { 
+				if (ExternalInterface.available) { 
+					isBrowserPopUp = ExternalInterface.call('flexIsPopUp'); 
+				}
+			}
+			
+			public function close(refreshParent:Boolean = false):void { 
+				if (_isPopUp) { 
+					ExternalInterface.call('flexClose', refreshParent); 
+				}
+			}
+			
+			private function trimSlashes(url:String):String {
+				var char:String = '/';
+				if (url.charAt(url.length - 1) == char) {
+					url = trimSlashes(url.substring(0, url.length - 1));
+				}
+				return url;
+			}
+			
+			public function navigateTo(url:String, target:String, parameters:Object = null, useDestination:Boolean=false):void {
+				// Default in the base path.  
+				if (!_baseURL && FlexGlobals.topLevelApplication.parameters.basePath) {
+					baseURL = FlexGlobals.topLevelApplication.parameters.basePath; 
+				}
+				
+				if (url.search(":") == -1) {
+					url = _baseURL + '/' + url; 
+				}
+				var request:URLRequest = new URLRequest(url);
+				var params:URLVariables = new URLVariables(); 
+				request.method="GET"; 
+				if (parameters) {
+					for (var p:String in parameters) { 
+						params[p]=parameters[p]; 
+					}
+					request.data=params;
+				}
+				flash.net.navigateToURL(request,target); 
+			}
+			
+			public function popUp(url:String, parameters:Object=null, useDestination:Boolean=false):void {
+				navigateTo(url,"_blank", parameters, useDestination); 
+			}
+			
+			public function goto(url:String, parameters:Object=null, useDestination:Boolean=false):void { 
+				navigateTo(url,"_top", parameters, useDestination); 
+			}			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:HGroup>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:services="services.*"
+			   creationComplete="init()"
+			   >
+	<s:layout>
+    	<s:VerticalLayout/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import people.PersonEditor; 
+			private var personEditor:people.PersonEditor; 
+			public function editUser():void { 
+				personEditor = new people.PersonEditor();
+				personEditor.addEventListener(CloseEvent.CLOSE,onPersonEditorClose);
+				PopUpManager.addPopUp(personEditor,this,true); 
+				personEditor.personId = searchGrid.selectedItem.person_id; 
+				PopUpManager.centerPopUp(personEditor); 
+			}
+			
+			public function addUser():void { 
+				personEditor = new people.PersonEditor();
+				personEditor.addEventListener(CloseEvent.CLOSE,onPersonEditorClose);
+				PopUpManager.addPopUp(personEditor,this,true); 
+				personEditor.personId = '-1'; 
+				PopUpManager.centerPopUp(personEditor); 
+			}			
+			public var changeTimer:Timer = new Timer(1000, 1); 
+			private function init():void { 
+				changeTimer.addEventListener(TimerEvent.TIMER, onTimerEnd); 
+			}
+			
+			private function onTimerEnd(event:TimerEvent):void { 
+				searchSvc.send({q:searchStr.text}); 
+			}
+			
+			
+			private function onChange():void { 
+				if (changeTimer) { 
+					changeTimer.stop(); 
+					changeTimer.reset(); 
+					changeTimer.start()
+				}
+			}
+			
+			private function onPersonEditorClose(event:CloseEvent):void {
+				PopUpManager.removePopUp(personEditor); 
+				searchSvc.send({q:searchStr.text}); 
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<services:RestXMLService id="searchSvc" defaultService="UserManager" defaultMethod="searchPeople" debug="true"/> 
+	<s:TitleWindow title="Search Users" height="100%" width="100%">
+		<s:controlBarContent>
+			<s:Button label="Edit" enabled="{searchGrid.selectedItem}" click="editUser()"/> 
+			<s:Button label="Add" click="addUser()"/> 
+		</s:controlBarContent>
+		<s:VGroup width="100%" height="100%" paddingLeft="5" paddingBottom="5" paddingRight="5">
+		<s:Form width="100%">
+			<s:FormItem label="Search">
+				<s:TextInput id="searchStr" change="onChange()"/> 
+			</s:FormItem>
+		</s:Form>
+				<s:DataGrid id="searchGrid" width="100%" height="100%" doubleClickEnabled="true" doubleClick="editUser()">
+					<s:dataProvider>
+						<s:XMLListCollection source="{searchSvc.xml.row}"/> 
+					</s:dataProvider>
+				   <s:columns>
+					   <s:ArrayList>
+						   <s:GridColumn headerText="First" dataField="first_name"/> 
+						   <s:GridColumn headerText="Last" dataField="last_name"/> 
+						   <s:GridColumn headerText="Student In" dataField="student_buildings"/> 
+						   <s:GridColumn headerText="Staff In" dataField="staff_buildings"/> 
+					   </s:ArrayList>
+				   </s:columns>
+				</s:DataGrid>
+		</s:VGroup>
+	</s:TitleWindow>
+</s:Application>

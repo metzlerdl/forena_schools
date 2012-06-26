@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:CheckBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+			xmlns:mx="library://ns.adobe.com/flex/mx"
+		    >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			[Bindable] private var _text:String; 
+			[Bindable]
+			public function get text():String { 
+			  return _text; 
+			}
+			
+			public function set text(value:String):void { 
+			  super.selected = (value == "true"); 
+			  _text = value; 
+			}		
+			
+			public override function set selected(value:Boolean):void { 
+			  super.selected = value; 
+			  text = value ? "true":"false"; 
+			}
+		]]>
+	</fx:Script>
+</s:CheckBox>

@@ -7,6 +7,12 @@ function flexClose(refreshParent) {
 	  }
       self.close();
 }
+
+function flexCloseRedirect(href) {
+	opener.location.href = href; 
+	self.close(); 
+}
+
 /**
  * Set the title for a window.
  * @param newTitle

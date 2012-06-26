@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml"  click="debug()" change="setSelected()">
+
+	<mx:Script>
+      <![CDATA[
+      	import mx.collections.XMLListCollection;
+         private var _selectedValue:String;
+         private var _dataField:String = "data";
+         private var bDataProviderSet:Boolean = false;
+         // Override committ, this may be called repeatedly
+        public function jumpToSelected():void {
+         	if(this.dataProvider && this.dataProvider.length > 0) {
+         		var rowValue:String;
+         		if(this.selectedItem && this.selectedItem[_dataField] == this._selectedValue) {
+         			return;
+         		}
+         		for(var i:int=0; i<this.dataProvider.length; i++) {
+         			if(this.dataProvider[i] != null) {
+         				rowValue = this.dataProvider[i][_dataField];
+         				if(rowValue == _selectedValue) {
+         					//found our match
+         					this.selectedIndex = i;
+         					return;
+         				}
+         			}
+         		}
+         		//didn't find a match
+         		this.selectedIndex = -1;
+         	}
+         }
+   
+         override protected function commitProperties():void
+         {
+            // invoke ComboBox version
+            super.commitProperties();
+            jumpToSelected(); 
+           }
+         private function debug():void {
+            trace('here'); 
+         }
+         private function setSelected():void { 
+         	if (this.selectedItem) {
+         		this.selectedValue = XML(selectedItem)[_dataField]; 
+         	}
+         }
+
+         // Trap dataProvider being set
+         override public function set dataProvider(o:Object):void
+         {
+            // invoke ComboBox version
+            super.dataProvider = o;
+            jumpToSelected(); 
+         }
+         [Bindable]
+         // set for selectedValue
+         public function get selectedValue():String {
+            return _selectedValue;
+         }
+
+         public function set selectedValue(s:String):void
+         {
+
+            // Save value
+            _selectedValue = s;
+            // Make sure selected is set
+            jumpToSelected(); 
+         }
+         
+ 
+         public function set dataField(s:String):void
+         {
+         	// SET datafield
+         	_dataField = s;
+         }
+      ]]>
+   </mx:Script>   
+</mx:DataGrid>

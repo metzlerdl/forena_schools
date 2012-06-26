@@ -1,6 +1,7 @@
 <div style="width: 100% height: <?php print $height?>">
 
  <style type="text/css" media="screen">
+            html, body { height: 100%;  }
             object:focus { outline:none; }
             #<?php print $div_id?> { display:none; }
 </style>

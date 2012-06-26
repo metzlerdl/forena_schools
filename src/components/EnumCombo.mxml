@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<comp:BindingCombo xmlns:mx="http://www.adobe.com/2006/mxml"  xmlns:comp="components.*"  close="onChange()"  creationComplete="init()" dataProvider="{enum_xml.row}" >
+<mx:Script>
+	<![CDATA[
+		import mx.rpc.events.ResultEvent;
+		[Bindable] public var enum_xml:XML; 
+		public var category:String; 
+		[Bindable] public var enum_id:String; 
+	    public function init() : void {
+	    	dataService.url = this.parentApplication.parameters.dataService; 
+	    	dataService.send({service:"lookups", method:"enumerations",category:category}); 
+	    }
+	    public function dataHandler(event:ResultEvent):void {
+	      enum_xml = XML(event.result.toString()); 
+	      this.invalidateDisplayList();
+	      this.validateNow(); 
+	    }
+	    public function onChange():void {
+	      this.enum_id = this.selectedItem.id; 
+	    }
+	]]>
+</mx:Script>
+<mx:HTTPService id="dataService" result="dataHandler(event)" resultFormat="e4x"/>
+</comp:BindingCombo>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:DataGrid xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+		    sortableColumns="false"
+		    selectionMode="multipleRows"
+			xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			[Bindable]public var xml:XML; 
+  
+			
+			/**
+			 * Move an item in a direction
+			 */ 
+			private function moveItem(dir:int, si:int = -1):void {
+				var xl:XMLList = xml.children(); 
+				var x:XML = xml; 
+				var d:XML; 
+				var di:int; 
+				var s:XML; 
+
+				if (si==-1) si = this.selectedIndex; 
+				if (xml.children()[si]){		
+					s = xl[si].copy(); 
+					if (dir<0 && si > 0) {
+						di = si-1;
+					}
+					if (dir>0 && si < xl.length()-1) {
+						di = si+1; 	
+					}
+					d = xl[di].copy(); 
+					// Swap values
+					
+					xml.replace(di,s);
+					xml.replace(si,d); 
+				}
+			}
+			
+			/**
+			 * Move all selected items up
+			 */ 
+			public function moveUp():void {
+				moveSelected(-1); 
+			}
+			
+			/**
+			 * Move all selected items down
+			 */ 
+			public function moveDown():void { 
+				moveSelected(1); 
+			}
+			
+			public function refresh():void {
+				var i:Vector.<int> = this.selectedIndices; 
+				dataSource.source = xml.children(); 
+				this.selectedIndices = i; 
+			}
+			
+			/**
+			 * Remove all selected
+			 */ 
+			public function removeSelected():void { 
+			   var sel:Vector.<Object> = this.selectedItems; 
+			   for each (var x:XML in sel) {
+			     remove(x.childIndex()); 
+			   }
+			   dataSource.source = xml.children(); 
+			   this.validateNow(); 
+			}
+			
+			
+			/**
+			 * MOves all selected items
+			 */ 
+			public function moveSelected(dir:int):void {
+				var sel:Vector.<Object> = this.selectedItems; 
+				var selIndexes:Vector.<int> = this.selectedIndices; 
+				var i:int; 
+				if (dir) sel = sel.reverse(); 
+				for each (var x:XML  in sel) { 
+					i = x.childIndex(); 
+				    moveItem(dir, i); 
+				}
+				dataSource.source = xml.children(); 
+				this.validateNow(); 
+				for each (i in selIndexes) {
+					this.addSelectedIndex( i + dir); 
+					
+				}
+	            
+
+			}
+			
+			/**
+			 * Remove an item
+			 */ 
+			public function remove(i:int = -1):void { 
+				if (i==-1) i= this.selectedIndex; 
+				if (xml.children()[i]) { 
+					var x:XML = this.xml;
+					delete x.children()[i]; 
+				}	
+			}
+			/**
+			 * This function is unfinished.  I'm trying to figure out the complexities of 
+			 * moving strands around. 
+			 */ 
+			public function validateSelection():Boolean { 
+				var sel:Vector.<Object> = this.selectedItems;
+				var nonStrands:Array = new Array(); 
+				var multiStrand:Boolean = false; 
+				var hasStrands:Boolean = false; 
+				var multiTest:Boolean = false; 
+				var parentIds:Dictionary = new Dictionary(); 
+				var ids:Dictionary = new Dictionary(); 
+			    // Don't validate if there's no selected items. 
+				if (this.selectedIndex<0) {
+					return false; 
+				}
+				
+				var firstTest:String = this.selectedItem.@parent ; 
+			    for each (var x:XML in sel) { 
+					var pid:String = x.@parent; 
+					var sid:String = x.@id; 
+					ids[sid] = sid;
+					parentIds[pid] = pid; 
+					if (x.@id == x.@parent) {
+					  nonStrands.push(x.@id);
+					}
+					else { 
+					  hasStrands = true; 
+					  if (x.@parent != firstTest) {
+						  multiTest = true; 
+					  }
+					}
+				}
+				
+				if (multiTest && hasStrands) { 
+  				  for each(var key:String in parentIds) { 
+				    for (var i:int=0; i< dataSource.length; i++) { 
+				    	
+					}
+				  }
+				}
+				// Ok now we know what we have.  
+				
+			  return false; 
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:dataProvider>
+		<s:XMLListCollection id="dataSource" source="{xml.children()}"/> 
+	</s:dataProvider>
+</s:DataGrid>

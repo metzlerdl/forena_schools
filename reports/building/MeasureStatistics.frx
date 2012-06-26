@@ -5,7 +5,7 @@
 <html xmlns:frx="urn:FrxReports">
 <head>
 <frx:fields>
-  <frx:field id="sched_label" link="reports/StrandStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;seq={seq}">
+  <frx:field id="sched_label" link="reports/building.StrandStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;seq={seq}">
   </frx:field>
 </frx:fields>
 <title>Measure Statistics</title>

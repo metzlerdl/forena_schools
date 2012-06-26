@@ -15,8 +15,6 @@
   <frx:field id="subject" link="reports/Student?person_id={parm.person_id}&amp;grade_level={parm.grade_level}&amp;subject={subject}"/>
 </frx:fields>
 <frx:parameters>
-	<frx:parm id="student_id" />
-	<frx:parm id="profile_id"/>
 </frx:parameters>
 <frx:docgen />
 </head>

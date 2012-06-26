@@ -1,11 +1,5 @@
 <?php
-
-function forena_schools_update_7116(&$sanbox) {
-	require_once('inc/ForenaSchoolsScript.inc');
-	ForenaSchoolsScript::instance()->dbScript('upgrade_3_16.sql');
-}
-
-function forena_schools_update_7117(&$sanbox) {
-	require_once('inc/ForenaSchoolsScript.inc');
-	ForenaSchoolsScript::instance()->dbScript('upgrade_3_17.sql');
+require_once('inc/ForenaSchoolsScript.inc');
+function forena_schools_install(&$sanbox) {
+	ForenaSchoolsScript::instance()->dbScript('upgrade_7.sql');
 }

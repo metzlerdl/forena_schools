@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ACCESS=dist_admin -->
 <menus>
-    <item title="Define Tests" path="TestDefinition/Tests" /> 
-    <item title="Assessment Profile Editor" path="district/Profiles"/> 
-    <item title="Testing Control Panel" path="TestControlPanel"/> 
-    <item title="Import Test Scores" path="TestImportWizard" type="flex"/>   
+    <item title="Define Tests" path="reports/TestDefinition.Tests" /> 
+    <item title="Assessment Profile Editor" path="reports/district.Profiles"/> 
+    <item title="Testing Control Panel" path="flexpopup/TestControlPanel" target="popupTestControlLPanel"/> 
+    <item title="Import Test Scores" path="flexpopup/TestImportWizard" target="popupTestImportWizard"/>   
 </menus>

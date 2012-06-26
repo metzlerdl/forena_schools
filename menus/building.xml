@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ACCESS=bldg_admin -->
 <menus>
-    <item title="District Assessment Analysis" path="Analysis" /> 
-    <item title="Building Statistics" path="BuildingAnalysis" /> 
+    <item title="Building Statistics" path="reports/BuildingAnalysis" /> 
 </menus>

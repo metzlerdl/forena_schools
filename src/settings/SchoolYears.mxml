@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:services="services.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+		[Bindable] private var currYear:XML; 
+		private function newSchoolYear():void { 
+		var x:XML = new XML(<row><school_year>2020</school_year><label>replace</label><start_date>2099-08-01</start_date><end_date>2099-07-31</end_date></row>);
+		yearSvc.xml.appendChild(x); 
+		yearsGrid.selectedIndex = yearSvc.xml.length(); 	
+		}
+		
+		private function saveYear():void {  
+		yearSvc.send({method:"saveYears", xml:yearSvc.xml.toXMLString()});
+		}
+		]]>
+	</fx:Script>
+ <fx:Binding source="XML(yearsGrid.selectedItem)" destination="currYear"/>
+ <fx:Binding source="schoolYearText.text" destination="currYear.school_year"/>
+ <fx:Binding source="labelText.text" destination="currYear.label"/> 
+ <fx:Binding source="startDate.text" destination="currYear.start_date"/>
+ <fx:Binding source="endDate.text" destination="currYear.end_date"/>  	
+
+  <mx:VBox width="100%" height="100%">
+	<services:RestXMLService id="yearSvc" defaultService="SystemSettings" defaultMethod="schoolYears" preload="true"/> 
+	<mx:ControlBar width="100%" >
+	  <mx:Button label="Save" click="saveYear()"/> 
+	  <mx:Button label="New" click="newSchoolYear()"/>
+    </mx:ControlBar> 
+	<mx:HBox width="100%" height="100%">
+		<mx:DataGrid id="yearsGrid" dataProvider="{yearSvc.xml.row}" width="50%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn dataField="school_year" headerText="Year"/> 
+				<mx:DataGridColumn dataField="label" headerText="Label"/> 
+				<mx:DataGridColumn dataField="start_date" headerText="Starts"/> 
+				<mx:DataGridColumn dataField="end_date" headerText="Ends"/> 
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:Form width="50%" height="100%" enabled="{yearsGrid.selectedItem}">
+			<mx:FormItem label="Year">
+				<mx:TextInput id="schoolYearText" text="{yearsGrid.selectedItem.school_year}"/>
+			</mx:FormItem>
+			<mx:FormItem label="Label">
+				<mx:TextInput id="labelText" text="{yearsGrid.selectedItem.label}"/>
+			</mx:FormItem>
+			<mx:FormItem label="Starts">
+				<mx:DateField id="startDate" text="{yearsGrid.selectedItem.start_date}" editable="true"/>
+			</mx:FormItem>
+			<mx:FormItem label="Ends">
+				<mx:DateField  id="endDate" text="{yearsGrid.selectedItem.end_date}" editable="true"/>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:HBox>
+  </mx:VBox>
+</mx:Canvas>

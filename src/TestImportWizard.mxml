@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:services="services.*" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import events.FlexXMLEvent;
+			
+			import flash.net.FileReference;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.states.State;
+			
+			import tests.MeasureSelect; 
+			
+			private var file:FileReference = new FileReference(); 
+			private var fileName:String;
+			private var selectedFile:Boolean = false; 
+			[Bindable]private var modified:Boolean = false; 
+			public function uploadTestFile():void { 
+				uploadSvc.send({method:"uploadTestFile", 
+					file_name: fileGrid.selectedItem.@name,
+					date_taken: defaultDateTakenInput.text, 
+					mode: importMode.selectedValue, 
+					test_code: defaultTestCodeSelect.selectedValue,
+					bldg_code: defaultBuildingSelect.selectedValue,
+					grade_level: defaultGradeSelect.selectedValue}); 
+			}
+			
+			public function uploadFile():void { 
+				var dispatcher:IEventDispatcher = IEventDispatcher(file); 
+				file.addEventListener(Event.SELECT,onSelect); 
+				file.addEventListener(Event.COMPLETE,onUploadComplete); 
+				//uploadFile.addEventListener(ProgressEvent.PROGRESS,uploadProgress); 
+				file.browse(); 				
+			}
+			
+			/** 
+			 * Handles the file selection from fileReference object
+			 */ 
+			private function onSelect(event:Event):void {
+				fileName = file.name;
+				var request:URLRequest; 
+				request = new URLRequest(fileSvc.url); 
+				request.method = URLRequestMethod.POST; 
+				
+				var sendVars:URLVariables = new URLVariables();
+				sendVars['service'] = "TestImportWizard";
+				sendVars['method'] = "uploadFile"; 
+				request.data = sendVars ; 
+				
+				file.upload(request); 
+			}			
+			
+			/**
+			 * Handler for when the upload is finished
+			 */ 
+			public function onUploadComplete(event:Event):void {
+				var s:String = "";
+				if (s.search("Error")>0) {
+					trace("Error Uploading File " + s);
+					Alert.show(s); 
+				} else {
+					fileSvc.send(); 
+				}
+				
+			}		
+			
+			public function removeFile():void { 
+				if (fileGrid.selectedIndex >= 0) {
+					
+				   var s:String = fileGrid.selectedItem.@name; 
+				   Alert.show("Are you sure you want to permanently delete " + s +"? This cannot be undone", 'Confirm Delete File', Alert.YES + Alert.NO, this, onRemoveConfirm ); 
+				}
+			}
+			
+			public function onRemoveConfirm(event:CloseEvent):void { 
+				if (event.detail == Alert.YES) { 
+					fileSvc.send({method: "removeFile",
+						file_name: fileGrid.selectedItem.@name})
+				}
+			}
+			
+			public function refresh(force:Boolean = true):void { 
+				if (force || testSvc.xml==null) testSvc.send(); 
+			}
+			
+			public function saveTranslations():void { 
+				modified = false; 
+				testSvc.send({method:"saveTranslations", xml:testSvc.xml.toXMLString()}); 
+			}
+			
+			public function translateScores():void { 
+				testSvc.send({method:"translateScores"}); 
+			}
+			
+			public function importScores():void { 
+				testSvc.send({method:"importScores"}); 
+			}
+			
+			public function onUplaodReturn():void {
+				this.currentState="translate"; 
+			}
+			
+			
+			public function selectMeasure():void { 
+				if (testGrid.selectedItem && testGrid.selectedItem.test_id) { 
+					MeasureSelect.selectMeasure(testPanel,
+						testGrid.selectedItem.test_id,
+						"Select Measure code for " + testGrid.selectedItem.measure_code+" "+testGrid.selectedItem['description'], 
+						onMeasureSelect); 
+				}
+			}
+			
+			public function onMeasureSelect(event:FlexXMLEvent):void { 
+				if (testGrid.selectedItem) {
+					var m:XML = XML(testGrid.selectedItem); 
+					var code:String = event.xml.code; 
+					trace(code); 
+					m['matched_code'] = code; 
+					modified = testSvc.checkModified()
+				}
+			}
+			
+			public function gotoTest():void { 
+				if (testGrid.selectedItem['test_id']) { 
+					app.popUp("TestDefinition?test_id=" + testGrid.selectedItem['test_id']); 
+				}
+			}
+			
+			public function onImportLoadReturn():void { 
+				this.currentState = 'translate'; 
+				refresh(); 
+			}
+	
+			
+			public function selFileState(value:String):void {
+				if (selectedFile) { 
+					this.currentState = value; 
+				}
+				else { 
+				   this.currentState = 'importFile'; 
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:RadioButtonGroup id="importMode" />
+	</fx:Declarations>
+	<s:states>
+		<s:State name="importFile"/>
+		<s:State name="selectMode"/>
+		<s:State name="setDefaults"/>
+		<s:State name="translate"/>
+		<s:State name="check"/>
+	</s:states>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		@namespace services "services.*";
+		s|RadioButton {
+			font-weight:bold; 
+		}
+	</fx:Style>
+	<services:DataService id="testSvc" defaultService="TestImportWizard" defaultMethod="tests" showProgress="true"  preload="false"/>
+	<services:DataService id="uploadSvc" defaultService="TestImportWizard" defaultMethod="uploadTestFile" showProgress="true" dataServiceReturn="onImportLoadReturn()"/>
+	<services:DataService id="testListSvc" defaultService="TestImportWizard" defaultMethod="listTests" /> 
+	<services:DataService id="fileSvc" defaultService="TestImportWizard" defaultMethod="listFiles"
+						  showProgress="true" preload="true"/> 
+	<services:DataService id="statusSvc" defaultService="TestImportWizard" defaultMethod="fileStats" preload="true"/> 
+	<services:FlexApp id="app"/> 
+	<s:Panel includeIn="importFile" width="100%" height="100%" title="Select File to Import">
+		<s:controlBarContent>
+			<s:Button label="Use last imported" click="selectedFile=false; this.currentState='translate'; refresh(false)"/>
+			<s:Button label="Import Selected" enabled="{fileGrid.selectedIndex >= 0}" click="selectedFile=true; this.currentState='selectMode'"/>
+			<s:Button label="Delete file" enabled="{fileGrid.selectedIndex >= 0}" click="removeFile()"/>
+			<s:Button label="Add new file" click="uploadFile()" enabled="{statusSvc.xml != null}"/> 
+		</s:controlBarContent>
+		<mx:AdvancedDataGrid id="fileGrid" height="100%" width="100%" dataProvider="{fileSvc.xml.file}">
+			<mx:columns>
+				<mx:AdvancedDataGridColumn headerText="Name" dataField="@name"/> 
+			</mx:columns>
+		</mx:AdvancedDataGrid>
+	</s:Panel>
+	<s:Panel includeIn="selectMode" width="100%" height="100%">
+	  <s:controlBarContent>
+		  <s:Button label="Prev" click="this.currentState='importFile'"/>
+		  <s:Button label="Next" click="this.currentState='setDefaults'"/>
+	  </s:controlBarContent>
+	  <s:Form width="100%" height="100%">
+		  <s:FormItem label="Select Input mode" width="100%">
+			  <s:VGroup width="100%">
+				  <s:RadioButton width="100%" label="Spreadsheet" value="spreadsheet" group="{importMode}" selected="true"/> 
+				  <s:Label width="100%" lineBreak="toFit">
+					  <s:text>Use when you are importing a .csv file where column headers match the measure codes defined in the test defintion screen. You can specify which test you are importing in the defaults screen or in the test_code field in file.</s:text>
+				  </s:Label>
+				  <s:RadioButton label="Washington State Testing" value="state_testing" group="{importMode}" />
+				  <s:Label width="100%" lineBreak="toFit" >
+					  <s:text>Use when you are importing .csv files that have been downloaded from the the Washington State testing database. Only scores headings ending in percent or score will be imported.  The test_code is detertmined by the columns such as mathTestType which indicate which state test was administered.  Remember to specify the date taken as this data is not in the import. </s:text>
+				  </s:Label>
+				  <s:RadioButton label="Standard Import" value="standard" group="{importMode}"/> 
+				  <s:Label width="100%" lineBreak="toFit">
+					  <s:text>Use when you importing a .csv file that containts one score per line in the .csv file.  The test_code column indicates which test is being imported while the measure_code column indicates which measure is being imported. </s:text>
+				  </s:Label>
+			  </s:VGroup>
+		  </s:FormItem>
+	  </s:Form>
+	</s:Panel>
+	<s:Panel id="testDefaults" includeIn="setDefaults" title="Test Upload Defaults" width="100%" height="100%">
+		<s:controlBarContent>
+			<s:Button label="Prev: Select File" click=" this.currentState='selectMode'"/>
+			<s:Button label="Next: Import Using Defaults" click="uploadTestFile()"/> 
+		</s:controlBarContent>
+		<services:DataService id="bldgSvc" defaultService="Lookup" defaultMethod="buildings" preload="true"/> 
+		<services:DataService id="testCodeSvc" defaultService="Lookup" defaultMethod="tests" preload="true"/>  
+		<services:DataService id="gradeSvc" defaultService="Lookup" defaultMethod="gradeLevels" preload="true"/> 
+		<s:Form width="100%">
+			<s:Label lineBreak="toFit">
+				<s:text>Specify default minimum required values for the following.  Note that these values may be overriden by fields labeled with the column values (indicated in parethises). </s:text>
+			</s:Label>
+			<s:FormItem label="Default Date Taken (date_taken):">
+				<s:helpContent>
+					<s:Label>
+						<s:text>Specify the date taken for the import</s:text>
+					</s:Label>
+				</s:helpContent>
+				<mx:DateField id="defaultDateTakenInput" editable="true" /> 
+			</s:FormItem>
+			<s:FormItem label="Default Test(test_code):" width="100%">
+				<components:BindingDropDown id="defaultTestCodeSelect" XML="{testCodeSvc.xml.row}"
+											dataField="code" labelField="name" width="60%"/>
+				<s:helpContent>
+					<s:Label>
+						<s:text>Select the default test from a valid defined tests.  </s:text>
+					</s:Label>
+				</s:helpContent>
+			</s:FormItem>
+			<s:FormItem label="Default Building(bldg_code)" width="100%">
+				<components:BindingDropDown id="defaultBuildingSelect" XML="{bldgSvc.xml.row}"
+											dataField="code" labelField="name" width="60%"/> 
+			</s:FormItem>
+			<s:FormItem label="Default Grade(grade_level)" width="100%">
+				<components:BindingDropDown id="defaultGradeSelect" XML="{gradeSvc.xml.row}"
+											dataField="grade_level" labelField="abbrev" width="60%"/> 
+			</s:FormItem>
+			
+		</s:Form>
+	</s:Panel>	
+	<s:Panel id="testPanel" width="100%" height="100%" includeIn="translate">
+		<s:layout>
+			<s:VerticalLayout/> 
+		</s:layout>
+		<s:controlBarContent>
+			<s:Button label="Back" click="selFileState('setDefaults')"/> 
+			<s:Button label="Refresh" click="refresh()"/> 
+			<s:Button label="Save Translations" click="saveTranslations()" enabled="{modified}"/> 
+			<s:Button label="Edit Test Definition" click="gotoTest()" enabled="{testGrid.selectedIndex>=0}"/>
+			<s:Button label="Next" click="this.currentState='check'; checkSvc.send()"/> 
+		</s:controlBarContent>
+		<s:DataGrid id="testGrid" width="100%" height="100%" doubleClick="selectMeasure()" doubleClickEnabled="true"  >
+			<s:dataProvider>
+				<s:XMLListCollection source="{testSvc.xml.row}"/> 
+			</s:dataProvider>
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn headerText="Test" dataField="test_code" width="90"/> 
+					<s:GridColumn headerText="Measure" dataField="measure_code"/>
+					<s:GridColumn headerText="Matches" dataField="matched_code"/> 
+					<s:GridColumn headerText="Desc" dataField="description"/> 
+					<s:GridColumn headerText="Schedule" dataField="label" width="90"/> 
+					<s:GridColumn headerText="Max Date" dataField="max_date" width="90"/> 
+					<s:GridColumn headerText="Min Date" dataField="min_date" width="90"/> 
+					<s:GridColumn headerText="Scores" dataField="scores" width="60"/>
+					<s:GridColumn headerText="Min" dataField="min_score" width="60"/>
+					<s:GridColumn headerText="Max" dataField="max_score" width="60"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:Panel>
+    <s:Panel includeIn="check" title="Verfiy Import" height="100%" width="100%">
+		<s:layout>
+			<s:VerticalLayout/> 
+		</s:layout>
+		<s:controlBarContent>
+			<s:Button label="Prev" click="this.currentState='translate'"/> 
+			<s:Button label="Import Test Scores" click="importScores()" enabled="{checkSvc.xml.row.total_complete!='0'}"/> 
+		</s:controlBarContent>
+		<services:DataService id="checkSvc" defaultService="TestImportWizard" defaultMethod="verifyImport" showProgress="true" progressMessage="Validating"/> 
+		<s:Form>
+			<s:FormItem label="Students">
+				<s:Label text="{checkSvc.xml.row.matched_students} of {checkSvc.xml.row.total_students}"/> 
+				<s:helpContent>
+					<s:Label text="0 of 0 indicates that the sis_id column for the import is missing."/> 
+				</s:helpContent>
+			</s:FormItem>
+			<s:FormItem label="Buildings">
+				<s:Label text="{checkSvc.xml.row.matched_buildings} of {checkSvc.xml.row.total_buildings}"/> 
+				<s:helpContent>
+					<s:Label text="0 of 0 indicates that either bldg_code or bldg_school_code column is missing. Fix by specifying default and reuploading file.  " />
+				</s:helpContent>
+			</s:FormItem>
+			<s:FormItem label="Tests">
+				<s:Label text="{checkSvc.xml.row.matched_tests} of {checkSvc.xml.row.total_tests}"/> 
+				<s:helpContent>
+					<s:Label lineBreak="toFit" text="0 of 0 indicates that the test_code column is missing from the file.  Fix by specifying a default or adding the column to the file." />
+				</s:helpContent>
+			</s:FormItem>
+			<s:FormItem label="Measures">
+				<s:Label text="{checkSvc.xml.row.matched_measures} of {checkSvc.xml.row.total_measures}"/> 
+				<s:helpContent>
+					<s:Label lineBreak="toFit" text="0 of 0 indicates that no scores were found in the import.  If there are columns that aren't scores it's ok to see this be less than the total (e.g. 4 of 8)"/> 
+				</s:helpContent>
+			</s:FormItem>
+			<s:FormItem label="Dates matching test schedules">
+				<s:Label text="{checkSvc.xml.row.matched_dates} of {checkSvc.xml.row.total_dates}"/>
+				<s:helpContent>
+					<s:Label lineBreak="toFit" text="0 of 0 indicates date_taken is missing from the imort file.  Fix by specifying a default or adding the column to the import file." /> 
+				</s:helpContent>
+			</s:FormItem>
+			<s:FormItem label="Grade Level">
+				<s:Label text="{checkSvc.xml.row.matched_grades} of {checkSvc.xml.row.total_grades}"/> 
+				<s:helpContent>
+					<s:Label text="0 of 0 indicates that grade level is missing from the import file.  Fix by specifying a default or adding the column to the import file. Note that kindergardten should be indicated as 0."/>
+				</s:helpContent>
+			</s:FormItem>
+		</s:Form>
+		<s:Label text="If the import tests button is disabled then one of the above required fields is missing or unmatched. "/> 
+	</s:Panel>
+
+</s:Application>

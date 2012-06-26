@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"  width="100%" height="100%" 
+		   xmlns:services="services.*" xmlns:components="components.*" >
+  <fx:Script>
+  	<![CDATA[
+  	  import events.FlexXMLEvent;
+  	  
+  	  [Bindable] private var districtId:String; 
+  	  [Bindable] private var curBuilding:XML; 
+  	  
+  	  /** 
+  	  * Default values for a new building
+  	  */ 
+  	  private var defaultBuilding:XML = new XML(
+  	    <row>
+  	      <bldg_id/>
+  	      <name>School</name>
+  	      <code/>
+		  <abbrev/>
+  	      <sis_code/>
+ 	      <min_grade/>
+  	      <max_grade/>
+		  <address/>
+  	      <city/>
+  	      <state/>
+  	      <zip/>
+  	      <phone/>
+  	      <fax/>
+  	    </row>
+  	    ); 
+  	  private function onDistrictLoad(event:FlexXMLEvent):void {
+  	  	if (event.xml) {
+  	  		districtId = event.xml.row.district_id[0];
+  	  		bldgSvc.send({district_id:districtId}); 
+  	  	}
+  	  }	
+  	  
+  	    private function onSelectBuilding():void { 
+  	if (buildingGrid.selectedItem) {
+  		curBuilding = XML(buildingGrid.selectedItem); 
+  	} else {
+  		curBuilding = null; 
+  	}
+  }
+  
+  private function addBuilding():void {
+  	var newBuilding:XML = defaultBuilding.copy(); 
+  	newBuilding.district_id = districtId; 
+  	bldgSvc.xml.appendChild(newBuilding); 
+  }
+  
+  private function saveBuildings():void {
+  	bldgSvc.send({method:"saveBuildings",district_id:districtId,xml:bldgSvc.xml.toXMLString()}); 
+  }
+  	]]>
+  </fx:Script>	
+  <services:RestXMLService id="bldgSvc" defaultService="SystemSettings" defaultMethod="buildingInfo" debug="true" preload="true"/>
+
+    <mx:VBox width="100%" height="100%">
+   	
+   <mx:ControlBar x="0" y="0" width="100%">
+   	<mx:Button label="Save" click="saveBuildings()"/>
+   	<mx:Button label="New"  click="addBuilding()"/>
+   </mx:ControlBar>
+   <mx:HBox width="100%" height="100%">
+	   <mx:DataGrid  id="buildingGrid" dataProvider="{bldgSvc.xml.row}" click="onSelectBuilding()" width="30%" height="100%">
+	   	  <mx:columns>
+	   	  	<mx:DataGridColumn headerText="Name" dataField="name" />
+	   	  	<mx:DataGridColumn headerText="Code" dataField="alpha_code"/>
+	   	  </mx:columns>
+	   </mx:DataGrid>
+       <mx:Form width="100%" enabled="{buildingGrid.selectedIndex>=0}">
+           <mx:FormItem label="Name">
+               <mx:TextInput id="nameInput" text="@{curBuilding.name}"/>
+           </mx:FormItem>
+		   <mx:FormItem label="Abbreviation">
+			   <mx:TextInput  id="shortNameInput" text="@{curBuilding.abbrev}"/>
+		   </mx:FormItem>
+		   <mx:FormItem label="Code">
+               <mx:TextInput id="alphaCodeInput" text="@{curBuilding.code}"/>
+           </mx:FormItem>
+		   <mx:FormItem label="SIS Code">
+			   <mx:TextInput id="schoolCodeInput" text="@{curBuilding.sis_code}" />
+		   </mx:FormItem>
+		   <mx:FormItem label="Min Grade">
+			   <mx:TextInput  id="minGradeLevelInput" text="@{curBuilding.min_grade}"/>
+		   </mx:FormItem>
+		   <mx:FormItem label="Max Grade">
+			   <mx:TextInput  id="maxGradeLevelInput" text="@{curBuilding.max_grade}"/>
+		   </mx:FormItem>
+           <mx:FormItem label="Address">
+               <mx:TextInput id="addressInput" text="@{curBuilding.address}"/>
+           </mx:FormItem>
+           <mx:FormItem label="City">
+               <mx:TextInput  id="cityInput" text="@{curBuilding.city}"/>
+           </mx:FormItem>
+           <mx:FormItem label="State">
+               <mx:TextInput  id="stateInput" text="@{curBuilding.state}"/>
+           </mx:FormItem>           <mx:FormItem label="Zip">
+               <mx:TextInput id="zipInput" text="@{curBuilding.zip}"/>
+           </mx:FormItem>
+           <mx:FormItem label="Phone">
+               <mx:TextInput id="phoneInput" text="@{curBuilding.phone}"/>
+           </mx:FormItem>
+           <mx:FormItem label="Fax">
+               <mx:TextInput id="faxInput" text="@{curBuilding.fax}"/>
+           </mx:FormItem>
+ 
+
+      </mx:Form>   	
+   </mx:HBox>
+   </mx:VBox>
+
+</mx:Canvas>

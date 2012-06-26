@@ -204,8 +204,9 @@ function forena_schools_flex($application, $popup=false) {
 
 function theme_forena_schools_flex_popup($variables) {
 	$js = '';
+	$suf = variable_get('css_js_query_string', '0');
 	if (isset($variables['js'])) foreach($variables['js'] as $j) {
-		$js .= "\n".'  <script src="' . base_path() . $j . '" language="javascript" type="text/javascript"></script>';
+		$js .= "\n".'  <script src="' . base_path() . $j . '?' . $suf . '" language="javascript" type="text/javascript"></script>';
 	}
 	$variables['scripts'] = $js;
 	print forena_schools_render_partial('popup', $variables);

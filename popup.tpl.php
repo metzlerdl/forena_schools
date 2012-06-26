@@ -5,7 +5,7 @@
   <title><?php print $title;  ?></title>
   <?php print $scripts;  ?>
   <style type="text/css" media="screen">
-		html body {
+		html, body {
 			margin: 0;
 			padding: 0;
 			height: 100%;
