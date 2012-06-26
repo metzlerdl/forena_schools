@@ -55,6 +55,39 @@
 				}
 			}
 			
+			public function closeRedirect(url:String, parameters: Object):void { 
+				// Default in the base path.  
+				if (_isPopUp) { 
+					if (!_baseURL && FlexGlobals.topLevelApplication.parameters.basePath) {
+						baseURL = FlexGlobals.topLevelApplication.parameters.basePath; 
+					}
+					
+					if (url.search(":") == -1) {
+						url = _baseURL + '/' + url; 
+					}
+	                var qStr:String = ''; 
+					var i:int = 0;
+					if (parameters) {
+						for (var p:String in parameters) { 
+							i++; 
+							if (i>1) {
+								qStr = qStr + '&'; 
+							}
+							else {
+								qStr = '?'; 
+							}
+							qStr +=  p + "=" + encodeURIComponent(parameters[p]); 
+						}
+					
+					}
+					ExternalInterface.call('flexCloseRedirect', url + qStr); 
+				}
+				else { 
+					this.goto(url, parameters); 
+				}
+
+			}
+			
 			private function trimSlashes(url:String):String {
 				var char:String = '/';
 				if (url.charAt(url.length - 1) == char) {

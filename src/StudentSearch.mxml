@@ -26,7 +26,7 @@
 				<s:click>
 					<![CDATA[
 					    var s:String = searchCtl.selectedItem.@person_id; 
-						app.goto('Student',{person_id:s}); 
+						app.closeRedirect('reports/Student',{person_id:s}); 
 					]]>
 				</s:click>
 			</s:Button> 
