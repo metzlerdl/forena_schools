@@ -42,7 +42,7 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		
 	</fx:Declarations>
-	<services:DataService id="searchSvc" defaultService="Search" defaultMethod="search" /> 
+	<services:DataService id="searchSvc" defaultService="StudentSearch" defaultMethod="execSearch" /> 
 	<mx:FormItem label="Search" >
 		<s:TextInput id="searchStr" width="296" change="onChange()"/> 
 	</mx:FormItem>
