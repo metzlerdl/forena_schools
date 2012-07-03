@@ -5,13 +5,12 @@
 <frx:category>District</frx:category>
 <frx:options hidden="0" form="" />
 <frx:parameters>
-	<frx:parm id="expired" default="Y" />
 </frx:parameters>
 <frx:fields>
   <frx:field id="year_label" 
     link="reports/TeacherDashboard?school_year={school_year}&amp;staff_id={parm.staff_id}&amp;"
   /> 
-	<frx:field id="@title" link="index.php?q={@path}&amp;bldg_id={parm.bldg_id}" />
+	<frx:field id="@title" link="{@path}?bldg_id={parm.bldg_id}" />
 	<frx:field id="@grade_name"
 		link="reports/GradeView?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="@name"
