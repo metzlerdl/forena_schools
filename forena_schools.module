@@ -50,15 +50,11 @@ function forena_schools_access($security) {
  * Enter description here ...
  * @param unknown_type $app
  */
-function forena_schools_assessments($app='') {
-	$args = func_get_args();
-	$app = implode('/', $args);
+function forena_schools_assessments() {
   $m_path = drupal_get_path('module', 'forena_schools');
-	$flexfile = $m_path . '/flex/'.$app . '.swf';
-
 	drupal_add_js($m_path . '/flex/swfobject.js');
   $fs = ForenaSchools::instance();
-	if (!$app)  {
+
 		if ($fs->access('dist_admin')) {
 			$app = 'DistrictDashboard';
 		}
@@ -71,13 +67,8 @@ function forena_schools_assessments($app='') {
 		else {
 			drupal_access_denied();
 		}
-	}
-  if (file_exists($flexfile)) {
-  	$output = forena_schools_flex($app);
-  }
-  else {
-		$output = forena_report($app);
-  }
+
+	$output = forena_report($app);
   return $output;
 }
 
@@ -103,7 +94,7 @@ function forena_schools_forena_repos_alter(&$repos) {
 	  'data provider' => 'FrxPostgres',
 	  'debug' => @$_GET['debug']|| @$_GET['appdebug'],
 	  'postgres_xml' => TRUE,
-	  'access callback' => 'user_access',
+	  'access callback' => 'forena_schools_access',
 	  'user callback' => 'forena_schools_current_login',
 	  'search path' => 'public,import',
   );

@@ -28,6 +28,7 @@ class ForenaSchools {
 			$rs = $this->db->exec_query($sql, array('login' => $login, 'email' => $email));
 			if ($rs) {
 				$this->user = $this->db->first_row($rs);
+
 			}
 			else {
 				$this->user = array();
@@ -63,15 +64,23 @@ class ForenaSchools {
 	 */
 	public function access($role) {
 		static $roles = '';
+		if ($role=='PUBLIC') return TRUE;
 		if (user_access('administer forena schools')) return TRUE;
 		if (!$roles) {
 		  $roles = array();
 			$login = $this->current_login();
 		  $parms = array('login' => $login);
-			$rows = $this->db->query('SELECT s.role FROM p_people p JOIN p_staff s
-			  ON p.person_id = s.person_id
+
+			$rows = $this->db->query("
+			select v.code AS role FROM p_staff s JOIN p_people p
+        ON p.person_id=s.person_id
+      JOIN i_validations v ON v.var='role'
+        AND (s.role = 'sys_admin'
+          OR s.role='dist_admin' AND v.code IN ('dist_admin','bldg_admin','teacher')
+          OR s.role='bldg_admin' AND v.code IN ('bldg_admin', 'teacher')
+          OR s.role=v.code)
 			  WHERE login=:login
-			  ORDER BY bldg_id ASC', $parms);
+			  ORDER BY bldg_id ASC", $parms);
 			if ($rows) foreach ($rows as $row) {
 				if ($row['role']) $roles[] = $row['role'];
 			}
@@ -88,7 +97,6 @@ class ForenaSchools {
 			case 'sys_admin':
 				if (array_search('sys_admin', $roles) !== FALSE) return TRUE;
 		}
-
 		return FALSE;
 	}
 
