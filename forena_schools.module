@@ -89,7 +89,7 @@ function forena_schools_connection_string() {
 	$password = $db['password'];
 	$host = $db['host'];
 	$port = $db['port'];
-	$uri = "dbname=$db_name user=$user_name password=$password";
+	$uri = "host =$host dbname=$db_name user=$user_name password=$password";
 	if ($port) $uri .= " port=$port";
 	return $uri;
 }
