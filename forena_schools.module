@@ -104,7 +104,7 @@ function forena_schools_forena_repos_alter(&$repos) {
     'title' => 'Forena Schools Menus',
     'uri' => "file://$m_path/menus",
     'data provider' => 'FrxFiles',
-    'access callback' => 'user_access',
+    'access callback' => 'forena_schools_access',
   );
 
 }
