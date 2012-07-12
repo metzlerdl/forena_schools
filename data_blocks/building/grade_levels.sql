@@ -1,5 +1,5 @@
 --ACCESS=teacher
-SELECT g.bldg_id, b.name AS bldg_name, grades FROM 
+SELECT g.bldg_id, b.name AS bldg_name, b.building_dashboard, b.teacher_dashboard, grades FROM 
 i_buildings b JOIN 
 (SELECT gi.bldg_id, 
   XMLAGG(XMLELEMENT(name grade, 

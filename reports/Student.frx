@@ -6,7 +6,7 @@
 <head>
 <title>Student Assessment Profile</title>
 <frx:category>Student</frx:category>
-<frx:options />
+<frx:options hidden="1" />
 <frx:fields>
   <frx:field id="@date_taken" format="iso_date" format-string="F d, Y"/> 
   <frx:field id="all_grades" link="reports/Student?person_id={parm.person_id}&amp;subject={parm.subject}">All</frx:field>

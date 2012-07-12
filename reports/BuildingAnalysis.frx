@@ -3,7 +3,7 @@
 <head>
 <title>Building Statistics</title>
 <frx:category>District</frx:category>
-<frx:options hidden="0" form="" />
+<frx:options hidden="1" form="" />
 <frx:parameters>
 	<frx:parm id="expired" default="Y" />
 </frx:parameters>

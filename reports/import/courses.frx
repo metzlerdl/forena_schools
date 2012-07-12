@@ -6,7 +6,7 @@
 <head>
 <title>Courses In Import</title>
 <frx:category>IMS</frx:category>
-<frx:options />
+<frx:options hidden="1" />
 <frx:fields>
 	<frx:field id="bldg_code" link="reports/import.courses?bldg_code={bldg_code}"
 		format="" format-string="" target="" />

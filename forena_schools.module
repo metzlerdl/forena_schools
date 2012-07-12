@@ -30,6 +30,17 @@ function forena_schools_menu() {
 	  'file' => 'inc/common.inc',
 	);
 
+	// Admin Menus
+	$items['forenaschools/building/edit'] = array(
+	  'type' => MENU_CALLBACK,
+	  'title' => 'Edit Building',
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_building_form', 3),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
 	return $items;
 }
 

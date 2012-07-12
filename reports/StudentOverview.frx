@@ -6,7 +6,7 @@
 <head>
 <title>Student Overview</title>
 <frx:category>Student</frx:category>
-<frx:options />
+<frx:options hidden="1"/>
 <frx:fields>
   <frx:field id="@date_taken" format="iso_date" format-string="F d, Y"/> 
   <frx:field id="name" link="reports/StudentView?profile_id={profile_id}&amp;student_id={parm.student_id}"/> 

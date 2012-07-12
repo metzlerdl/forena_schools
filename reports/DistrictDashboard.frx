@@ -3,7 +3,7 @@
 <head>
 <title>District View</title>
 <frx:category>District</frx:category>
-<frx:options hidden="0" form="" />
+<frx:options hidden="1"/>
 <frx:fields>
 	<frx:field id="@title" link="{@path}" target="{@target}" />
 	<frx:field id="name" link="reports/BuildingDashboard?bldg_id={bldg_id}" />

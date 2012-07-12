@@ -3,7 +3,7 @@
 <head>
 <title>Teacher Dashboard</title>
 <frx:category>District</frx:category>
-<frx:options hidden="0" form="" />
+<frx:options hidden="1" form="" />
 <frx:parameters>
 </frx:parameters>
 <frx:fields>

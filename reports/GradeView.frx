@@ -4,7 +4,10 @@
 ]>
 <html xmlns:frx="urn:FrxReports">
 <head>
+<frx:options hidden="1"/>
 <frx:fields>
+  <frx:field id="bldg.name" link="reports/BuildingDashboard?bldg_id={bldg_id}"/>
+  <frx:field id="grade_name" link="{bldg.building_dashboard}?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}"/>
   <frx:field id="name" link="reports/GradeView.web?profile_id={profile_id}&amp;bldg_id={bldg_id}&amp;grade_level={grade_level}"/> 
   <frx:field id="last_name" link="reports/Student?person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
   <frx:field id="export" link="reports/GradeView.csv?profile_id={parm.profile_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}">Export to .csv</frx:field> 
@@ -12,10 +15,8 @@
 <title>Grade View</title>
 </head>
 <body>
-  <div id="profile-list-block" frx:block="ims/building/grade_profiles">
-    <ul class="nav hnav">
-     <li frx:foreach="*">{name}</li>
-    </ul>
+  <div id="bldg" frx:block="ims/building/building_grade" frx:foreach="*" >
+    <h2>{bldg.name} - {grade_name}</h2>
   </div>
   <div id="profile-block" frx:block="ims/building/grade_profile">
     <div frx:foreach="*" id="profile">

@@ -29,6 +29,7 @@ FROM
     AND c.bldg_id=s.bldg_id
   JOIN p_people f ON s.person_id=f.person_id
   WHERE c.bldg_id=COALESCE(:bldg_id, c.bldg_id)
+      AND (:grade_level IS NULL OR :grade_level BETWEEN c.min_grade_level and c.max_grade_level)
       AND c.bldg_id IN (select bldg_id FROM p_building_roles_v WHERE login=:current_user)
     AND c.school_year=COALESCE(:school_year,i_school_year())
   ORDER BY last_name, first_name

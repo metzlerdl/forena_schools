@@ -3,3 +3,8 @@ require_once('inc/ForenaSchoolsScript.inc');
 function forena_schools_install(&$sanbox) {
 	ForenaSchoolsScript::instance()->dbScript('upgrade_7.sql');
 }
+
+function forena_schools_update_7001() {
+	db_query("UPDATE {i_buildings} SET building_dashboard='reports/PrimaryDashboard',
+	  teacher_dashboard='reports/PrimaryTeacherDashboard'");
+}

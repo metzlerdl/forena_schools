@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Building Dashboard</title>
+<frx:category>District</frx:category>
+<frx:options hidden="1" form="" />
+<frx:parameters>
+</frx:parameters>
+<frx:fields>
+  <frx:field id="profile_name" link="reports/GradeView?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}&amp;school_year={parm.school_year}"/> 
+  <frx:field id="test_entry" link="flexpopup/TestEntry?group_id={@group_id}" target="popupTestEntry{@group_id}">Test Entry</frx:field> 
+  <frx:field id="@teacher_name" link="{bldg.teacher_dashboard}?staff_id={@staff_id}"/>
+  <frx:field id="@course_name" link="reports/GroupView?group_id={@group_id}"/> 
+  <frx:field id="manage" link="flexpopup/GroupEditor?group_id={@group_id}" target="popupGroupEditor{@group_id}">manage</frx:field>
+  <frx:field id="year_label" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={school_year}"/>
+  <frx:field id="@grade_name" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}"/>
+    <frx:field id="test_name"
+    link="reports/building.TestStatistics?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
+  </frx:field>
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+	<div class="grid_12" id="bldg" frx:block="ims/building/building_grade" frx:foreach="*" >
+	  <h2>{bldg.name} - {grade_name}</h2>
+	</div>
+	<div class="grid_8" frx:block="ims/building/courses_by_grade" id="courses">
+		<h3>Classes</h3>
+		<p>{add_course}</p>
+		<table >
+			<tbody frx:foreach="*" id="course">
+				<tr>
+					<th colspan="4"><h4>{grade_heading}</h4>
+					</th>
+				</tr>
+				<tr frx:foreach="courses/course" id="forena-8">
+					<td>{@teacher_name}</td>
+					<td>{@course_name}</td>
+					<td>{test_entry}</td>
+					<td>{manage}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div frx:block="ims/collections" id="collections">
+		
+		<h3>Collections</h3>
+		<table >
+			<tbody>
+				<tr frx:foreach="*" id="coll">
+					<td>{collection_name}</td>
+					<td>{editable}</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}">
+      <h3>Test Statistics</h3>
+      <p>The following table shows the most recent calculated statistics for all tests available for your school.  Select a test to view statistics available 
+        for that test. </p>
+      <table >
+        <thead>
+          <tr><th>Test</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr frx:foreach="*">
+            <td>{test_name}</td><td>{sched_label} {year_label}</td>
+          </tr>
+        </tbody>
+      </table>	
+		</div>
+	</div>
+	<div id="menu-1" class="nav grid_4">
+		<h2>Menu</h2>
+		<ul frx:block="menus/building" id="menu">
+			<li frx:foreach="*" id="link"><span>{link.@title}</span>
+			</li>
+		</ul>
+		<div frx:block="ims/profiles/by_grade" id="profiles" class="nav">
+		   <h2>Profiles</h2>
+		   <ul>
+		     <li frx:foreach="*">{profile_name}</li>
+		   </ul>
+		</div>
+		<div frx:block="ims/building/grade_levels" id="buildings" frx:parameters="bldg_id={parm.bldg_id}">
+			<div id="bldg" frx:foreach="*">
+				<h2>Grade Levels</h2>
+				<ul>
+					<li frx:foreach="grades/*" id="forena-5"><span
+						class="{@selected}">{@grade_name}</span>
+					</li>
+				</ul>
+				<p />
+			</div>
+		</div>
+	</div>
+	<div id="school_years" class="grid_12" frx:block="ims/school_years">
+		<h3>Select Year</h3>
+		<ul class="nav hnav">
+			<li frx:foreach="*" class="{year_selected}" id="forena-12">{year_label}</li>
+		</ul>
+	</div>
+</body>
+</html>

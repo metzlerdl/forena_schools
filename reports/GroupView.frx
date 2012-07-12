@@ -4,6 +4,7 @@
 ]>
 <html xmlns:frx="urn:FrxReports">
 <head>
+<frx:options hidden="1"/> 
 <frx:fields>
   <frx:field id="name" link="reports/GroupView.web?profile_id={profile_id}&amp;group_id={group_id}"/> 
    <frx:field id="last_name" link="reports/Student?person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
