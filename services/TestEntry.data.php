@@ -37,7 +37,7 @@ class TestEntry extends ForenaSchools {
 
 		    WHERE group_id= :group_id
 		    ) S
-		    ORDER BY first_name, last_name
+		    ORDER BY  last_name, first_name
 		  ', $_POST);
 		}
 		else {
