@@ -73,12 +73,8 @@
       </table>	
 		</div>
 	</div>
-	<div id="menu-1" class="nav grid_4">
-		<h2>Menu</h2>
-		<ul frx:block="menus/building" id="menu">
-			<li frx:foreach="*" id="link"><span>{link.@title}</span>
-			</li>
-		</ul>
+	<div class="nav grid_4">
+
 		<div frx:block="ims/profiles/by_grade" id="profiles" class="nav">
 		   <h2>Profiles</h2>
 		   <ul>

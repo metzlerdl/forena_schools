@@ -1,5 +1,6 @@
 --ACCESS=teacher
-SELECT g.bldg_id, b.name AS bldg_name, grades, COALESCE(CAST(:school_year AS integer), i_school_year()) AS school_year FROM 
+SELECT g.bldg_id, b.name AS bldg_name, grades, COALESCE(CAST(:school_year AS integer), i_school_year()) AS school_year,
+  b.building_dashboard FROM 
 i_buildings b JOIN 
 (SELECT gi.bldg_id, 
   XMLAGG(XMLELEMENT(name grade, 
