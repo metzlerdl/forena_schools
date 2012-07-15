@@ -14,7 +14,7 @@ protected $sql_cmd;
 protected $bind_order;
 protected $rs;
 protected $token_exp = '/:([a-z]|[0-9]|{A-Z]|[-_])+/';
-public $debug = TRUE;
+public $debug = 'FALSE';
 
 /**
  * Connect to databse using global connect string
@@ -26,6 +26,7 @@ function __construct() {
     $this->c = pg_connect(forena_schools_connection_string());
     if ($this->c) pg_query($this->c,"SET search_path=public,import");
   }
+  $this->debug = @$_GET['debug']=='true';
 }
 
 /**

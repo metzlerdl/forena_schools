@@ -41,6 +41,41 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools.admin.inc',
 	);
 
+		$items['admin/config/system/forena-schools'] = array(
+	  'type' => MENU_NORMAL_ITEM,
+	  'title' => 'Forena Schools',
+		'description' => 'Run SIS import jobs',
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_import_form'),
+	  'access arguments' => array('administer forena schools'),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['admin/config/system/forena-schools/imports'] = array(
+	  'type' => MENU_DEFAULT_LOCAL_TASK,
+	  'title' => 'Import Jobs',
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_import_form'),
+	  'access arguments' => array('administer forena schools'),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['admin/config/system/forena-schools/import-delete'] = array(
+	  'title' => 'Delete job',
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_import_delete_form'),
+	  'access arguments' => array('administer forena schools'),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['admin/config/system/forena-schools/import'] = array(
+	  'type' => MENU_CALLBACK,
+	  'title' => 'Import SIS Data',
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_import_edit_form'),
+	  'access arguments' => array('administer forena schools'),
+	  'file' => 'forena_schools.admin.inc',
+	);
 	return $items;
 }
 
@@ -290,4 +325,52 @@ function forena_schools_permission() {
   return $perms;
 }
 
+function forena_schools_run_import_batch($title, $script, &$context) {
+  require_once('inc/ForenaSchoolsImport.inc');
+  ForenaSchoolsImport::instance()
+	  ->processImport($script, $context);
+}
+
+function forena_schools_start_import_batch($title, $script, &$context) {
+	$context ['message'] = 'Starting '. check_plain($title);
+	require_once('inc/ForenaSchoolsImport.inc');
+  ForenaSchoolsImport::instance()
+	  ->preProcessImport($script, $context);
+}
+
+function forena_schools_cronapi($op, $job=NULL) {
+
+	$jobs = variable_get('forena_schools_import_jobs', array());
+	$items = array();
+	if ($jobs) foreach ($jobs as $i => $job) {
+		if (@$job['cron_rule']) {
+			$items['forena_schools_import_' . $i] = array(
+			  'description' => $job['title'],
+			  'rule' => $job['cron_rule'],
+			  'callback' => 'forena_schools_import_cron',
+			  'arguments' => array($i),
+			);
+		}
+	}
+	return $items;
+}
+
+
+function forena_schools_import_cron($job_num) {
+	require_once 'inc/ForenaSchoolsImport.inc';
+	$jobs = variable_get('forena_schools_import_jobs', array());
+	$job = $jobs[$job_num];
+  $ops[] = array('forena_schools_run_import_batch', array($job['title'], $job['script']));
+	$batch = array(
+		  'title' => t('Running Forena Schools Import jobs'),
+		  'operations' => $ops,
+		);
+	batch_set($batch);
+	if (is_callable('drush_backend_batch_process')) {
+	 drush_backend_batch_process();
+	}
+	else {
+	  batch_process('node');
+	}
+}
 

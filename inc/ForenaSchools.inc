@@ -171,7 +171,7 @@ class ForenaSchools {
 	 * Return the configured import directory
 	 */
 	public function import_directory() {
-		$dir = variable_get('forena_schools_import_dir', '');
+		$dir = variable_get('file_private_path' , conf_path() . '/files'). '/import';
 	  if (!$dir) {
 	    $dir = variable_get('file_' . file_default_scheme() . '_path' , conf_path() . '/files'). '/import';
 	  }

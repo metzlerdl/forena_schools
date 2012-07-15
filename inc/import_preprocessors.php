@@ -14,7 +14,7 @@ function process_imp_students($stu_row, $tab_columns) {
   // If there are attributes in the array insert them into the table
   $sql = 'INSERT INTO imp_student_attributes(sis_id,attribute) '.
       ' VALUES ( {sis_id},{attribute} )';
-  $values = array('sis_id'=>$sid_id);
+  $values = @array('sis_id'=>$sid_id);
   if (count($attributes) > 0 ) {
   	foreach ($attributes as $attribute) {
       $values['attribute'] = $attribute;
