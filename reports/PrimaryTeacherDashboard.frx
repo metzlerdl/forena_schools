@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Teacher Dashboard</title>
+<frx:category>District</frx:category>
+<frx:options hidden="1" form="" />
+<frx:parameters>
+</frx:parameters>
+<frx:fields>
+  <frx:field id="year_label" 
+    link="reports/TeacherDashboard?school_year={school_year}&amp;staff_id={parm.staff_id}&amp;"
+  /> 
+	<frx:field id="@title" link="{@path}?bldg_id={parm.bldg_id}" />
+	<frx:field id="@grade_name"
+		link="{bldg.building_dashboard}?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
+	<frx:field id="@name"
+		link="reports/GroupView?group_id={@group_id}&amp;name={@name}&amp;school_Year={parm.school_year}" />
+	<frx:field id="@editable"
+		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
+	<frx:field id="test_entry" default="test entry" link="flexpopup/TestEntry?group_id={@group_id}" target="te_{@group_id}">test entry</frx:field>
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+  <div id="teacher_info" frx:block="ims/teacher/info" class="grid_12">
+    <h2>{row/first_name} {row/last_name}</h2>
+  </div>
+	<div id="menu-1" class="nav grid_4">
+		<h3>Teacher Menu</h3>
+		<ul frx:block="menus/teacher">
+			<li frx:foreach="*"><span>{@title}</span></li>
+		</ul>
+		<h3>Performance by Grade</h3>
+		<div frx:block="ims/teacher/grade_levels" id="bldg" frx:foreach="*">
+		  <h4>{bldg_name}</h4>
+		  <ul>
+			<li frx:foreach="grades/*" id="forena-2"><span>{@grade_name}</span></li>
+			</ul>
+		</div>
+	</div>
+	<div class="grid_8">
+		<h3>Classes</h3>
+		<table frx:block="ims/teacher/courses_by_teacher">
+			<tbody frx:foreach="*">
+				<tr>
+					<th colspan="2"><h4>{bldg_name}</h4>
+					</th>
+				</tr>
+				<tr frx:foreach="courses/course">
+					<td>{@name}</td>
+					<td>{test_entry}</td>
+				</tr>
+			</tbody>
+		</table>
+		<h3>Collections</h3>
+		<table frx:block="ims/collections">
+			<tr frx:foreach="*">
+				<td>{collection_name}</td>
+				<td>{editable}</td>
+			</tr>
+		</table>
+	</div>
+  <div id="school_years" class="grid_12" frx:block="ims/school_years">
+    <h4>Show courses for year</h4>
+    <ul class="nav hnav">
+      <li frx:foreach="*" class="{year_selected}">{year_label}</li>
+    </ul>
+  </div>
+</body>
+</html>
