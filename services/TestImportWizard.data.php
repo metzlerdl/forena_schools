@@ -5,7 +5,7 @@ class TestImportWizard extends ForenaSchools {
 	public function auth() {
 
 		$auth = $this->access('dist_admin');
-		if (!$auth && !$_COOKIE && !$_SESSION) {
+		if (@!$auth && !$_COOKIE && !$_SESSION) {
 			// no cookies no sessioin.  Flex UPLOAD bug so circumvent security
 			return true;
 		}
@@ -103,7 +103,7 @@ class TestImportWizard extends ForenaSchools {
  */
 public function uploadFile() {
   $this->db->log('test', 'debug');
-  $import_type = $_REQUEST['import_type'];
+  $import_type = @$_REQUEST['import_type'];
   // Testing the file upload
   $file_temp = $_FILES['Filedata']['tmp_name'];
   $file_name = $_FILES['Filedata']['name'];
@@ -113,8 +113,10 @@ public function uploadFile() {
    if ($filestatus) {
      $retvar = 'Successful Upload' . $file_name;
    }
-   else
-     $retvar = 'Error uploading file' . print_r($_FILES,1);
+   else {
+     $retvar = '<pre>Error uploading file' . print_r($_FILES,1) . '</pre>';
+   }
+   watchdog('debug', $retvar);
   return $retvar;
 }
 
