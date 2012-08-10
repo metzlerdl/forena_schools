@@ -21,6 +21,7 @@ function forena_schools_menu() {
 	  'access callback' => TRUE,
 	  'page callback' => 'forena_schools_flex',
 	  'page arguments' => array(1, TRUE),
+	  'file' => 'inc/common.inc',
 	);
 
 	$items['flexServices'] = array(
@@ -299,7 +300,7 @@ function forena_schools_data() {
 		    print "<pre>$method: Method Not Found</pre>";
 		  }
 	  } else {
-	  	watchdog('error', 'Data Service Access Denied',"Service: $class \n Method:$method \n User: \n" . print_r(current_user(),1));
+	  	watchdog('error', 'Data Service Access Denied',"Service: $class \n Method:$method \n");
 	  	print "<pre>Access Denied</pre>";
 	  }
 	}

@@ -102,7 +102,8 @@ class TestImportWizard extends ForenaSchools {
  * Perform the file upload for a test import batch
  */
 public function uploadFile() {
-  $this->db->log('test', 'debug');
+
+  watchdog('debug', 'Staring upload');
   $import_type = @$_REQUEST['import_type'];
   // Testing the file upload
   $file_temp = $_FILES['Filedata']['tmp_name'];

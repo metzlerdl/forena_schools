@@ -13,7 +13,7 @@ class PersonEditor extends ForenaSchools {
 	 * Save the collections.
 	 */
 	public function save() {
-		$data = array('login' => current_login());
+		$data = array('login' => $this->current_login());
 		$data['xml'] = $_POST['xml'];
 		$person_id = $this->db->call('p_save_person(:xml,:login)', $data);
 		$_POST['person_id'] = $person_id;
