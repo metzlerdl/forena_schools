@@ -57,7 +57,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<services:RestXMLService id="searchSvc" defaultService="UserManager" defaultMethod="searchPeople" debug="true"/> 
+	<services:DataService id="searchSvc" defaultService="UserManager" defaultMethod="searchPeople"/> 
 	<s:TitleWindow title="Search Users" height="100%" width="100%">
 		<s:controlBarContent>
 			<s:Button label="Edit" enabled="{searchGrid.selectedItem}" click="editUser()"/> 

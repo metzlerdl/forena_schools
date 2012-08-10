@@ -6,8 +6,12 @@
 			   creationComplete="init()">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<components:DateRangeValidator id="dateTakenVal" source="{dateTakenInput}" property="text" 
-									   start_date="{scheduleSelect.selectedItem.start_date}" end_date="{scheduleSelect.selectedItem.end_date}"/>
+		<fx:Array id="validators">
+			<mx:StringValidator required="true" source="{testSelect}" property="selectedValue"  requiredFieldError="Required"/>
+			<mx:StringValidator required="true" source="{scheduleSelect}" property="selectedValue" requiredFieldError="Required"/>
+			<components:DateRangeValidator id="dateTakenVal" source="{dateTakenInput}" property="text" 
+										   start_date="{scheduleSelect.selectedItem.start_date}" end_date="{scheduleSelect.selectedItem.end_date}"/>
+		</fx:Array>
 
 	</fx:Declarations>
 	<fx:Script>
@@ -25,7 +29,6 @@
 			
 			import tests.ScoreEditor;
 			import tests.ScoreRenderer; 
-			private var validators:Array = new Array(); 
 			private var _testId:String; 
 			private var _schedSeq:String; 
 			private var _dateTaken:String; 
@@ -94,7 +97,6 @@
 			  groupId = FlexGlobals.topLevelApplication.parameters.group_id; 
 			  groupSvc.send({group_id: groupId}); 
 			  testListSvc.send({group_id: groupId});
-			  validators.push(dateTakenVal); 
 			  testGrid.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, true, 100); 
 			  
 			  
@@ -281,8 +283,8 @@
 			
 			private function onSchedRcv(event:FlexXMLEvent):void {
 				if (event.xml) {
-				  _schedSeq=event.xml.row[0].seq; 
-				  dateTaken=event.xml.row[0].start_date; 
+				  //_schedSeq=event.xml.row[0].seq; 
+				  //dateTaken=event.xml.row[0].start_date; 
 				}
 			}
 			
@@ -297,28 +299,32 @@
 	<s:TitleWindow title="Test Entry" height="100%" width="100%">
 		<s:VGroup height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
 			
-		<s:HGroup verticalAlign="middle">
+		<s:Form width="100%">
+			<s:layout>
+				<s:HorizontalLayout/>
+			</s:layout>
 
          
+			<s:FormItem width="33%" label="Test">
 				
 			  <components:BindingDropDown id="testSelect"  prompt="Select Test" XML="{testListSvc.xml.row}" dataField="test_id" labelField="name" 
 										  selectedValue="@{testId}"
 										   />
 
+			</s:FormItem>	
+            <s:FormItem width="33%" label="Schedule">
+				
+			  <components:BindingDropDown id="scheduleSelect" XML="{schedSvc.xml.row}" dataField="seq" labelField="label" defaultSelect="true"
+									  selectedValue="@{schedSeq}" prompt="select"/>
+			</s:FormItem>
 
-			  <components:BindingList id="scheduleSelect" XML="{schedSvc.xml.row}" dataField="seq" labelField="label" defaultSelect="true"
-									  selectedValue="@{schedSeq}">
-				  <components:layout>
-					  <s:HorizontalLayout/>
-				  </components:layout>
-			  </components:BindingList>
-		  <s:FormItem width="100%">
+		  <s:FormItem width="33%">
 			  
 			  <components:BindingDateInput id="dateTakenInput" editable="true" text="@{dateTaken}"/>
 	      
 		  </s:FormItem>	  
 
-		</s:HGroup>
+		</s:Form>
 		<s:Form backgroundColor="#C8C7C7" width="100%">
 			<s:layout>
 				<s:HorizontalLayout/>
