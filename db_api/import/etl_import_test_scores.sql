@@ -78,11 +78,12 @@ CREATE OR REPLACE FUNCTION etl_import_test_scores() RETURNS VARCHAR AS $$
      FOR m_rec IN SELECT 
          m.*, 
          i.assessment_id, 
-         i.score,
+         i.score as score,
          COALESCE(norm_override,a_normalize(i.score, ARRAY[r.level_1, r.level_2, r.level_3, r.level_4, r.max_score])) AS norm_score,
          CASE WHEN sc.measure_id IS NULL THEN 'insert' ELSE 'update' END AS action
        FROM a_test_measures m JOIN 
        (SELECT 
+          row_number() OVER (partition by sis_id, si.test_code, si.measure_code ORDER BY score desc) m_rank,
           v_assessment_id AS assessment_id,
           COALESCE(tl.measure_code, si.measure_code) AS measure_code,   
           parse_numeric(score) AS score, 
@@ -94,7 +95,7 @@ CREATE OR REPLACE FUNCTION etl_import_test_scores() RETURNS VARCHAR AS $$
           WHERE sis_id=t_rec.sis_id
             AND si.test_code = t_rec.test_code
             AND CAST(si.date_taken AS date) = t_rec.date_taken
-       ) i  ON m.test_id = t_rec.test_id AND m.code = i.measure_code
+       ) i  ON m.test_id = t_rec.test_id AND m.code = i.measure_code and i.m_rank=1
        JOIN a_test_rules r ON r.measure_id=m.measure_id
          AND r.grade_level = t_rec.grade_level
          AND r.seq=t_rec.seq
