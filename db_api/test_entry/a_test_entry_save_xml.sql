@@ -8,6 +8,8 @@ CREATE OR REPLACE FUNCTION a_test_entry_save_xml(p_xml TEXT) RETURNS VARCHAR AS 
     v_score NUMERIC; 
     v_norm_score NUMERIC; 
     v_msg VARCHAR(1000);
+    v_school_year INTEGER; 
+    v_test_id INTEGER; 
   BEGIN
    v_msg = ''; 
    v_xml := XML(p_xml); 
@@ -33,6 +35,9 @@ CREATE OR REPLACE FUNCTION a_test_entry_save_xml(p_xml TEXT) RETURNS VARCHAR AS 
        AND a.test_id = t.test_id
        AND a.date_taken = t.date_taken
      LOOP
+     
+     v_school_year = t_rec.school_year; 
+     v_test_id = t_rec.test_id; 
 
      -- Save the base test_record
      if COALESCE(t_rec.assessment_id,-1)=-1 THEN 
@@ -157,6 +162,7 @@ CREATE OR REPLACE FUNCTION a_test_entry_save_xml(p_xml TEXT) RETURNS VARCHAR AS 
          END IF; 
        END LOOP;        
    END LOOP; -- test  
+   PERFORM a_calc_score_stats(v_school_year, v_test_id); 
    RETURN v_msg;      
   END;
 $$ LANGUAGE plpgsql;
