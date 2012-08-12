@@ -165,9 +165,9 @@ CREATE OR REPLACE FUNCTION etl_import_test_scores() RETURNS VARCHAR AS $$
    
    -- Recalculate Stats
    FOR t_rec IN 
-     select distinct i_school_year(CAST (date_taken AS date)) as school_year , test_code from import.imp_test_scoreS
+     select distinct i_school_year(CAST (date_taken AS date)) as school_year , test_code from import.imp_test_scores
      LOOP
-     PERFORM etl_calc_score_stats(t_rec.school_year, t_rec.tesc_code); 
+     PERFORM etl_calc_score_stats(t_rec.school_year, t_rec.test_code); 
    END LOOP; 
    
    v_msg := 'Imported ' || v_test_cnt || ' assessments with ' || v_score_cnt || ' scores.'; 
