@@ -15,7 +15,7 @@ select v.* FROM
   JOIN i_school_years y ON s.school_year = y.school_year
   WHERE bldg_id=:bldg_id AND :grade_level 
     between t.min_grade and t.max_grade
-   AND s.school_year >= i_school_year() - 2
+   AND s.school_year = coalesce(:school_year,i_school_year()) 
 ) v
 WHERE r=1
 ORDER BY test_name

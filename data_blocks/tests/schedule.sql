@@ -11,6 +11,6 @@ SELECT
   a_test_measures_xml(t.test_id) measures
 FROM 
   a_tests t JOIN a_test_schedules ts ON ts.test_id=t.test_id 
-  LEFT JOIN i_school_years y ON y.school_year=:school_year
+  LEFT JOIN i_school_years y ON y.school_year=coalesce(:school_year, i_school_year())
   WHERE ts.test_id = :test_id
    AND ts.seq = :seq

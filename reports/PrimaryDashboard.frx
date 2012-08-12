@@ -18,7 +18,7 @@
   <frx:field id="year_label" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={school_year}"/>
   <frx:field id="@grade_name" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}"/>
     <frx:field id="test_name"
-    link="reports/building.TestStatistics?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}">
+    link="reports/building.GradeTestView?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}&amp;school_year={school_year}&amp;seq={seq}">
   </frx:field>
 </frx:fields>
 <frx:parameters />
@@ -57,7 +57,7 @@
 			</tbody>
 		</table>
 		</div>
-		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}">
+		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
       <h3>Test Statistics</h3>
       <p>The following table shows the most recent calculated statistics for all tests available for your school.  Select a test to view statistics available 
         for that test. </p>
@@ -66,8 +66,8 @@
           <tr><th>Test</th><th></th></tr>
         </thead>
         <tbody>
-          <tr frx:foreach="*">
-            <td>{test_name}</td><td>{sched_label} {year_label}</td>
+          <tr frx:foreach="*" id="schedule">
+            <td>{test_name}</td><td>{sched_label} {schedule.year_label}</td>
           </tr>
         </tbody>
       </table>	

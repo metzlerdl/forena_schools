@@ -20,4 +20,5 @@ WHERE bss.bldg_id = :bldg_id
   AND t.test_id=:test_id
   AND bss.grade_level=:grade_level
   and tmv.measure_id=tmv.parent_measure
+  and bss.school_year=coalesce(:school_year,i_school_year())
 ORDER BY bss.school_year desc, bss.seq desc, tmv.sort_order

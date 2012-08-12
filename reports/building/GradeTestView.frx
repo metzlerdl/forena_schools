@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:options hidden="1" />
+<frx:fields>
+	<frx:field id="bldg.name"
+		link="reports/BuildingDashboard?bldg_id={bldg_id}" />
+	<frx:field id="grade_name"
+		link="{bldg.building_dashboard}?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}" />
+	<frx:field id="last_name" link="reports/Student?person_id={person_id}" />
+	<frx:field id="export"
+		link="reports/GradeTestView.csv?profile_id={parm.test_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
+</frx:fields>
+<title>Test Results for Grade</title>
+</head>
+<body>
+	<div id="bldg" frx:block="ims/building/building_grade" frx:foreach="*">
+		<h2>{bldg.name} - {grade_name}</h2>
+	</div>
+	<div id="test_block" frx:block="ims/tests/schedule">
+		<div frx:foreach="*" id="profile">
+			<h3>{test_name} - {sched_label}</h3>
+			<div
+				frx:src="reports/building.TestStatsGraph.svg?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={profile.school_year}&amp;seq={profile.seq}"
+				frx:renderer="FrxInclude" frx:height="600" frx:width="800" />
+			<div id="schedule-stats" frx:block="ims/building/test_statistics">
+				<p>
+					<strong>Performance Distribution:</strong> The above graph
+					demonstrates the percentage of students tested performing at each
+					level.
+				</p>
+				<table>
+					<thead>
+						<tr>
+							<th>measure</th>
+							<th>building average</th>
+							<th>district average</th>
+							<th>struggling</th>
+							<th>below</th>
+							<th>met</th>
+							<th>exceeded</th>
+							<th>percent met standard</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr frx:foreach="*">
+							<td>{name}</td>
+							<td>{b_score}</td>
+							<td>{d_score}</td>
+							<td>{bl1_percent}</td>
+							<td>{bl2_percent}</td>
+							<td>{bl3_percent}</td>
+							<td>{bl4_percent}</td>
+							<td>{b_percent_met}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="pedagoggle-scores"
+				frx:block="ims/building/grade_test_scores"
+				frx:parameters="school_year={profile.school_year}&amp;seq={seq}&amp;grade_level={parm.grade_level}&amp;bldg_id={parm.bldg_id}&amp;test_id={parm.test_id}">
+				<table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
+					<thead>
+						<tr>
+							<th>Last Name</th>
+							<th>First Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{last_name}</td>
+							<td>{first_name}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="footer-block">
+		<ul class="nav hnav">
+			<li>{export}</li>
+		</ul>
+	</div>
+</body>
+</html>
