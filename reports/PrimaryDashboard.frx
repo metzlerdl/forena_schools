@@ -29,6 +29,21 @@
 	  <h2>{bldg.name} - {grade_name}</h2>
 	</div>
 	<div class="grid_8" frx:block="ims/building/courses_by_grade" id="courses">
+		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
+      <h3>Test Statistics</h3>
+      <p>The following table shows the most recent calculated statistics for all tests available for your school.  Select a test to view statistics available 
+        for that test. </p>
+      <table >
+        <thead>
+          <tr><th>Test</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr frx:foreach="*" id="schedule">
+            <td>{test_name}</td><td>{sched_label} {schedule.year_label}</td>
+          </tr>
+        </tbody>
+      </table>	
+		</div>
 		<h3>Classes</h3>
 		<p>{add_course}</p>
 		<table >
@@ -56,21 +71,6 @@
 				</tr>
 			</tbody>
 		</table>
-		</div>
-		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
-      <h3>Test Statistics</h3>
-      <p>The following table shows the most recent calculated statistics for all tests available for your school.  Select a test to view statistics available 
-        for that test. </p>
-      <table >
-        <thead>
-          <tr><th>Test</th><th></th></tr>
-        </thead>
-        <tbody>
-          <tr frx:foreach="*" id="schedule">
-            <td>{test_name}</td><td>{sched_label} {schedule.year_label}</td>
-          </tr>
-        </tbody>
-      </table>	
 		</div>
 	</div>
 	<div class="nav grid_4">
