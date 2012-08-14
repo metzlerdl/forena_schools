@@ -83,7 +83,7 @@ CREATE OR REPLACE FUNCTION etl_import_test_scores() RETURNS VARCHAR AS $$
          CASE WHEN sc.measure_id IS NULL THEN 'insert' ELSE 'update' END AS action
        FROM a_test_measures m JOIN 
        (SELECT 
-          row_number() OVER (partition by sis_id, si.test_code, si.measure_code ORDER BY score desc) m_rank,
+          row_number() OVER (partition by sis_id, si.test_code, si.measure_code ORDER BY nts(score) desc) m_rank,
           v_assessment_id AS assessment_id,
           COALESCE(tl.measure_code, si.measure_code) AS measure_code,   
           parse_numeric(score) AS score, 

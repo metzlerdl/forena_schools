@@ -106,8 +106,7 @@ function forena_schools_assessments() {
 			$app = 'DistrictDashboard';
 		}
 		elseif ($fs->access('bldg_admin')) {
-			drupal_set_message('building admin');
-			$app = 'BuidingDashboard';
+			$app = 'BuildingDashboard';
 		}
 		elseif ($fs->access('teacher')) {
 			$app = 'TeacherDashboard';
