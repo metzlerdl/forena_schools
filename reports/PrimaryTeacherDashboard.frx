@@ -8,13 +8,13 @@
 </frx:parameters>
 <frx:fields>
   <frx:field id="year_label" 
-    link="reports/TeacherDashboard?school_year={school_year}&amp;staff_id={parm.staff_id}&amp;"
+    link="reports/PrimaryTeacherDashboard?school_year={school_year}&amp;staff_id={parm.staff_id}&amp;"
   /> 
 	<frx:field id="@title" link="{@path}?bldg_id={parm.bldg_id}" />
 	<frx:field id="@grade_name"
 		link="{bldg.building_dashboard}?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="@name"
-		link="reports/GroupView?group_id={@group_id}&amp;name={@name}&amp;school_Year={parm.school_year}" />
+		link="reports/group.Dashboard?group_id={@group_id}" />
 	<frx:field id="@editable"
 		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
 	<frx:field id="test_entry" default="test entry" link="flexpopup/TestEntry?group_id={@group_id}" target="te_{@group_id}">test entry</frx:field>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:options hidden="1"/> 
+<frx:fields> 
+   <frx:field id="name" link="reports/Student?person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
+   <frx:field id="test_name" link="reports/group.TestResults?group_id={group_id}&amp;test_id={test_id}&amp;seq={seq}&amp;school_year={school_year}&amp;grade_level={grade_level}"/>
+   <frx:field id="profile.name" link="reports/group.GroupProfile?group_id={parm.group_id}&amp;profile_id={profile_id}"/> 
+</frx:fields>
+<title>Group</title>
+</head>
+<body>
+ <div frx:block="ims/group/details" id="group" frx:foreach="*" class="grid_12">
+   <h2>{group.name}</h2>
+   <h4>{first_name} {last_name}</h4>
+ </div>
+ <div class="grid_5">
+ <div  frx:block="ims/group/testing_summary" id="test-query">
+   <table>
+     <thead>
+       <tr>
+       <th>test</th>
+       <th>grade</th>
+       <th>schedule</th>
+       <th>coverage</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr frx:foreach="*" id="test">
+         <td>{test_name}</td>
+         <td>{grade}</td>
+         <td>{sched_label}</td>
+         <td>{coverage}</td>
+       </tr>
+     </tbody>
+   </table>
+ </div>
+ <div  frx:block="ims/group/members">
+   <h3>Students</h3>
+   <table>
+        <thead>
+          <tr>
+            <th>name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr frx:foreach="*">
+            <td>{name}</td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  
+ </div>
+    <div frx:block="ims/group/group_profiles" id="profiles" class="nav grid_4">
+       <h2>Profiles</h2>
+       <ul>
+         <li frx:foreach="*" id="profile">{profile.name}</li>
+       </ul>
+    </div>
+</body>
+</html>

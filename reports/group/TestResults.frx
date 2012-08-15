@@ -12,21 +12,23 @@
 		link="{bldg.building_dashboard}?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}" />
 	<frx:field id="last_name" link="reports/Student?person_id={person_id}" />
 	<frx:field id="export"
-		link="reports/building.GradeTestView.csv?test_id={parm.test_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
+		link="reports/group.TestResults.csv?test_id={parm.test_id}&amp;group_id={parm.group_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
 </frx:fields>
-<title>Test Results for Grade</title>
+<title>Test Results</title>
 </head>
 <body>
-	<div id="bldg" frx:block="ims/building/building_grade" frx:foreach="*">
-		<h2>{bldg.name} - {grade_name}</h2>
-	</div>
-	<div id="test_block" frx:block="ims/tests/schedule">
-		<div frx:foreach="*" id="profile">
+  <div frx:block="ims/group/details" id="group" frx:foreach="*">
+   <h2>{group.name}</h2>
+   <h3>{first_name} {last_name}</h3>
+ </div>
+	<div id="schedule" frx:block="ims/tests/schedule" frx:foreach="*" >
 			<h3>{test_name} - {sched_label}</h3>
-			<div
-				frx:src="reports/building.TestStatsGraph.svg?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={profile.school_year}&amp;seq={profile.seq}"
+ </div> 
+ <h3>Statistics</h3>
+ <div
+				frx:src="reports/group.TestStatsGraph.svg?group_id={parm.group_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}"
 				frx:renderer="FrxInclude" frx:height="600" frx:width="800" />
-			<div id="schedule-stats" frx:block="ims/building/test_statistics">
+ <div id="schedule-stats" frx:block="ims/group/group_test_statistics">
 				<p>
 					<strong>Performance Distribution:</strong> The above graph
 					demonstrates the percentage of students tested performing at each
@@ -48,21 +50,21 @@
 					<tbody>
 						<tr frx:foreach="*">
 							<td>{name}</td>
+							<td>{avg_score}</td>
 							<td>{b_score}</td>
-							<td>{d_score}</td>
-							<td>{bl1_percent}</td>
-							<td>{bl2_percent}</td>
-							<td>{bl3_percent}</td>
-							<td>{bl4_percent}</td>
-							<td>{b_percent_met}</td>
+							<td>{l1_percent}</td>
+							<td>{l2_percent}</td>
+							<td>{l3_percent}</td>
+							<td>{l4_percent}</td>
+							<td>{percent_met}</td>
 						</tr>
 					</tbody>
 				</table>
-			</div>
-			<div class="pedagoggle-scores"
-				frx:block="ims/building/grade_test_scores"
-				frx:parameters="school_year={profile.school_year}&amp;seq={seq}&amp;grade_level={parm.grade_level}&amp;bldg_id={parm.bldg_id}&amp;test_id={parm.test_id}">
-				<table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
+</div>
+<h3>Scores</h3>
+<div class="pedagoggle-scores"
+				frx:block="ims/group/group_test_scores">
+				<table frx:renderer="FrxPedagoggleScores" frx:profile="schedule">
 					<thead>
 						<tr>
 							<th>Last Name</th>
@@ -77,12 +79,10 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
-	</div>
-	<div id="footer-block">
+<div id="footer-block">
 		<ul class="nav hnav">
 			<li>{export}</li>
 		</ul>
-	</div>
+</div>
 </body>
 </html>

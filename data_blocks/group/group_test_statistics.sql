@@ -1,6 +1,6 @@
 --ACCESS=teacher
 select v.*,
-  t.name as test_name, t.abbrev as test_abbrev, COALESCE(tmv.subject, pm.subject) subject,y.label, ts.label, gl.abbrev AS grade, 
+  t.name as test_name, t.abbrev as test_abbrev, tmv.name, tmv.abbrev, COALESCE(tmv.subject, pm.subject) subject,y.label, ts.label, gl.abbrev AS grade, 
   bss.norm_score AS b_norm_score, dss.norm_score AS d_norm_score, 
   bss.score as b_score, dss.score as d_score,
   ROUND(100.0 * (bss.l3_count + bss.l4_count)/bss.total) b_percent_met, 
@@ -21,8 +21,12 @@ FROM
   JOIN p_students s ON gm.student_id=s.student_id
   JOIN a_assessments a ON s.person_id=a.person_id
   JOIN a_scores sc ON sc.assessment_id = a.assessment_id
-  WHERE gm.group_id=:group_id AND a.test_id=:test_id
---  WHERE gm.group_id=28621 AND a.test_id=25
+  WHERE gm.group_id=:group_id
+   AND a.school_year = :school_year
+   AND a.test_id = :test_id
+   AND a.grade_level = :grade_level
+   AND a.seq = :seq
+   AND a.test_id=:test_id
   GROUP BY gm.group_id, a.test_id, a.grade_level, a.school_year,  a.seq, sc.measure_id
   ) v
 JOIN s_groups g ON v.group_id = g.group_id

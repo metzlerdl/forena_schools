@@ -13,7 +13,7 @@
   <frx:field id="profile_name" link="reports/GradeView?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}&amp;school_year={parm.school_year}"/> 
   <frx:field id="test_entry" link="flexpopup/TestEntry?group_id={@group_id}" target="popupTestEntry{@group_id}">Test Entry</frx:field> 
   <frx:field id="@teacher_name" link="{bldg.teacher_dashboard}?staff_id={@staff_id}"/>
-  <frx:field id="@course_name" link="reports/GroupView?group_id={@group_id}"/> 
+  <frx:field id="@course_name" link="reports/group.Dashboard?group_id={@group_id}"/> 
   <frx:field id="manage" link="flexpopup/GroupEditor?group_id={@group_id}" target="popupGroupEditor{@group_id}">manage</frx:field>
   <frx:field id="year_label" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={school_year}"/>
   <frx:field id="@grade_name" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}"/>
