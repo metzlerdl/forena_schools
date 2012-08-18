@@ -4,11 +4,21 @@ function forena_schools_install(&$sanbox) {
 	ForenaSchoolsScript::instance()->dbScript('upgrade_7.sql');
 }
 
+function forena_schools_db_refresh() {
+	ForenaSchoolsScript::instance()->dbScript('api_install.sql');
+
+}
+
 function forena_schools_update_7001() {
 	db_query("UPDATE {i_buildings} SET building_dashboard='reports/PrimaryDashboard',
 	  teacher_dashboard='reports/PrimaryTeacherDashboard'");
 }
 
+
 function forena_schools_update_7002() {
 	ForenaSchoolsScript::instance()->dbScript('upgrade_7_01.sql');
+}
+
+function forena_schools_update_7003() {
+  forena_schools_db_refresh();
 }

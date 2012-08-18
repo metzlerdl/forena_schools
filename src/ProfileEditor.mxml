@@ -16,7 +16,7 @@
 			private var validators:Array = new Array(); 
 			private var loadedXML:String; 
 			private var doClose:Boolean = false; 
-			[Bindable]private var offsetXML:XML = XML(<offsets><offset value="0" label="Current Year"/><offset value="-1" label="Prior Year"/></offsets>); 
+			[Bindable]private var offsetXML:XML = XML(<offsets><offset value="0" label="Current Year"/><offset value="-1" label="Prior Year"/><offset value="-12" label="Any Year"/></offsets>); 
 		
 			private function initProfile():void { 
 				if (profileId != '-1') { 

@@ -6,6 +6,20 @@ class TestEntry extends ForenaSchools {
 		return $this->access('teacher');
 	}
 
+	public function info() {
+		return $this->db->query_xml("
+		  SELECT p.first_name || ' ' || p.last_name as owner, g.name as group_name, group_id, y.label AS year_label,
+		    s.label AS sched_label,
+		    i_calc_school_date(s.target_day, g.school_year) target_date
+		   FROM s_groups g
+		     LEFT JOIN i_school_years y ON g.school_year=y.school_year
+		     LEFT JOIN a_test_schedules s ON s.test_id = :test_id
+		       AND s.seq = :seq
+		     LEFT JOIN p_people ON g.owner_id=p.person_id
+		   where group_id=:group_id
+		", $_POST);
+	}
+
 	public function groupMembers() {
 		$test_date = @$_POST['date_taken'];
 		$test_id = @$_POST['test_id'];

@@ -23,9 +23,9 @@
 			import mx.core.FlexGlobals;
 			import mx.events.AdvancedDataGridEvent;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 			import mx.validators.Validator;
-			import mx.events.FlexEvent; 
-			import mx.managers.PopUpManager; 
 			
 			import tests.ScoreEditor;
 			import tests.ScoreRenderer; 
@@ -40,6 +40,7 @@
 			private var confirmLoad:Boolean = false; 
 			private var doSave:Boolean = false; 
 			private var keySet:Boolean = false; 
+			[Bindable] private var title:String; 
 			[Bindable] private var groupId:String; 
 		    [Bindable] private var curMeasure:XML; 
 			
@@ -66,7 +67,7 @@
 			[Bindable]
 			private function set schedSeq(value:String):void { 
 				_schedSeq = value; 
- 
+                infoSvc.send({group_id:groupId, test_id:_testId, seq: _schedSeq});  
 				      
 			}
 			
@@ -85,7 +86,6 @@
 			[Bindable]
 			private function set dateTaken(value:String):void {
 				_dateTaken = value; 
-				setTestData(); 
 			}
 			
 			private function get dateTaken():String { 
@@ -291,15 +291,24 @@
 				}
 			}
 			
-				
+		    private function onInfoSvcData(event:FlexXMLEvent):void { 
+				if (event.xml) { 
+					var x:XML = event.xml.row[0]; 
+					if (x) { 
+					  dateTaken = x.target_date; 
+					  title = x.group_name + ' ' + x.year_label; 
+					}
+				}
+			}
 			
 		]]>
 	</fx:Script>
-
+    <services:DataService id="infoSvc" defaultService="TestEntry" defaultMethod="info" preload="false" flexXMLChange="onInfoSvcData(event)"/> 
 	<services:DataService id="groupSvc" defaultService="TestEntry" defaultMethod="groupMembers" showProgress="true" flexXMLChange="onScoreSaveReturn()"/> 
 	<services:DataService id="testListSvc" defaultService="TestEntry" defaultMethod="tests" /> 
 	<services:DataService id="schedSvc" defaultService="TestEntry" defaultMethod="schedules" flexXMLChange="onSchedRcv(event)"/>
-	<s:TitleWindow title="Test Entry" height="100%" width="100%">
+	<services:FlexApp title="{title}"/> 
+	<s:TitleWindow title="{title} Test Entry" height="100%" width="100%">
 		<s:VGroup height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
 			
 		<s:Form width="100%">
