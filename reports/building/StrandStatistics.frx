@@ -12,7 +12,7 @@
 	<div class="grid_8">
 		<div id="building" frx:block="ims/building/building_grade"
 			frx:foreach="*">
-			<h2>{building.name} - {grade_name}</h2>
+			<h2>{building.name}, {grade_name}, {year_label}</h2>
 			   <p>The graphs below demonstrate the average normalized according to the following scale:
 			   <blockquote>
 			     1 - below expectations<br/>

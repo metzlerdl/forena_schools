@@ -26,7 +26,7 @@
 </head>
 <body>
 	<div class="grid_12" id="bldg" frx:block="ims/building/building_grade" frx:foreach="*" >
-	  <h2>{bldg.name} - {grade_name}</h2>
+	  <h2>{bldg.name}, {grade_name}, {bldg.year_label}</h2>
 	</div>
 	<div class="grid_8" frx:block="ims/building/courses_by_grade" id="courses">
 		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">

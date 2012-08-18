@@ -18,7 +18,7 @@
 </head>
 <body>
 	<div id="bldg" frx:block="ims/building/building_grade" frx:foreach="*">
-		<h2>{bldg.name} - {grade_name}</h2>
+		<h2>{bldg.name}, {grade_name}, {year_label}</h2>
 	</div>
 	<div id="test_block" frx:block="ims/tests/schedule">
 		<div frx:foreach="*" id="profile">

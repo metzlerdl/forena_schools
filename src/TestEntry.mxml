@@ -66,8 +66,8 @@
 			[Bindable]
 			private function set schedSeq(value:String):void { 
 				_schedSeq = value; 
-				if (schedSeq) dateTaken = scheduleSelect.selectedItem.target_date; 
-				
+ 
+				      
 			}
 			
 			private function get schedSeq():String {
@@ -95,6 +95,9 @@
 			
 			public function init():void { 
 			  groupId = FlexGlobals.topLevelApplication.parameters.group_id; 
+			  testId = FlexGlobals.topLevelApplication.parameters.test_id; 
+			  schedSeq = FlexGlobals.topLevelApplication.parameters.seq; 
+			  
 			  groupSvc.send({group_id: groupId}); 
 			  testListSvc.send({group_id: groupId});
 			  testGrid.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, true, 100); 

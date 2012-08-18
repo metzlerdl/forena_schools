@@ -18,7 +18,7 @@
 </head>
 <body>
   <div frx:block="ims/group/details" id="group" frx:foreach="*">
-   <h2>{group.name}</h2>
+   <h2>{group.name}, {year_label}</h2>
    <h3>{first_name} {last_name}</h3>
  </div>
 	<div id="schedule" frx:block="ims/tests/schedule" frx:foreach="*" >

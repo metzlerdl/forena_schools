@@ -14,7 +14,7 @@
   <div class="grid_8">
     <div id="building" frx:block="ims/building/building_grade"
       frx:foreach="*">
-      <h2>{building.name} - {grade_name}</h2>
+      <h2>{building.name}, {grade_name}, {year_label}</h2>
       <p>Graphs below represent raw scores for the measure indicated. Only the last 6 issues of the test are shown.</p>
     </div>
   </div>

@@ -24,7 +24,7 @@
 </head>
 <body>
   <div id="teacher_info" frx:block="ims/teacher/info" class="grid_12">
-    <h2>{row/first_name} {row/last_name}</h2>
+    <h2>{row/first_name} {row/last_name}, {row/year_label} </h2>
   </div>
 	<div id="menu-1" class="nav grid_4">
 		<h3>Teacher Menu</h3>

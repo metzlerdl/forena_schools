@@ -1,9 +1,5 @@
 
-th { 
-	  text-align: center; 
-	  border: 1px solid; 
-	  border-color: 999; 
-	}
+
 	
 td { padding: 5px; }
 
@@ -79,7 +75,7 @@ table.form-header th {
 	}
 	
 	.hrule { 
-	  border-bottom: solid 1px; 
+	  border-bottom: solid 1pthx; 
 	}
 	
 	.selected { 
