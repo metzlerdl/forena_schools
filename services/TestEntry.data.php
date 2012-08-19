@@ -15,7 +15,7 @@ class TestEntry extends ForenaSchools {
 		     LEFT JOIN i_school_years y ON g.school_year=y.school_year
 		     LEFT JOIN a_test_schedules s ON s.test_id = :test_id
 		       AND s.seq = :seq
-		     LEFT JOIN p_people ON g.owner_id=p.person_id
+		     LEFT JOIN p_people  p ON g.owner_id=p.person_id
 		   where group_id=:group_id
 		", $_POST);
 	}
