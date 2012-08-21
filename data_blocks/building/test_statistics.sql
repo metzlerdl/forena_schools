@@ -1,6 +1,6 @@
 --ACCESS=teacher
 select 
-  t.name as test_name, t.abbrev as test_abbrev, tmv.name,  tmv.abbrev, COALESCE(tmv.subject, pm.subject) subject,y.label as year_label, ts.label as sched_label, gl.abbrev AS grade, 
+  t.name as test_name, t.abbrev as test_abbrev, tmv.measure_id, tmv.name,  tmv.abbrev, COALESCE(tmv.subject, pm.subject) subject,y.label as year_label, ts.label as sched_label, gl.abbrev AS grade, 
   bss.norm_score AS b_norm_score, dss.norm_score AS d_norm_score, 
   bss.score as b_score, dss.score as d_score,
   ROUND(100.0 * (bss.l3_count + bss.l4_count)/bss.total) b_percent_met,  ROUND(100.0 * (dss.l3_count + dss.l4_count)/dss.total) d_percent_met, 

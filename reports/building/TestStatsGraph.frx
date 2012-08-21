@@ -6,7 +6,7 @@
 <head>
 <frx:fields>
   <frx:field id="name" 
-  link="index.php?q=building/MeasureStatistics&amp;measure_id={measure_id}&amp;school_year={school_year}&amp;seq={seq}">
+  link="reports/building.MeasureStatistics?measure_id={measure_id}&amp;school_year={school_year}&amp;seq={seq}">
   </frx:field>
 </frx:fields>
 <title>Test Statistics</title>
@@ -18,7 +18,7 @@
   </div>
   <div id="schedule-stats" frx:block="ims/building/test_statistics">
 			<svg id="test-chart" frx:renderer="FrxSVGGraph"
-				frx:link="../index.php?q=building/MeasureStatistics&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;school_year={parm.school_year}"
+				frx:link="building.MeasureStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;school_year={parm.school_year}"
 				frx:type="stackedbargraph" frx:xpath="*" frx:height="600"
 				frx:width="800"
 				frx:options="series[]={bl1_percent}&amp;series[]={bl2_percent}&amp;series[]={bl3_percent}&amp;series[]={bl4_percent}&amp;label={abbrev}&amp;colors[]=#E3B5B5&amp;colors[]=#E3E288&amp;colors[]=#BBE3B5&amp;colors[]=#B5C0E3&amp;axis_max_v=100.0&amp;grid_division_v=10">

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:fields>
+
+	<frx:field id="test_name"
+		link="reports/building.TestStatistics?group_id={parm.group_id}&amp;test_id={test_id}&amp;seq={seq}&amp;school_year={school_year}" />
+</frx:fields>
+<title>Measure Statistics</title>
+</head>
+<body>
+	<div class="grid_8">
+		<div frx:block="ims/group/details" id="group" frx:foreach="*">
+			<h2>{group.name}, {year_label}</h2>
+			<h3>{first_name} {last_name}</h3>
+		</div>
+	</div>
+	<div class="grid_3 legend">
+		<table>
+			<tr>
+				<th>Building</th>
+				<th width="10" style="background-color: tan;"></th>
+			</tr>
+			<tr>
+				<th>District</th>
+				<th width="10" style="background-color: olivedrab;"></th>
+			</tr>
+		</table>
+	</div>
+	<div class="grid_12">
+		<div id="test" frx:block="ims/tests/measure" frx:foreach="*">
+			<h3>{test_name}: {name}</h3>
+		</div>
+		<div id="measure_stats" frx:block="ims/group/measure_score_stats">
+			<div
+				frx:src="reports/group.MeasureTrendGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;group_id={parm.group_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}"
+				frx:renderer="FrxInclude" frx:height="430" frx:width="640"></div>
+			<p>
+				<strong>Building Average Score Trend:</strong> The above graph shows
+				the average building scores over the last six issuances of this test
+				for this grade level.
+			</p>
+			<hr />
+			<div
+				frx:src="reports/group.MeasureLevelsGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;group_id={parm.group_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}"
+				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
+			<p>
+				<strong>Performance Distribution:</strong> The above graph
+				demonstrates the percentage of students tested performing at each
+				level.
+			</p>
+			<hr />
+			<table>
+				<thead>
+					<tr>
+						<th>measure</th>
+						<th>building average</th>
+						<th>district average</th>
+						<th>struggling</th>
+						<th>below</th>
+						<th>met</th>
+						<th>exceeded</th>
+						<th>percent met standard</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr frx:foreach="*">
+						<td>{year_label} {sched_label}</td>
+						<td>{avg_score}</td>
+						<td>{d_score}</td>
+						<td>{l1_percent}</td>
+						<td>{l2_percent}</td>
+						<td>{l3_percent}</td>
+						<td>{l4_percent}</td>
+						<td>{percent_met}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

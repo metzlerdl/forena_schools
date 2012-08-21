@@ -5,31 +5,30 @@
 <html xmlns:frx="urn:FrxReports">
 <head>
 <frx:fields>
-  <frx:field id="sched_label" link="reports/building.StrandStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;seq={seq}">
-  </frx:field>
+	  <frx:field id="grade_name" link="index.php?q=BuildingAnalysis&amp;bldg_id={bldg_id}&amp;grade_level={grade_level}"/> 
+  <frx:field id="test_name" link="index.php?q=building%2FTestStatistics&amp;bldg_id=6&amp;grade_level=4&amp;test_id=11"/> 
 </frx:fields>
 <title>Measure Statistics</title>
 </head>
 <body>
-  <div class="grid_8">
-    <div id="building" frx:block="ims/building/building_grade"
-      frx:foreach="*">
-      <h2>{building.name}, {grade_name}, {year_label}</h2>
-      <p>Graphs below represent raw scores for the measure indicated. Only the last 6 issues of the test are shown.</p>
-    </div>
-  </div>
-  <div class="grid_3 legend">
-    <table>
-      <tr>
-        <th>Building</th>
-        <th width="10" style="background-color: tan;"></th>
-      </tr>
-      <tr>
-        <th>District</th>
-        <th width="10" style="background-color: olivedrab;"></th>
-      </tr>
-    </table>
-  </div>
+	<div class="grid_8">
+		<div id="building" frx:block="ims/building/building_grade"
+			frx:foreach="*">
+			<h2>{building.name} - {grade_name}</h2>
+		</div>
+	</div>
+	<div class="grid_3 legend">
+		<table>
+			<tr>
+				<th>Building</th>
+				<th width="10" style="background-color: tan;"></th>
+			</tr>
+			<tr>
+				<th>District</th>
+				<th width="10" style="background-color: olivedrab;"></th>
+			</tr>
+		</table>
+	</div>
 	<div class="grid_12">
 		<div id="test" frx:block="ims/tests/measure" frx:foreach="*">
 			<h3>{test_name}: {name}</h3>
@@ -38,20 +37,35 @@
 			<div
 				frx:src="reports/building.MeasureTrendGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
 				frx:renderer="FrxInclude" frx:height="430" frx:width="640"></div>
+			<p><strong>Building Average Score Trend:</strong>  The above graph shows the average building scores over the last six issuances of this test for this grade level.</p>
+			<hr/>
+			<div
+				frx:src="reports/building.MeasureLevelsGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
+				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
+      <p><strong>Performance Distribution:</strong>  The above graph demonstrates the percentage of students tested performing at each level.</p>
+      <hr/>
 			<table>
 				<thead>
 					<tr>
 						<th>measure</th>
 						<th>building average</th>
 						<th>district average</th>
+						<th>struggling</th>
+						<th>below</th>
+						<th>met</th>
+						<th>exceeded</th>
 						<th>percent met standard</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr frx:foreach="*">
-						<td>{year_label} {sched_label}</td>
+						<td>{name} {year_label} {sched_label}</td>
 						<td>{b_score}</td>
 						<td>{d_score}</td>
+						<td>{bl1_percent}</td>
+						<td>{bl2_percent}</td>
+						<td>{bl3_percent}</td>
+						<td>{bl4_percent}</td>
 						<td>{b_percent_met}</td>
 					</tr>
 				</tbody>

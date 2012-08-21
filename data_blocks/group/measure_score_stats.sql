@@ -1,5 +1,6 @@
 --ACCESS=teacher
-SELECT v.*, y.label, ts.label, tmv.abbrev, gl.abbrev AS grade, 
+SELECT v.*, y.label, ts.label, tmv.abbrev, tmv.name,  gl.abbrev AS grade, 
+  bss.score AS b_score, dss.score AS d_score, 
   bss.norm_score AS b_norm_score, dss.norm_score AS d_norm_score, 
   ROUND(100.0 * bss.l1_count/bss.total,2) AS bl1_percent, ROUND(100.0 * dss.l1_count/dss.total,2) as dl1_percent, 
   ROUND(100.0 * bss.l2_count/bss.total,2) as bl2_percent, ROUND(100.0 * dss.l2_count/dss.total,2) as dl2_percent,
