@@ -297,6 +297,7 @@
 					if (x) { 
 					  dateTaken = x.target_date; 
 					  title = x.group_name + ' ' + x.year_label; 
+					  this.setTestData(); 
 					}
 				}
 			}
