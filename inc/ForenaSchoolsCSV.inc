@@ -126,7 +126,7 @@ class ForenaSchoolsCSV {
 
 			$row = $defaults;
 	    	foreach ($fields as $key=>$column) {
-				$row[$column] = $data[$key];
+				$row[$column] = @$data[$key];
 			}
 	    if ($proc_fn) {
 	      $rows = call_user_func($proc_fn, $row, $tab_columns);

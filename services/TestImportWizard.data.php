@@ -17,6 +17,7 @@ class TestImportWizard extends ForenaSchools {
 		$m_path = drupal_get_path('module', 'forena_schools');
     require_once("$m_path/inc/ForenaSchoolsCSV.inc");
     $this->csv = ForenaSchoolsCSV::instance();
+    set_time_limit(3600);
 
 	}
 
