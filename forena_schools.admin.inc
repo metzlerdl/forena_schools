@@ -12,38 +12,45 @@ require_once 'inc/ForenaSchoolsQuery.inc';
 function forena_schools_building_form($formid, &$form_state, $bldg_id='') {
 
 	$q = ForenaSchoolsQuery::instance();
-	$data = $q->retrieve('i_buildings', array('bldg_id' => $bldg_id));
+	if ($bldg_id) {
+	  $data = $q->retrieve('i_buildings', array('bldg_id' => $bldg_id));
+	}
+	else {
+		$data = array('P');
+	}
   $form['building']['#tree'] = TRUE;
 	$form['building']['bldg_id'] = array(
 	  '#type' => 'value',
-	  '#value' => $data['bldg_id'],
+	  '#value' => @$data['bldg_id'],
 	);
 
 	$form['building']['name'] = array(
 	  '#type' => 'textfield',
 	  '#title' => t('Building Name'),
-	  '#default_value' => $data['name'],
+	  '#default_value' => @$data['name'],
+	  '#required' => TRUE,
 	);
 
 	$form['building']['abbrev'] = array(
 	  '#type' => 'textfield',
 	  '#title' => t('Abbreviation'),
-	  '#default_value' => $data['abbrev'],
+	  '#default_value' => @$data['abbrev'],
 	  '#description' => t('Short name for use in tabular displays and graphs'),
+	  '#required' => TRUE,
 	);
 
 	$form['building']['code'] = array(
 	  '#type' => 'textfield',
 	  '#title' => t('Code'),
 	  '#description' => t('Used for import files to match building'),
-	  '#default_value' => $data['code'],
+	  '#default_value' => @$data['code'],
 	);
 
 	$form['building']['sis_code'] = array(
 	  '#type' => 'textfield',
 	  '#title' => t('SIS Code'),
 	  '#description' => t('Typical numeric identifier used in the student information system'),
-	  '#default_value' => $data['sis_code'],
+	  '#default_value' => @$data['sis_code'],
 	);
 
 	$grade_levels = db_query('select grade_level,abbrev from {i_grade_levels}')
@@ -52,7 +59,7 @@ function forena_schools_building_form($formid, &$form_state, $bldg_id='') {
 	$form['building']['min_grade'] = array(
 	  '#type' => 'select',
 	  '#title' => t('Min Grade Level'),
-	  '#default_value' => $data['min_grade'],
+	  '#default_value' => @$data['min_grade'],
 	  '#options' => $grade_levels,
 	  '#required' => TRUE,
 	);
@@ -60,7 +67,7 @@ function forena_schools_building_form($formid, &$form_state, $bldg_id='') {
 	$form['building']['max_grade'] = array(
 	  '#type' => 'select',
 	  '#title' => t('Maximum Grade Level'),
-	  '#default_value' => $data['max_grade'],
+	  '#default_value' => @$data['max_grade'],
 	  '#options' => $grade_levels,
 	  '#required' => TRUE,
 	);
@@ -68,14 +75,14 @@ function forena_schools_building_form($formid, &$form_state, $bldg_id='') {
 	$form['building']['building_dashboard'] = array(
 	  '#type' => 'textfield',
 	  '#title' => t('Building Dashboard'),
-	  '#default_value' => $data['building_dashboard'],
+	  '#default_value' => @$data['building_dashboard'],
 	  '#autocomplete_path' => 'forena/reports/autocomplete/link',
 	);
 
 	$form['building']['teacher_dashboard'] = array(
 	  '#type' => 'textfield',
-	  '#title' => t('Building Dashboard'),
-	  '#default_value' => $data['teacher_dashboard'],
+	  '#title' => t('Teacher Dashboard'),
+	  '#default_value' => @$data['teacher_dashboard'],
 	  '#autocomplete_path' => 'forena/reports/autocomplete/link',
 	);
 
@@ -96,6 +103,7 @@ function forena_schools_building_form_validate($form, &$form_state) {
 function forena_schools_building_form_submit($form, &$form_state) {
 	$q = ForenaSchoolsQuery::instance();
 	$q->update('i_buildings', 'bldg_id', $form_state['values']['building']);
+	$form_state['redirect']='reports/building.Schools';
 }
 
 /**

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Define Schools</title>
+<frx:category>DIstrict</frx:category>
+<frx:options hidden="1" />
+<frx:fields>
+	<frx:field id="bldg_id" />
+	<frx:field id="name" link="forenaschools/building/edit/{bldg_id}" />
+  <frx:field id="add_school" link="forenaschools/building/edit" >Add School</frx:field>
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+  <ul><li>{add_school}</li></ul>
+	<div id="schools_block" class="FrxTable"
+		frx:block="ims/building/schools">
+		<table>
+			<thead>
+				<tr>
+					<th>name</th>
+					<th>abbrev</th>
+					<th>code</th>
+					<th>sis_code</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="schools" frx:foreach="*">
+					<td>{name}</td>
+					<td>{abbrev}</td>
+					<td>{code}</td>
+					<td>{sis_code}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

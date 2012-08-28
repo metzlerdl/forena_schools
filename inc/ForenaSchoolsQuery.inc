@@ -50,9 +50,10 @@ class ForenaSchoolsQuery {
 			  ->execute();
 		}
 		else {
+			unset($values[$key]);
 			db_insert($table)
 			  ->fields($values)
-			  ->exectue();
+			  ->execute();
 		}
 	}
 
