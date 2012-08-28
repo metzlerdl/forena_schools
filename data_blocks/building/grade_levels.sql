@@ -6,7 +6,7 @@ i_buildings b JOIN
     XMLATTRIBUTES(grade_level, grade_name, selected)
   )) grades
   FROM 
-  (SELECT
+  (SELECT DISTINCT
     b.bldg_id,
     g.grade_level,
     g.name AS grade_name,
