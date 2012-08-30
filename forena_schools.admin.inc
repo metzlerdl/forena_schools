@@ -267,3 +267,27 @@ function forena_schools_import_delete_form_submit($form, &$form_state) {
 
 	$form_state['redirect'] = 'admin/config/system/forena-schools/imports';
 }
+
+function forena_schools_impersonate_form($formid, &$form_state) {
+	$form['login'] = array(
+	  '#type' => 'textfield',
+	  '#title' => t('Login'),
+	  '#description' => t('Leave blank to undo impersonation, otherwise specify login to see forena schools as it exists for another user'),
+	);
+	$form['submit'] = array(
+	  '#type' => 'submit',
+	  '#value' => 'Impersonate',
+	);
+	return $form;
+}
+
+function forena_schools_impersonate_form_submit($formid, &$form_state) {
+	$login = $form_state['values']['login'];
+	if ($login) {
+		$_SESSION['forena_schools_impersonate'] = $login;
+	}
+	else {
+		unset($_SESSION['forena_schools_impersonate']);
+	}
+	$form_state['redirect'] = 'assessments';
+}

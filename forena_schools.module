@@ -78,6 +78,16 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_building_form', 3),
 	  'file' => 'forena_schools.admin.inc',
 	);
+
+	$items['admin/config/people/forena-schools-impersonate'] = array(
+	  'type' => MENU_NORMAL_ITEM,
+	  'title' => 'Impersonate User (Forena Schools)',
+	  'description' => t('Become a different user in Forena Schools'),
+	  'access arguments' => array('forena_schools impersonate'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_impersonate_form'),
+	  'file' => 'forena_schools.admin.inc',
+	);
 	return $items;
 }
 
@@ -154,6 +164,7 @@ function forena_schools_forena_repos_alter(&$repos) {
     'data provider' => 'FrxFiles',
     'access callback' => 'forena_schools_access',
   );
+
 
 }
 
@@ -323,6 +334,7 @@ function forena_schools_permission() {
     'manage profiles' => array('title' => t('Administer Forena Reports')),
     'manage assessments' => array('title' => t('Define Assessments')),
     'import assessments' => array('title' => t('Import Assessments')),
+    'forena_schools impersonate' => array('title' => t('Impersonate User')),
     );
   return $perms;
 }
@@ -374,5 +386,9 @@ function forena_schools_import_cron($job_num) {
 	else {
 	  batch_process('node');
 	}
+}
+
+function forena_schools_cas_user_alter(&$cas_user) {
+	$cas_user['name'] = strtolower($cas_user['name']);
 }
 

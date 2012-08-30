@@ -15,7 +15,11 @@ class ForenaSchools {
 			$sql = 'SELECT p.*,s.role,s.bldg_id FROM p_people p JOIN p_staff s
          ON p.person_id=s.person_id';
 			if (is_callable('cas_current_user')) {
-				$login = cas_current_user();
+				$login = strtolower(cas_current_user());
+			}
+
+			if (isset($_SESSION['forena_schools_impersonate'])) {
+				$login = strtolower($_SESSION['forena_schools_impersonate']);
 			}
 			// Use cas user preferentially
 			if ($login) {
@@ -65,7 +69,7 @@ class ForenaSchools {
 	public function access($role) {
 		static $roles = '';
 		if ($role=='PUBLIC') return TRUE;
-		if (user_access('administer forena schools')) return TRUE;
+		if (user_access('administer forena schools') && !isset($_SESSION['forena_schools_impersonate'])) return TRUE;
 		if (!$roles) {
 		  $roles = array();
 			$login = $this->current_login();
@@ -137,7 +141,7 @@ class ForenaSchools {
 	 * Enter description here ...
 	 */
 	function current_login() {
-    return @$this->user['login'];
+    return strtolower(@$this->user['login']);
 	}
 
   function verify_directory($fullpath) {
