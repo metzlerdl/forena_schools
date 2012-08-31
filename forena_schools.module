@@ -120,7 +120,7 @@ function forena_schools_assessments() {
 			$app = 'BuildingDashboard';
 		}
 		elseif ($fs->access('teacher')) {
-			$app = 'TeacherDashboard';
+			$app = 'PrimaryTeacherDashboard';
 		}
 		else {
 			drupal_access_denied();
