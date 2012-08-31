@@ -117,7 +117,7 @@ function forena_schools_assessments() {
 			$app = 'DistrictDashboard';
 		}
 		elseif ($fs->access('bldg_admin')) {
-			$app = 'BuildingDashboard';
+			$app = 'PrimaryDashboard';
 		}
 		elseif ($fs->access('teacher')) {
 			$app = 'PrimaryTeacherDashboard';
