@@ -95,7 +95,7 @@ CREATE OR REPLACE FUNCTION etl_import_test_scores() RETURNS VARCHAR AS $$
           WHERE sis_id=t_rec.sis_id
             AND si.test_code = t_rec.test_code
             AND CAST(si.date_taken AS date) = t_rec.date_taken
-       ) i  ON m.test_id = t_rec.test_id AND m.code = i.measure_code and i.m_rank=1
+       ) i  ON m.test_id = t_rec.test_id AND LOWER(m.code) = LOWER(i.measure_code) and i.m_rank=1
        JOIN a_test_rules r ON r.measure_id=m.measure_id
          AND r.grade_level = t_rec.grade_level
          AND r.seq=t_rec.seq

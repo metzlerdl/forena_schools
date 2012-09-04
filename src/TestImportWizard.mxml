@@ -125,7 +125,7 @@
 			
 			public function gotoTest():void { 
 				if (testGrid.selectedItem['test_id']) { 
-					app.popUp("TestDefinition?test_id=" + testGrid.selectedItem['test_id']); 
+					app.popUp("flexpopup/TestDefinition?test_id=" + testGrid.selectedItem['test_id']); 
 				}
 			}
 			

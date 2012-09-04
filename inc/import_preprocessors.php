@@ -50,6 +50,7 @@ function process_imp_test_scores($row, $tab_columns) {
     		case 'mathtesttype':
     		case 'eocmathyr2testtype':
     		case 'eocmathyr1testtype':
+    		case 'eocbiologytesttype':
     			$test_type = str_replace('testtype', '', $key);
     			// Make these two tests the same.
     			if ($value == 'MU1') $value = 'ALG';
@@ -63,6 +64,7 @@ function process_imp_test_scores($row, $tab_columns) {
     	$type_key = $key;
     	$type_key = str_replace('eoc math year 1','eocmathyr1', $type_key);
     	$type_key = str_replace('eoc math year 2','eocmathyr2', $type_key);
+    	$type_key = str_replace('eoc biology', 'eocbiology', $type_key);
       foreach ($test_codes as $subject => $type) {
       	if (strpos($type_key, $subject)!==FALSE) {
 	      	$new_test_code=$type;

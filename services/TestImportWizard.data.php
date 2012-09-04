@@ -43,7 +43,7 @@ class TestImportWizard extends ForenaSchools {
 			  LEFT JOIN a_test_schedules s  ON t.test_id = s.test_id AND i_calc_school_day(cast(i.date_taken AS date), false)  BETWEEN
 			    s.start_day AND s.end_day
 			  LEFT JOIN import.imp_test_translations tt ON i.measure_code=tt.import_code
-			  LEFT JOIN a_test_measures m ON t.test_id = m.test_id AND COALESCE(tt.measure_code, i.measure_code) = m.code
+			  LEFT JOIN a_test_measures m ON t.test_id = m.test_id AND LOWER(COALESCE(tt.measure_code, i.measure_code)) = LOWER(m.code)
 			  GROUP BY i.test_code, i.measure_code, t.test_id, s.seq, s.label
 			  ORDER BY test_code, seq, matched_code
 		',

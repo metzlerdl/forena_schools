@@ -22,3 +22,7 @@ function forena_schools_update_7002() {
 function forena_schools_update_7003() {
   forena_schools_db_refresh();
 }
+
+function forena_schools_update_7004() {
+	forena_schools_db_refresh();
+}
