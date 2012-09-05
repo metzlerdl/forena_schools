@@ -16,7 +16,7 @@
   <frx:field id="@course_name" link="reports/group.Dashboard?group_id={@group_id}"/> 
   <frx:field id="manage" link="flexpopup/GroupEditor?group_id={@group_id}" target="popupGroupEditor{@group_id}">manage</frx:field>
   <frx:field id="year_label" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={school_year}"/>
-  <frx:field id="@grade_name" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}"/>
+  <frx:field id="@grade_name" link="reports/PrimaryDashboard?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}"/>
     <frx:field id="test_name"
     link="reports/building.GradeTestView?bldg_id={bldg.bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={test_id}&amp;school_year={school_year}&amp;seq={seq}">
   </frx:field>
