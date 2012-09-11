@@ -117,7 +117,8 @@
 			  p.replace(x.childIndex(),editMeasureWin.measureXML); 
 			  testSvc.checkModified(); 
 		  }
-		  PopUpManager.removePopUp(editMeasureWin); 
+		  PopUpManager.removePopUp(editMeasureWin);  
+		  measureGrid.refresh(); 
 		  
 		}
 		  
@@ -295,6 +296,10 @@
 		   }
 		}
 		  
+		protected function doClose():void { 
+			app.close(true); 
+		}
+		  
     ]]>
   </fx:Script>
   <fx:Declarations>
@@ -307,10 +312,12 @@
   <services:DataService id="testSvc" defaultService="TestDefinition" flexXMLChange="onTestRcv(event)" />
   <services:DataService id="gradeSvc" defaultService="TestDefinition" defaultMethod="gradeLevels" /> 
   <services:DataService id="ruleSvc" defaultService="TestDefinition" defaultMethod="generateRules" /> 
+  <services:FlexApp id="app"/> 
 	<s:TitleWindow height="100%" width="100%" title="Test Definition" >
 	  <s:controlBarContent>
 		  
 		<s:Button label="Save" click="doSave()"/> 
+		<s:Button label="Close" click="doClose()"/>
 		<s:Label  text="{testSvc.isChanged || ruleSvc.isChanged ? 'Modified' : ''}" fontSize="12" height="100%" y="7" verticalAlign="middle" textAlign="right"/>
 		
 	  </s:controlBarContent>
