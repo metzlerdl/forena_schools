@@ -30,9 +30,10 @@ BEGIN
       role = v.role
     FROM etl_mrg_staff v WHERE s.person_id=v.person_id AND 
       s.bldg_id = v.bldg_id; 
-    */   
+  
     GET DIAGNOSTICS v_row_count = ROW_COUNT;
     v_total_count := v_total_count + v_row_count; 
+    */
 
     INSERT INTO p_staff(bldg_id, person_id, role) 
       (SELECT bldg_id, person_id, role from etl_mrg_staff WHERE action='insert'); 
