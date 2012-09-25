@@ -76,7 +76,7 @@ function process_imp_test_scores($row, $tab_columns) {
       else {
       		$test_code=$last_test;
       }
-		  if ((strpos($key,'score') !==FALSE || strpos($key, 'percent')!==FALSE) && $test_code) {
+		  if ((strpos($key,'score') !==FALSE || strpos($key, 'percent')!==FALSE) && $test_code && $value!=='') {
 		    	$ts['score'] = $value;
 		    	$ts['test_code'] = $test_code;
 		    	$ts['measure_code'] = $key;

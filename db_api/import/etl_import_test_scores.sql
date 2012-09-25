@@ -26,16 +26,16 @@ CREATE OR REPLACE FUNCTION etl_import_test_scores() RETURNS VARCHAR AS $$
        a_test_schedule_seq(t.test_id,i.date_taken) AS seq
      FROM p_people p 
      JOIN (SELECT DISTINCT sis_id,bldg_code, bldg_school_code, cast(date_taken as date) AS date_taken,test_code, CAST(grade_level AS INTEGER) AS grade_level FROM import.imp_test_scores
-          WHERE date_taken IS NOT NULL) i ON p.sis_id=i.sis_id
+          WHERE date_taken IS NOT NULL AND score is not null) i ON p.sis_id=i.sis_id
      JOIN a_tests t ON t.code=i.test_code
      JOIN i_buildings b ON b.code = i.bldg_code OR b.sis_code = i.bldg_school_code
      LOOP
      v_test_cnt := v_test_cnt + 1; 
      -- Save the base test_record
      SELECT assessment_id into v_assessment_id 
-     FROM a_assessments WHERE 
-       person_id = t_rec.person_id AND date_taken = t_rec.date_taken AND 
-       test_id = t_rec.test_id; 
+     FROM a_assessments WHERE person_id = t_rec.person_id 
+       AND seq = t_rec.seq AND school_year = t_rec.school_year
+       AND test_id = t_rec.test_id; 
        
      if COALESCE(v_assessment_id,-1)=-1 THEN 
        -- Add test

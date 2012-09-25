@@ -19,10 +19,11 @@ function forena_schools_update_7002() {
 	ForenaSchoolsScript::instance()->dbScript('upgrade_7_01.sql');
 }
 
-function forena_schools_update_7003() {
-  forena_schools_db_refresh();
-}
-
 function forena_schools_update_7004() {
 	forena_schools_db_refresh();
+}
+
+function forena_schools_update_7005() {
+	forena_schools_db_refresh();
+	ForenaSchoolsScript::instance()->dbScript('scripts/remove_empty_assessments.sql');
 }
