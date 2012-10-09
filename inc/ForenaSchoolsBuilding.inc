@@ -1,0 +1,45 @@
+<?php
+
+
+class ForenaSchoolsBuilding { 
+
+  
+  static public function instance() { 
+    static $o = ''; 
+    if (!$o) { 
+      $o = new ForenaSchoolsBuilding(); 
+    }
+    return $o; 
+  }
+  
+  
+  /**
+   * Delete a school
+   * Removes all data associated with a partcicluar school 
+   * @param mixed $schools Reference the building id or ids for schools that need to be deleted. 
+   */  
+  public function delete($schools = array()) { 
+    
+    $rows = 0;    
+    if ($schools) {  
+      $rows += db_delete('a_assessments')
+        ->condition('bldg_id', $schools)
+        ->execute();
+        
+      $rows += db_delete('s_groups')
+        ->condition('bldg_id', $schools)
+        ->execute(); 
+        
+      $rows += db_delete('p_students')
+        ->condition('bldg_id', $schools)
+        ->execute();
+        
+      $rows += db_delete('i_buildings')
+        ->condition('bldg_id', $schools)
+        ->execute(); 
+      drupal_set_message("Deleted building data of $rows rows."); 
+      watchdog('Forena Schoools',  "Deleted build data of $rows rows." ); 
+      return "$rows records deleted from database"; 
+    }
+  }
+}

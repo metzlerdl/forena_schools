@@ -43,9 +43,17 @@ class ForenaSchoolsImport extends ForenaSchools {
 	      	if ($var=='import_directory') {
 	      	  $value= rtrim($value,'/').'/';
 	      	}
+	      	
+	      	// Determine if it's an array syntax. 
+	      	if (strpos($var, '[]')) { 
+	      	  $var = trim($var, '[]'); 	
+	      	  $defaults[$var][] = $value;       	  
+	      	}
+	      	else { 
+  	      	$defaults[$var]=$value;
+	      	}
+      	  $context['sandbox']['variables'] = $defaults; 	
 
-	      	$defaults[$var]=$value;
-	      	$context['sandbox']['variables'] = $defaults;
 	      }
 	      // Space delimited implies table import
 	      elseif (strpos($buffer,'>') >0) {
@@ -70,7 +78,34 @@ class ForenaSchoolsImport extends ForenaSchools {
 	      	sleep(1);
 	      } elseif (strpos($buffer,'(')>0) {
 	      	$output = "Completed $buffer....\n";
-	      	$output .=  $this->db->call($buffer,$defaults)."\n";
+	      	if (strpos($buffer, '.')) { 
+	      	  list($class, $method) = explode('.', $buffer); 
+	      	  list($method, $parms) = explode('(', $method); 
+	      	  include_once "$class.inc";
+	 
+	      	  if (class_exists($class) ) { 
+	      	    $o = call_user_func($class . '::instance');
+	      	    if ($o) { 
+	      	      if (method_exists($o, $method)) { 
+	      	        $output .= $o->$method($defaults); 
+	      	      }
+	      	      else { 
+	      	        drupal_set_message("Method $class.$method not found!", 'error');
+	      	      }
+	      	    }
+	      	    else { 
+	      	      drupal_set_message("Factory method instance not found on $class", 'error');
+	      	    }
+	      	  }
+	      	  else { 
+	      	    drupal_set_message("Class $class not found", 'error'); 
+	      	  }
+	      	  
+	      	}
+	      	else { 
+  	      	$output .=  $this->db->call($buffer,$defaults)."\n";
+	      	  
+	      	}
 	      	sleep(1);
 	      }
 	    }
@@ -79,7 +114,5 @@ class ForenaSchoolsImport extends ForenaSchools {
 	      $context['message'] = $output;
 	    }
 	  }
-
-
 
 }
