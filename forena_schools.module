@@ -340,15 +340,15 @@ function forena_schools_permission() {
 }
 
 function forena_schools_run_import_batch($title, $script, &$context) {
-  require_once('inc/ForenaSchoolsImport.inc');
-  ForenaSchoolsImport::instance()
+  require_once('inc/ForenaSchoolsImportJob.inc');
+  ForenaSchoolsImportJob::instance()
 	  ->processImport($script, $context);
 }
 
 function forena_schools_start_import_batch($title, $script, &$context) {
 	$context ['message'] = 'Starting '. check_plain($title);
-	require_once('inc/ForenaSchoolsImport.inc');
-  ForenaSchoolsImport::instance()
+	require_once('inc/ForenaSchoolsImportJob.inc');
+  ForenaSchoolsImportJob::instance()
 	  ->preProcessImport($script, $context);
 }
 

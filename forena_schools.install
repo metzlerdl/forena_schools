@@ -1,29 +1,18 @@
 <?php
-require_once('inc/ForenaSchoolsScript.inc');
-function forena_schools_install(&$sanbox) {
-	ForenaSchoolsScript::instance()->dbScript('upgrade_7.sql');
+require_once 'inc/ForenaSchoolsScript.inc';
+require_once 'forena_schools.schema.inc';
+
+function forena_schools_update_7006() { 
+  $schema = forena_schools_schema(); 
+  db_create_table('p_student_attributes', $schema['p_student_attributes']); 
+  db_create_table('i_student_attributes', $schema['i_student_attributes']); 
+  db_add_field('s_groups', 'category' , array('type' => 'varchar', 'length' => 60));
 }
 
-function forena_schools_db_refresh() {
-	ForenaSchoolsScript::instance()->dbScript('api_install.sql');
-
-}
-
-function forena_schools_update_7001() {
-	db_query("UPDATE {i_buildings} SET building_dashboard='reports/PrimaryDashboard',
-	  teacher_dashboard='reports/PrimaryTeacherDashboard'");
-}
-
-
-function forena_schools_update_7002() {
-	ForenaSchoolsScript::instance()->dbScript('upgrade_7_01.sql');
-}
-
-function forena_schools_update_7004() {
-	forena_schools_db_refresh();
-}
-
-function forena_schools_update_7005() {
-	forena_schools_db_refresh();
-	ForenaSchoolsScript::instance()->dbScript('scripts/remove_empty_assessments.sql');
+function forena_schools_update_7007() {
+  db_add_field('s_groups', 'source', array(
+  	'type' => 'varchar', 
+    'length' => 60, 
+    'default' => 'sis_import', 
+  ));  
 }

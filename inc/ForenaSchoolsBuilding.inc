@@ -2,7 +2,6 @@
 
 
 class ForenaSchoolsBuilding { 
-
   
   static public function instance() { 
     static $o = ''; 
@@ -41,5 +40,27 @@ class ForenaSchoolsBuilding {
       watchdog('Forena Schoools',  "Deleted build data of $rows rows." ); 
       return "$rows records deleted from database"; 
     }
+  }
+  
+  /**
+   * Return an array of buildings keyed by buidling id. 
+   */
+  public function idList() { 
+    $buildings = array(); 
+    $rs = db_query('select * from i_buildings order by name'); 
+    if ($rs) { 
+      $buidlings = $rs->fetchAllAssoc('bldg_id',PDO::FETCH_ASSOC); 
+    }
+    return $buildings; 
+  }
+  
+  public function codeList() { 
+    $buildings = array(); 
+    $rs = db_query('select * from i_buildings order by name'); 
+    if ($rs) { 
+      $buidlings = $rs->fetchAllAssoc('code',PDO::FETCH_ASSOC); 
+    }
+    return $buildings; 
+    
   }
 }

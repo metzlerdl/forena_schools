@@ -74,11 +74,6 @@ class ForenaSchoolsCSV {
 	 * generated based on the list of columns in the databse.  Any fields not in the csv file will be
 	 * considered to be null.
 	 *
-	 * @param $table_name string Table to insert form
-	 * @param $file_name string File name in import directory to isert from
-	 * @param $del boolean True implies delete all rows from table before importing.
-	 * @param $sep string Separater to use for csv file defaults to ,
-	 * @param $enc string Enclosure character to use for csv file defaults to "
 	 * @return unknown_type
 	 */
 	function table_from_csv($table_name,$file_name,$del=false,$defaults=array(),$sep=",",$enc='"') {
@@ -141,4 +136,72 @@ class ForenaSchoolsCSV {
 
 	    return "$file_name: $line records imported";
 	}
+	
+	/**
+	 * Read in a full csv grouping rows as needed. 
+
+	 */
+	function readCSV($file_name, $defaults=array(), $group_by = array(),  $sep = ',', $enc='"') { 
+		if (!trim($sep)) {
+			$sep =',';
+		}
+    
+		// Load File name
+    if (!file_exists($file_name)) {
+    	drupal_set_message( "Could not find file $file_name", 'error');
+    	return; 
+    }
+    
+		// Start reading the file.
+		$file = fopen($file_name,'r');
+
+		// Read in the header line for fields
+	  $header = fgetcsv($file,null,$sep,$enc);
+	  $fields = array();
+	  foreach ($header as $key=>$column) {
+				$fields[$key] = strtolower($column);
+		}
+		
+		if ($group_by) { 
+		  $empty_group = array_fill_keys($group_by, ''); 
+		  $last_group = $empty_group; 
+		  $group = array(); 
+		}
+	  $data = array(); 
+		$line = 1;
+		// Import the file
+    while (($cols=fgetcsv($file,null,$sep,$enc))!=false ) {
+	  	$line++;
+
+  	  // Row starts out with default values passed in
+  		$row = $defaults;
+      foreach ($fields as $key=>$column) {
+  			$row[$column] = @$cols[$key];
+  		}
+  		
+  		//If we're grouping extract keys based on data
+  		if ($group_by) { 
+  		  $cur_values = array_intersect_key($row, $empty_group); 
+  		  if ($cur_values != $last_group) { 
+  		    if ($last_group!=$empty_group) {
+  		      $data[] = $group; 
+  		    }
+  		    $last_group = $cur_values; 
+		      $group = array(); 
+  		  } 
+    		$group[] = $row; 
+  		} 
+  		else { 
+  		  $data[] = $row; 
+  		}
+  		
+    }  
+    // If we're grouping we need to save away the last group. 
+    if ($group_by) { 
+      $data[] = $group; 
+    }
+    
+    return $data; 
+	}
+
 }

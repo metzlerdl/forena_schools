@@ -1,118 +1,55 @@
 <?php
-require_once 'ForenaSchools.inc';
 require_once 'ForenaSchoolsCSV.inc';
-class ForenaSchoolsImport extends ForenaSchools {
+require_once 'ForenaSchoolsGroup.inc'; 
+require_once 'ForenaSchoolsPerson.inc'; 
+class ForenaSchoolsImport { 
+  public function importCourseSchedules($vars) { 
+    $output = ''; 
+    $group_count = 0; 
+    $student_count = 0; 
+    $path = rtrim($vars['import_directory']); 
+    $filename=$vars['filename']; 
+    $filepath = $path . '/' . $filename; 
+    $sep = @$vars['sep']; 
+    $enc = @$vars['enc']; 
+    $csv = ForenaSchoolsCSV::instance(); 
+    $group_by = array('school_code',  'bldg_code', 'group_code', 'course_code', 'faculty_sis_id'); 
+    $data = $csv->readCSV($filepath, $vars, $group_by);
 
-	static function instance() {
-		static $o = '';
-		if (!$o) {
-			$o = new ForenaSchoolsImport();
-		}
-		return $o;
-	}
-
-	public function preProcessImport($script, &$context) {
-  	$lines = explode( "\n", $script);
-		$variables = $context['sandbox']['variables'] = array();
-		$context['sandbox']['max_lines'] = count($lines);
-		$context['sandbox']['line'] = 0;
-		$context['sandbox']['lines'] = $lines;
-	}
-
-	public function processImport($script, &$context) {
-		  $output ='';
-		  set_time_limit(3600);
-		  if (empty($context['sandbox'])) {
-		  	$this->preProcessImport($script, $context);
-		  }
-		  $l = $context['sandbox']['line'];
-		  $defaults = $context['sandbox']['variables'];
-      $context['sandbox']['line'] = $l + 1;
-		  $line = $context['sandbox']['lines'][$l];
-	  	$buffer = trim($line);
-      if ($buffer) {
-	      // = Implies Variables
-	      if(strpos(trim($buffer),'#')===0) {
-	      	$output = trim($buffer, '#');
-	      	sleep(1);
-	      }
-	      elseif (strpos($buffer,"=")>0)  {
-	      	list($var,$value) = explode("=",$buffer,2);
-	      	$var = trim($var);
-	      	$value= trim($value);
-	      	if ($var=='import_directory') {
-	      	  $value= rtrim($value,'/').'/';
-	      	}
-	      	
-	      	// Determine if it's an array syntax. 
-	      	if (strpos($var, '[]')) { 
-	      	  $var = trim($var, '[]'); 	
-	      	  $defaults[$var][] = $value;       	  
-	      	}
-	      	else { 
-  	      	$defaults[$var]=$value;
-	      	}
-      	  $context['sandbox']['variables'] = $defaults; 	
-
-	      }
-	      // Space delimited implies table import
-	      elseif (strpos($buffer,'>') >0) {
-	      	$csv = new ForenaSchoolsCSV();
-	        list($filename,$dest) = explode('>',$buffer,2);
-	        list($table_name,$option) = explode(' ',$dest,2);
-	        $table_name = trim($table_name);
-	        $option = trim($option);
-	        $import_dir = $defaults['import_directory'];
-	      	$filename = trim($filename);
-	      	if (strtolower($option=='nodelete')) {
-	      		$delete = false ;
-	      		$del_msg = ' no delete specified';
-	      	} else {
-	      		$delete = true;
-	      		$del_msg = '';
-	      	}
-          $filepath = $import_dir. $filename;
-
-	      	$output = 'Imported '.$table_name .' from '.$filename . ' '. $del_msg . ' '
-	      	  . $csv->table_from_csv($table_name,$filepath,$delete,$defaults);
-	      	sleep(1);
-	      } elseif (strpos($buffer,'(')>0) {
-	      	$output = "Completed $buffer....\n";
-	      	if (strpos($buffer, '.')) { 
-	      	  list($class, $method) = explode('.', $buffer); 
-	      	  list($method, $parms) = explode('(', $method); 
-	      	  include_once "$class.inc";
-	 
-	      	  if (class_exists($class) ) { 
-	      	    $o = call_user_func($class . '::instance');
-	      	    if ($o) { 
-	      	      if (method_exists($o, $method)) { 
-	      	        $output .= $o->$method($defaults); 
-	      	      }
-	      	      else { 
-	      	        drupal_set_message("Method $class.$method not found!", 'error');
-	      	      }
-	      	    }
-	      	    else { 
-	      	      drupal_set_message("Factory method instance not found on $class", 'error');
-	      	    }
-	      	  }
-	      	  else { 
-	      	    drupal_set_message("Class $class not found", 'error'); 
-	      	  }
-	      	  
-	      	}
-	      	else { 
-  	      	$output .=  $this->db->call($buffer,$defaults)."\n";
-	      	  
-	      	}
-	      	sleep(1);
-	      }
-	    }
-		  $context['finished'] = ($l + 1) / $context['sandbox']['max_lines'];
-	    if ($output) {
-	      $context['message'] = $output;
-	    }
-	  }
-
+    $g = ForenaSchoolsGroup::instance(); 
+    $p = ForenaSchoolsPerson::instance(); 
+    
+    // Uncomment to only do the first group
+    //$data = array($data[0]); 
+    foreach ($data as $group_array) { 
+      $group_count++; 
+      
+      // Get first row as group
+      $group = $group_array[0];
+      if (isset($group['description'])) $group['name'] = $group['description']; 
+      $group['group_code'] = @$group['group_code'] ? $group['group_code']: $group['course_code']; 
+      $g->loadByCode($group['group_code'], $group['school_year'], $group['bldg_code'], $group['faculty_sis_id']); 
+      
+      // If we have enough data, save the group
+      if (!$g->group['group_id'] && @$group['name']) { 
+        $p->loadBySisId($group['fac_sis_id']); 
+        $group['owner_id'] = $p->person['person_id'];    
+        if ($group['owner_id']) $g->save($group); 
+      }
+      
+      // If we have a description then save group data.
+      if ($g->group['group_id']) { 
+        $sis_ids = array(); 
+        foreach ($group_array as $member) { 
+          if (@$member['sis_id']) $sis_ids[] = $member['sis_id']; 
+        }
+        $student_count+=count($sis_ids); 
+        $g->saveMembersBySISId($sis_ids, $group['school_year']); 
+      }
+    } 
+    
+    $output .= "Imported $student_count members into $group_count groups. "; 
+    return $output; 
+  }
+  
 }
