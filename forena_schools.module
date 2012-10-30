@@ -31,8 +31,7 @@ function forena_schools_menu() {
 	  'file' => 'inc/common.inc',
 	);
 
-
-		$items['admin/config/system/forena-schools'] = array(
+	$items['admin/config/system/forena-schools'] = array(
 	  'type' => MENU_NORMAL_ITEM,
 	  'title' => 'Forena Schools',
 		'description' => 'Run SIS import jobs',
@@ -88,6 +87,15 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_impersonate_form'),
 	  'file' => 'forena_schools.admin.inc',
 	);
+	
+	$items['forenaschools/import/group'] = array(
+	  'title' => 'Import Student Groups', 
+	  'type' => MENU_NORMAL_ITEM, 
+	  'access arguments' => array('import student groups'), 
+	  'page callback' => 'drupal_get_form', 
+	  'page arguments' => array('forena_schools_import_groups'),
+	  'file' => 'forena_schools_groups.inc', 	  
+	); 
 	return $items;
 }
 

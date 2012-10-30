@@ -141,7 +141,7 @@ class ForenaSchoolsCSV {
 	 * Read in a full csv grouping rows as needed. 
 
 	 */
-	function readCSV($file_name, $defaults=array(), $group_by = array(),  $sep = ',', $enc='"') { 
+	function readCSV($file_name, $defaults=array(), $group_by = array(),  $limit=0,  $sep = ',', $enc='"') { 
 		if (!trim($sep)) {
 			$sep =',';
 		}
@@ -169,8 +169,9 @@ class ForenaSchoolsCSV {
 		}
 	  $data = array(); 
 		$line = 1;
+		$count=0; 
 		// Import the file
-    while (($cols=fgetcsv($file,null,$sep,$enc))!=false ) {
+    while ( ($cols=fgetcsv($file,null,$sep,$enc))!=false  && (!$limit || $count<=$limit)) {
 	  	$line++;
 
   	  // Row starts out with default values passed in
@@ -185,6 +186,7 @@ class ForenaSchoolsCSV {
   		  if ($cur_values != $last_group) { 
   		    if ($last_group!=$empty_group) {
   		      $data[] = $group; 
+  		      $count++; 
   		    }
   		    $last_group = $cur_values; 
 		      $group = array(); 
@@ -193,6 +195,7 @@ class ForenaSchoolsCSV {
   		} 
   		else { 
   		  $data[] = $row; 
+  		  $count++; 
   		}
   		
     }  
@@ -200,7 +203,6 @@ class ForenaSchoolsCSV {
     if ($group_by) { 
       $data[] = $group; 
     }
-    
     return $data; 
 	}
 

@@ -19,7 +19,7 @@ class ForenaSchoolsPerson {
    */
   public function loadBySisId($sis_id) { 
     $rs = db_query(
-      'SELECT s.*, last_name, first_name 
+      'SELECT *
       FROM {p_people} p 
       WHERE p.sis_id = :sis_id',
       array(':sis_id' => $sis_id)
