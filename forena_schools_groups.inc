@@ -51,27 +51,35 @@ function forena_schools_import_groups($formid, &$form_state) {
   );
 
   $school_years = ForenaSchools::instance()->schoolYearList();
+  $form['defaults'] = array(
+    '#type' => 'fieldset', 
+    '#title' => 'Defaults', 
+    '#tree' => TRUE, 
+  ); 
 
-  $form['type'] = array(
+  $form['defaults']['type'] = array(
     '#type' => 'select', 
     '#title' => t('Student Group Type'), 
-    '#description' => t('Select the type of group you would like to create.'), 
+    '#description' => t('Select type of group to create can be overriende by type column in the import file.'), 
     '#options' => $group_types, 
   );
 
-  $form['category'] = array(
+  $form['defaults']['category'] = array(
     '#type' => 'textfield', 
     '#title' => 'Category', 
     '#description' => 'Can be overriden by specifying a category column in the import file.', 
     '#size' => 60,
   );
 
-  $form['school_year'] = array(
+  $form['defaults']['school_year'] = array(
     '#type' => 'select', 
     '#title' => 'School Year', 
     '#description' => 'Can be overridden by including school_year column in the import file.', 
     '#options' => $school_years,  
   );
+  
+ 
+  
   if (!@$form_state['storage']['file_name']) {
     $form['upload'] = array(
       '#type' => 'file', 
@@ -123,7 +131,7 @@ function forena_schools_import_groups_preview($form, &$form_state) {
   if ($path) {
     $csv = ForenaSchoolsCSV::instance();
     $group_by = array('school_code',  'bldg_code', 'group_code', 'course_code', 'faculty_sis_id');
-    $data = $csv->readCSV($path, $form_state['values'], $group_by, 10);
+    $data = $csv->readCSV($path, $form_state['values']['defaults'], $group_by, 10);
     $form_state['storage']['data'] = $data;
 
   }
@@ -137,27 +145,38 @@ function forena_schools_import_group_submit($form, &$form_state) {
     $batch = array(
       'title' => t('Importing Groups'),
       'operations' => array(
-        array('forena_schools_process_group_import', array($path, $form_state['values'])),
+        array('forena_schools_process_group_import', array($path, $form_state['values']['defaults'])),
         ),
       'file' => $mpath . '/forena_schools_groups.inc', 
     );
+    
     batch_set($batch); 
   }
 
 }
 
+/**
+ * Batch import of data from impot group
+ * $filename specifies the name of the file to import 
+ * $default is an array of defaults to include.
+ */
 function forena_schools_process_group_import($filename, $defaults,  &$context) {
+  // Reparse file because it may be too big to cache. 
   $csv = ForenaSchoolsCSV::instance();
   $group_by = array('school_code',  'bldg_code', 'group_code', 'course_code', 'faculty_sis_id');
   $data = $csv->readCSV($filename, $defaults, $group_by);
+  // Break into groups of 100. 
   $data = array_chunk($data, 100);   
     
+  // Determine how many passes are required. 
   if (@!$context['sandbox']) {
     $context['sandbox']['progress'] = 0;
     $context['sandbox']['max'] = count($data); 
   } 
   $cur = $context['sandbox']['progress']; 
   $max = $context['sandbox']['max'];
+  
+  // Import in groups of 100. 
   $context['message'] = ForenaSchoolsGroup::instance()->import($data[$cur]); 
 
   $cur++; 

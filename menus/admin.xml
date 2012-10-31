@@ -4,5 +4,6 @@
     <item title="Define Buildings" path="reports/building.Schools"/> 
     <item title="Define School Years" path="flexpopup/SystemSettings" target="popupSystemSettings" />
     <item title="User Management" path="flexpopup/UserManager" target="popupUserManager"/> 
+    <item title="Import Student Groups" path="forenaschools/import/group"/> 
     <item title="Inspect SIS Import" path="reports/import.courses"/> 
 </menus>

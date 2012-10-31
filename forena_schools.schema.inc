@@ -170,6 +170,7 @@ function forena_schools_schema() {
       ), 
       
       'school_year' => array(
+        'type' => 'int', 
         'description' => 'School Year of enrollment', 
       ), 
       
