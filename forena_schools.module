@@ -66,6 +66,15 @@ function forena_schools_menu() {
 	  'access arguments' => array('administer forena schools'),
 	  'file' => 'forena_schools.admin.inc',
 	);
+	
+	$items['forenaschools/year/edit'] = array(
+	  'type' => MENU_CALLBACK, 
+	  'access callback' => 'forena_schools_access', 
+	  'access arguments' => array('sys_admin'), 
+	  'page callback' => 'drupal_get_form', 
+	  'page arguments' => arraY('fornea_schools_year_form', 3), 
+	  'file' => 'forena_schools.admin.inc', 
+	); 
 
 	// Admin Menus
 	$items['forenaschools/building/edit'] = array(

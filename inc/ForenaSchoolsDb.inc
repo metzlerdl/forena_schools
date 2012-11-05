@@ -24,7 +24,7 @@ function __construct() {
 
   if (!$this->c) {
     $this->c = pg_connect(forena_schools_connection_string());
-    if ($this->c) pg_query($this->c,"SET search_path=public,import");
+    if ($this->c) @pg_query($this->c,"SET search_path=public,import");
   }
   $this->debug = @$_GET['debug']=='true';
 }

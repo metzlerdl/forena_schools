@@ -9,6 +9,8 @@ function forena_schools_schema() {
     'fields' => array(
       'bldg_id' => array(
         'type' => 'serial', 
+        'unsigned' => TRUE, 
+        'size' => 'big', 
         'not null' => TRUE, 
       ),
       
@@ -59,6 +61,56 @@ function forena_schools_schema() {
     'primary key' => array('bldg_id'), 
   ); 
   
+  // SChool year
+  $schema['i_school_years'] = array(
+    'description' => 'School years for statistics',
+    'fields' => array(
+      'school_year' => array(
+        'type' => 'int',
+        'not null' => TRUE, 
+      ), 
+      'label' => array(
+        'type' => 'varchar',
+        'not null' => TRUE, 
+        'length' => 60, 
+      ), 
+      'start_date' => array(
+         'type' => 'date',
+         'mysql_type' => 'DATE',
+         'pgsql_type' => 'DATE',
+         'sortable' => TRUE,
+      ), 
+      'end_date' => array(
+         'type' => 'date',
+         'mysql_type' => 'DATE',
+         'pgsql_type' => 'DATE',
+         'sortable' => TRUE,        
+      ), 
+    ), 
+    'primary_key' => array('school_year'), 
+  ); 
+  
+  //Grade levels
+  $schema['i_grade_levels'] = array(
+    'description' => 'Grade level validation', 
+    'fields' => array(
+      'grade_level' => array(
+        'type' => 'int', 
+        'size' => 'tiny', 
+        'not null' => TRUE, 
+      ), 
+      'name' => array(
+        'type' => 'varchar', 
+        'length' => 60, 
+      ), 
+      'abbrev' => array(
+        'type' => 'varchar', 
+        'length' => 25, 
+      ), 
+    ), 
+    'primary key' => array('grade_level'),  
+  ); 
+  
   // People 
   $schema['p_people'] = array(
     'description' => 'Every person, including teachers, students and administrators. ', 
@@ -67,6 +119,7 @@ function forena_schools_schema() {
       'person_id' => array(
         'description' => 'Unique key for person', 
         'type' => 'serial', 
+        'size' => 'big', 
         'not null' => TRUE, 
         'unsigned' => TRUE, 
       ), 
@@ -154,12 +207,15 @@ function forena_schools_schema() {
   
       'person_id' => array(
         'type' => 'int', 
+        'size' => 'big', 
         'not null' => TRUE, 
         'unsigned' => TRUE, 
       ), 
       
       'student_id' => array(
-        'type' => 'serial', 
+        'type' => 'serial',
+        'size' => 'big', 
+        'unsigned' => TRUE,  
         'not null' => TRUE,
       ),
       
@@ -171,6 +227,7 @@ function forena_schools_schema() {
       
       'school_year' => array(
         'type' => 'int', 
+        'size' => 'small', 
         'description' => 'School Year of enrollment', 
       ), 
       
@@ -192,7 +249,7 @@ function forena_schools_schema() {
       'student_id' => array(
         'description' => 'Id to student enrollment record', 
         'type' => 'int',
-        
+        'size' => 'big', 
         'unsigned' => TRUE,
         'not null' => TRUE, 
         ), 
@@ -239,6 +296,8 @@ function forena_schools_schema() {
       'group_id' => array(
         'type' => 'serial', 
         'unsigned' => TRUE, 
+        'size' => 'big', 
+        'not null' => TRUE, 
       ), 
       
       'category' => array(
@@ -258,6 +317,7 @@ function forena_schools_schema() {
        
        'school_year' => array(
          'type' => 'int', 
+         'size' => 'small', 
        ), 
        
        'group_type' => array(
@@ -269,12 +329,12 @@ function forena_schools_schema() {
        
        'min_grade_level' => array(
          'type' => 'int',
-         'size' => 'small', 
+         'size' => 'tiny', 
        ), 
        
        'max_grade_level' => array(
          'type' => 'int', 
-         'size' => 'small', 
+         'size' => 'tiny', 
        ), 
        
        'code' => array(
@@ -295,6 +355,8 @@ function forena_schools_schema() {
     'fields' => array(
       'group_id' => array(
         'type' => 'int', 
+        'size' => 'big', 
+        'unsigned' => TRUE, 
         'not null' => TRUE, 
       ), 
       
@@ -309,5 +371,327 @@ function forena_schools_schema() {
     
   ); 
   
+  $schema['p_staff'] = array(
+    'description' => 'Staff of a building and their roles', 
+    'fields' => array(
+       'staff_id' => array(
+         'type' => 'serial', 
+         'size' => 'big', 
+         'unsigned' => 'true', 
+         'not null' => TRUE,
+       ), 
+       
+       'bldg_id' => array(
+         'type' => 'int',
+         'not null' => TRUE, 
+       ),
+       
+       'person_id' => array(
+         'type' => 'int', 
+         'size' => 'big', 
+         'unsigned' => TRUE, 
+         'not null' => TRUE, 
+       ),
+
+       'min_grade_level' => array(
+         'type' => 'int',
+         'size' => 'tiny', 
+       ), 
+       
+       'max_grade_level' => array(
+         'type' => 'int', 
+         'size' => 'tiny', 
+       ), 
+       
+       'role' => array(
+         'type' => 'varchar', 
+         'length' => 25, 
+       ), 
+    ), 
+    'primary key' => array('staff_id')
+  ); 
+  
+  $schema['a_tests'] = array(
+    'description' => 'Test Definitions', 
+    'fields' => array(
+      'test_id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE, 
+        'not null' => TRUE,  
+      ), 
+      'name' => array(
+        'type' => 'varchar', 
+        'length' => 75, 
+        'not null' => TRUE,
+      ), 
+      'abbrev' => array(
+        'type' => 'varchar', 
+        'length' => 25, 
+      ), 
+      'code' => array(
+        'type' => 'varchar', 
+        'length' => 50, 
+      ), 
+      'subject_area' => array(
+        'type' => 'varchar',
+        'length' => 25, 
+      ), 
+      'inactive' => array(
+        'type' => 'int', 
+      ), 
+      'min_grade' => array(
+        'type' => 'int', 
+        'size' => 'tiny'
+      ), 
+      'max_grade' => array(
+        'type' => 'int',
+        'size' => 'tiny'
+      ), 
+      'weight' => array(
+        'type' => 'int', 
+      ), 
+      'allow_data_entry' => array(
+        'type' => 'int', 
+      ), 
+    ), 
+    'primary key' => array('test_id'), 
+  ); 
+  
+  $schema['a_test_measures'] = array(
+    'description' => 'Measure Definition', 
+    'fields' => array(
+      'measure_id' => array(
+        'type' => 'serial', 
+      ), 
+      'test_id' => array(
+        'type' => 'int', 
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+      ), 
+      'name' => array(
+        'type' => 'varchar', 
+        'length' => 75, 
+      ), 
+      'abbrev' => array(
+        'type' => 'varchar',
+        'length' => 25, 
+      ),
+      'code' => array(
+        'type' => 'varchar', 
+        'length' => 128, 
+      ), 
+      'description' => array(
+        'type' => 'varchar',
+        'length' => 400, 
+      ), 
+      'parent_measure' => array(
+        'type' => 'int', 
+      ), 
+      'calc_rule' => array(
+        'type' => 'varchar',
+        'length' => 75, 
+      ), 
+      'subject' => array(
+        'type' => 'varchar',
+        'length' => 60, 
+      ), 
+      'grad_requirement' => array(
+        'type' => 'varchar', 
+        'length' => 60, 
+      ), 
+    ), 
+    'primary key' => array('measure_id'), 
+  ); 
+  
+  $schema['a_test_measure_calcs'] = array(
+    'description' => 'List of measures in the calc', 
+    'fields' => array(
+      'measure_id' => array(
+        'type' => 'int',
+        'not null' => TRUE, 
+        'unsigned' => TRUE, 
+       ), 
+      'calc_measure_id' => array(
+         'type' => 'int', 
+         'unsigned' => TRUE, 
+         'not null' => TRUE, 
+       ),
+    ), 
+    'primary key' => array('measure_id', 'calc_measure_id'), 
+  ); 
+  
+  $schema['a_test_schedules'] = array(
+    'description' => 'Schedules', 
+    'fields' => array(
+      'test_id' => array(
+        'type' => 'int', 
+        'not null' => TRUE, 
+      ),
+      'seq' => array(
+        'type' => 'int',
+        'size' => 'tiny', 
+      ),
+      'label' => array(
+        'type' => 'varchar', 
+        'length' => 255, 
+      ), 
+      'start_day' => array(
+        'type' => 'int',
+        'default' => 0,  
+      ), 
+      'end_day'=> array(
+        'type' => 'int',
+        'default' => 300, 
+      ),
+      'target_day' => array(
+        'type' => 'int', 
+        'default' => 150, 
+      ), 
+    ),
+    'primary key' => array('test_id', 'seq'), 
+  ); 
+  
+  $schema['a_test_rules'] = array(
+    'description' => 'Normalization rules', 
+    'fields' => array(
+      'measure_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+      ), 
+      'grade_level' => array(
+        'type' => 'int',
+        'size' => 'tiny',  
+        'not null' => TRUE,
+      ), 
+      'seq' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE, 
+      ), 
+      'level_1' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+      ), 
+      'level_2' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+      ),       
+      'level_3' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+      ),       
+      'level_4' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+      ),       
+      'max_score' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+      ), 
+    ), 
+    'primary key' => array('measure_id', 'grade_level', 'seq'), 
+  ); 
+  
+  $schema['a_assessments'] = array(
+    'description' => 'Individual assessments', 
+    'fields' => array(
+      'assessment_id' => array(
+        'type' => 'serial', 
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'test_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE, 
+        'not null' => TRUE,  
+      ), 
+      'person_id' => array(
+        'type' => 'int',
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE, 
+      ), 
+      'grade_level' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+      ), 
+      'school_year' => array(
+        'type' => 'int',
+        'size' => 'small', 
+      ), 
+      'bldg_id' => array(
+        'type' => 'int',
+        'size' => 'small', 
+      ), 
+      'date_taken' => array(
+         'type' => 'date',
+         'mysql_type' => 'DATE',
+         'pgsql_type' => 'DATE',
+         'sortable' => TRUE, 
+      ), 
+      'attr1' => array(
+        'type' => 'varchar',
+        'length' => 30, 
+      ), 
+      'attr2' => array(
+        'type' => 'varchar', 
+        'length' => 30, 
+      ), 
+      'comments' => array(
+        'type' => 'text',
+      ), 
+      'modified' => array(
+         'type' => 'date',
+         'mysql_type' => 'DATE',
+         'pgsql_type' => 'DATE',
+         'sortable' => TRUE, 
+      ),
+      'source' => array(
+        'type' => 'varchar', 
+        'length' => 30,      
+      ),      
+      'modified_by' => array(
+        'type' => 'varchar', 
+        'length' => 60, 
+      ), 
+    ), 
+    'primary key' => array('assessment_id'),
+  ); 
+  
+  $schema['a_scores'] = array(
+    'description' => 'Test scores for each assessment',
+    'fields' => array(
+      'assessment_id' => array(
+        'type' => 'int', 
+        'size' => 'big',
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+      ), 
+      'measure_id' => array(
+         'type' => 'int', 
+         'unsigned' => TRUE, 
+         'not null' => TRUE, 
+      ), 
+      'score' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+        'not null' => TRUE, 
+      ), 
+      'norm_score' => array(
+        'type' => 'numeric',
+        'precision' => 6, 
+        'scale' => 2, 
+      ), 
+    ), 
+    'primary key' => array('assessment_id', 'measure_id'), 
+  ); 
   return $schema; 
 }

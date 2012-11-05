@@ -16,3 +16,35 @@ function forena_schools_update_7007() {
     'default' => 'sis_import', 
   ));  
 }
+
+/**
+ * Loads configuration data from a simple xml file.  Usually saved from a forena block.
+ * @param unknown_type $file
+ */
+function forena_schools_load_xml($filename) {
+  $path = drupal_get_path('module', 'forena_schools'); 
+  $xml = file_get_contents($path . '/' . $filename); 
+  $data = array(); 
+  if ($xml) {
+    $xml = @new SimpleXMLElement($xml); 
+  }
+  foreach ($xml as $row) { 
+    $r = array(); 
+    foreach ($row as $name=>$column) { 
+      $r[$name] = (string) $column; 
+    }
+    $data[] = $r; 
+  }
+  return $data; 
+}
+
+function forena_schools_install() { 
+  // load base data
+  $data = forena_schools_load_xml('grade_levels.xml'); 
+  foreach($data as $row) { 
+    db_insert('i_grade_levels')
+     ->fields($row)
+     ->execute(); 
+  }
+  
+}

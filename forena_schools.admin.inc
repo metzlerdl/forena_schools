@@ -2,6 +2,68 @@
 require_once 'inc/ForenaSchools.inc';
 require_once 'inc/ForenaSchoolsQuery.inc';
 
+function forena_schools_school_year_form($formid, &$form_state, $school_year='') { 
+  $y = ForenaSchoolsYear::instance(); 
+  if ($school_year) { 
+    $data = $y->load($school_year); 
+  }
+  else { 
+    $data = array(); 
+  }
+  
+  if ($school_year) { 
+    $form['school_year'] = array(
+      '#type' => 'value', 
+      '#value' => $school_year, 
+    ); 
+  }
+  else {
+    $form['school_year'] = array(
+      '#type' => 'textfield', 
+      '#title' => 'School Year', 
+      '#description'  => 'A four digit number representing the year that the school year ends', 
+    ); 
+  }
+  
+  $form['label'] = array(
+    '#type' => 'textfield', 
+    '#maxlength' => 60, 
+    '#required' => TRUE, 
+    '#title' => 'Label', 
+    '#description' => 'Enter year as it is displayed to the user (.e.g. 2012-13)', 
+  ); 
+  
+  $form['abbrev'] = array(
+    '#type' => 'textfield', 
+    '#title' => 'Abbreviation',
+    '#maxlength' => 25, 
+    '#required' => TRUE, 
+    '#description' => 'Short description of school year (e.g. 12-13)'
+  ); 
+  
+  $form['start_date'] = array(
+    '#type' => 'textfield', 
+    '#title' => 'Start date', 
+    '#description' => 'Starting poing of school year. ', 
+  ); 
+  
+  $form['end_date'] = array(
+    '#type' => 'textfield', 
+    '#title' => 'End Date', 
+    '#description' => 'Ending date of the school year.  Leave time for tests to be entered. '
+  ); 
+  
+  $form['save'] = array(
+    '#type' => 'submit',
+    '#sumbit' => array('forena_schools_year_save'), 
+  ); 
+  
+}
+
+function forena_schools_year_save($form, &$form_state) { 
+  ForenaSchoolsYear::instance()->save($form_state['values']); 
+}
+
 /**
  * School definition form
  * Enter description here ...

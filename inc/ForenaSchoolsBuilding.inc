@@ -60,7 +60,6 @@ class ForenaSchoolsBuilding {
     if ($rs) { 
       $buidlings = $rs->fetchAllAssoc('code',PDO::FETCH_ASSOC); 
     }
-    return $buildings; 
-    
+    return $buildings;  
   }
 }
