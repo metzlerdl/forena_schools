@@ -3,6 +3,7 @@
 
 class ForenaSchoolsBuilding { 
   
+  public $bulding; 
   static public function instance() { 
     static $o = ''; 
     if (!$o) { 
@@ -47,19 +48,40 @@ class ForenaSchoolsBuilding {
    */
   public function idList() { 
     $buildings = array(); 
-    $rs = db_query('select * from i_buildings order by name'); 
+    $rs = db_query('select * from {i_buildings} order by name'); 
     if ($rs) { 
-      $buidlings = $rs->fetchAllAssoc('bldg_id',PDO::FETCH_ASSOC); 
+      $buildings = $rs->fetchAllAssoc('bldg_id',PDO::FETCH_ASSOC); 
     }
     return $buildings; 
   }
   
+  /**
+   * Retrun a list of all buildings indexed by code. 
+   */
   public function codeList() { 
     $buildings = array(); 
-    $rs = db_query('select * from i_buildings order by name'); 
+    $rs = db_query('select * from i_buildings  where code is not null order by name'); 
     if ($rs) { 
-      $buidlings = $rs->fetchAllAssoc('code',PDO::FETCH_ASSOC); 
+      $buildings = $rs->fetchAllAssoc('code',PDO::FETCH_ASSOC); 
     }
     return $buildings;  
+  }
+  
+  /**
+   * Load individual building by code
+   * @param $code Building code to load. 
+   */
+  public function loadByCode($code) {
+    $rs = db_query('select * from i_buildings where code=:code',
+      array(':code' => $code)
+    ); 
+    if ($rs) { 
+      $bldg = $rs->fetchAssoc(); 
+    }
+    else { 
+      $bldg =  array(); 
+    }
+    $this->building = $bldg; 
+    return $bldg; 
   }
 }

@@ -1,4 +1,6 @@
 <?php
+require_once 'ForenaSchoolsPerson.inc'; 
+require_once 'ForenaSchoolsBuilding.inc'; 
 class ForenaSchoolsGroup { 
   
   public $group; 
@@ -35,14 +37,17 @@ class ForenaSchoolsGroup {
     $this->group['code'] = $code; 
     $this->group['school_year'] = $school_year; 
     
+    $parms = array(':code' => $code, ':school_year' => $school_year, ':bldg_code' => $bldg_code, ':fac_sis_id' => $fac_sis_id);
+    
     //Search for the existing entry
     $rs = db_query(
     	'SELECT * FROM {s_groups} g 
     	  JOIN {i_buildings} b ON g.bldg_id=b.bldg_id
     	  JOIN {p_people} p ON g.owner_id = p.person_id
     	  WHERE g.code=:code AND g.school_year=:school_year and b.code=:bldg_code
-    	    AND p.sis_id = :fac_sis_id', 
-      array(':code' => $code, ':school_year' => $school_year, ':bldg_code' => $bldg_code, ':fac_sis_id' => $fac_sis_id)
+    	    AND p.sis_id = :fac_sis_id',
+     $parms 
+    
     );    
    
     // If data was returned then load the members
@@ -119,21 +124,20 @@ class ForenaSchoolsGroup {
     if (!$new_members) $new_members = array(); 
     
     // Only overwrite fields present in the group
-    $group = array_merge($this->group, $group); 
+    if ($this->group) $group = array_merge($this->group, $group); 
     $this->group = $group; 
     
     // Insert/update the group. 
-    if ($group['group_id']) { 
+    if (@$group['group_id']) { 
       db_update('s_groups')->
         fields(
           array(
           	'name' => $group['name'],
-            'category' => $group['category'], 
+            'category' => @$group['category'], 
             'bldg_id' => $group['bldg_id'], 
             'school_year' => $group['school_year'],
-            'group_type' => $group['group_type'], 
-            'source' => $group['source'], 
-            'code' => $group['code'],
+            'source' => @$group['source'], 
+            'code' => @$group['code'],
             'owner_id' => $group['owner_id'],
           )
         )
@@ -144,13 +148,13 @@ class ForenaSchoolsGroup {
       $group_id = db_insert('s_groups')
         ->fields(array(
           'name' => $group['name'], 
-          'category' => $group['category'],
+          'category' => @$group['category'],
           'bldg_id' => $group['bldg_id'],
-          'school_year' => $group['school_year'], 
+          'school_year' => @$group['school_year'], 
           'group_type' => $group['group_type'], 
-          'source' => $group['source'], 
-          'code' => $group['code'], 
-          'owner_id' => $group['owner_id'], 
+          'source' => @$group['source'], 
+          'code' => @$group['code'], 
+          'owner_id' => @$group['owner_id'], 
           ))
         ->execute(); 
       $this->group['group_id'] = $group_id; 
@@ -191,8 +195,30 @@ class ForenaSchoolsGroup {
           ))
         ->execute();  
     }
+    
+    // Update min and max grade levels if necessary
+    $rs = db_query('SELECT MIN(grade_level) AS min_grade, max(grade_level) as max_grade 
+      FROM s_group_members m JOIN p_students s ON m.student_id=s.student_id where group_id=:group_id',
+      array(':group_id' => $group_id)
+    ); 
+    if ($rs) { 
+      $data = $rs->fetchAssoc(); 
+      if ($data['min_grade'] != $this->group['min_grade_level'] || $data['max_grade']!= $this->group['max_grade_level'])
+      db_update('s_groups')
+        ->fields(array(
+            'max_grade_level' => $data['max_grade'], 
+            'min_grade_level' => $data['min_grade'], 
+          ))
+        ->condition('group_id', $group_id)
+        ->execute(); 
+    }
   }
   
+  /**
+   * Save members based on a profided array of sis_ids along with a school year
+   * @param $sis_ids Student System identifier
+   * @param $school_year School year ofr current school records. 
+   */
   public function saveMembersBySISId($sis_ids, $school_year) { 
     if ($sis_ids && $school_year) { 
       $query =  db_select('p_students', 's'); 
@@ -222,6 +248,7 @@ class ForenaSchoolsGroup {
     $student_count = 0; 
     $p = ForenaSchoolsPerson::instance(); 
     $g = $this; 
+    $buildings = ForenaSchoolsBuilding::instance()->codeList(); 
     
     // Uncomment to only do the first group
     //$data = array($data[0]); 
@@ -230,19 +257,37 @@ class ForenaSchoolsGroup {
       
       // Get first row as group
       $group = $group_array[0];
-      if (isset($group['description'])) $group['name'] = $group['description']; 
-      $group['group_code'] = @$group['group_code'] ? $group['group_code']: $group['course_code']; 
-      $g->loadByCode($group['group_code'], $group['school_year'], $group['bldg_code'], $group['faculty_sis_id']); 
       
-      // If we have enough data, save the group
-      if (!$g->group['group_id'] && @$group['name']) { 
-        $p->loadBySisId($group['fac_sis_id']); 
-        $group['owner_id'] = $p->person['person_id'];    
-        if ($group['owner_id']) $g->save($group); 
+      // Rename fields for backward compatibilty
+      if (isset($group['description'])) $group['name'] = $group['description']; 
+      $group['code'] = @$group['code'] ? $group['code']: $group['course_code']; 
+      // Default in group type
+      if (!@$group['group_type']) $group['group_type'] = 'course'; 
+      
+      // Check for existing group. 
+      $cur_group = $g->loadByCode($group['code'], $group['school_year'], $group['bldg_code'], $group['faculty_sis_id']); 
+      if ($cur_group) { 
+        $group['group_id'] = $cur_group['group_id']; 
       }
       
+      // Determine building id based on bldg_code. 
+      $bldg = @$buildings[$group['bldg_code']]; 
+      if ($bldg) { 
+        $group['bldg_id'] = $bldg['bldg_id']; 
+      }
+      else {
+        $group['bldg_id'] = -1; 
+      }
+          
+      // If we have enough data, save the group
+      if (!$g->group['group_id'] && @$group['name'] && @$group['bldg_id']) { 
+        $p->loadBySisId($group['faculty_sis_id']); 
+        $group['owner_id'] = $p->person['person_id'];    
+        if ($group['owner_id']) $g->save($group); 
+      } 
+      
       // If we have a description then save group data.
-      if ($g->group['group_id']) { 
+      if ($g->group['group_id']  && isset($group['sis_id'])) { 
         $sis_ids = array(); 
         foreach ($group_array as $member) { 
           if (@$member['sis_id']) $sis_ids[] = $member['sis_id']; 

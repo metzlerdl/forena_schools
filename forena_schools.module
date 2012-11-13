@@ -401,7 +401,7 @@ function forena_schools_import_cron($job_num) {
 	 drush_backend_batch_process();
 	}
 	else {
-	  batch_process('node');
+	  batch_process('forena_schools_import');
 	}
 }
 

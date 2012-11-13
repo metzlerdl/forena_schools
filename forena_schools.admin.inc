@@ -1,7 +1,7 @@
 <?php
 require_once 'inc/ForenaSchools.inc';
 require_once 'inc/ForenaSchoolsQuery.inc';
-
+require_once 'inc/common.inc'; 
 function forena_schools_school_year_form($formid, &$form_state, $school_year='') { 
   $y = ForenaSchoolsYear::instance(); 
   if ($school_year) { 

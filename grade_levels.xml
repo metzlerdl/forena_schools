@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<table xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<row>
+  <grade_level>0</grade_level>
+  <name>Kindergarten</name>
+  <abbrev>K</abbrev>
+</row>
+
+<row>
+  <grade_level>1</grade_level>
+  <name>First Grade</name>
+  <abbrev>1st</abbrev>
+</row>
+
+<row>
+  <grade_level>2</grade_level>
+  <name>Second Grade</name>
+  <abbrev>2nd</abbrev>
+</row>
+
+<row>
+  <grade_level>3</grade_level>
+  <name>Third Grade</name>
+  <abbrev>3rd</abbrev>
+</row>
+
+<row>
+  <grade_level>4</grade_level>
+  <name>Fourth Grade</name>
+  <abbrev>4th</abbrev>
+</row>
+
+<row>
+  <grade_level>5</grade_level>
+  <name>Fifth Grade</name>
+  <abbrev>5th</abbrev>
+</row>
+
+<row>
+  <grade_level>6</grade_level>
+  <name>Sixth Grade</name>
+  <abbrev>6th</abbrev>
+</row>
+
+<row>
+  <grade_level>7</grade_level>
+  <name>Seventh Grade</name>
+  <abbrev>7th</abbrev>
+</row>
+
+<row>
+  <grade_level>8</grade_level>
+  <name>Eighth Grade</name>
+  <abbrev>8th</abbrev>
+</row>
+
+<row>
+  <grade_level>9</grade_level>
+  <name>Ninth Grade</name>
+  <abbrev>9th</abbrev>
+</row>
+
+<row>
+  <grade_level>10</grade_level>
+  <name>Tenth Grade</name>
+  <abbrev>10th</abbrev>
+</row>
+
+<row>
+  <grade_level>11</grade_level>
+  <name>Eleventh Grade</name>
+  <abbrev>11th</abbrev>
+</row>
+
+<row>
+  <grade_level>12</grade_level>
+  <name>Twelfth Grade</name>
+  <abbrev>12th</abbrev>
+</row>
+
+</table>

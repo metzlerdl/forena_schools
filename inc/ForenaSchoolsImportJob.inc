@@ -6,7 +6,7 @@ class ForenaSchoolsImportJob extends ForenaSchools {
 	static function instance() {
 		static $o = '';
 		if (!$o) {
-			$o = new ForenaSchoolsImport();
+			$o = new ForenaSchoolsImportJob();
 		}
 		return $o;
 	}
