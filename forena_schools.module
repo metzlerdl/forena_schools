@@ -351,6 +351,7 @@ function forena_schools_permission() {
     'manage profiles' => array('title' => t('Administer Forena Reports')),
     'manage assessments' => array('title' => t('Define Assessments')),
     'import assessments' => array('title' => t('Import Assessments')),
+    'import student groups' => array('title' => t('Import Student Groups')), 
     'forena_schools impersonate' => array('title' => t('Impersonate User')),
     );
   return $perms;
