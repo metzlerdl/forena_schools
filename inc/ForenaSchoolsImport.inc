@@ -30,4 +30,16 @@ class ForenaSchoolsImport {
     return ForenaSchoolsGroup::instance()->import($data); 
   }
   
+  /**
+   * Delete all courses for a source in a given school year. 
+   * @param $data varables containing school_year and source to delete. 
+   */
+  public function deleteCoursesForSource($data) {
+    if (@$data['school_year'] && @$data['source']) {
+      db_delete('s_groups')
+        ->condition('source', $data['source'])
+        ->condition('school_year', $data['school_year'])
+        ->execute(); 
+    }
+  }
 }
