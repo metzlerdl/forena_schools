@@ -321,19 +321,19 @@
 			<s:FormItem width="33%" label="Test">
 				
 			  <components:BindingDropDown id="testSelect"  prompt="Select Test" XML="{testListSvc.xml.row}" dataField="test_id" labelField="name" 
-										  selectedValue="@{testId}"
+										  selectedValue="@{testId}" enabled="false"
 										   />
 
 			</s:FormItem>	
             <s:FormItem width="33%" label="Schedule">
 				
 			  <components:BindingDropDown id="scheduleSelect" XML="{schedSvc.xml.row}" dataField="seq" labelField="label" defaultSelect="true"
-									  selectedValue="@{schedSeq}" prompt="select"/>
+									  selectedValue="@{schedSeq}" prompt="select" enabled="false"/>
 			</s:FormItem>
 
 		  <s:FormItem width="33%">
 			  
-			  <components:BindingDateInput id="dateTakenInput" editable="true" text="@{dateTaken}"/>
+			  <components:BindingDateInput id="dateTakenInput" editable="true" enabled="false" text="@{dateTaken}"/>
 	      
 		  </s:FormItem>	  
 

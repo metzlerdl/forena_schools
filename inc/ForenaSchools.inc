@@ -10,7 +10,7 @@ class ForenaSchools {
 		$this->db = ForenaSchoolsDB::instance();
 		//Determine current user
 		GLOBAL $user;
-		$login = $user->name; 
+		$login = @$user->name; 
 		if ($this->db && $user->uid) {
 			$email = $user->mail;
 			$sql = 'SELECT p.*,s.role,s.bldg_id FROM p_people p JOIN p_staff s

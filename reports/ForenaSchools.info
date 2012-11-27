@@ -1,0 +1,7 @@
+
+name = Forena Schools Default Skin
+description = Default skin for use with Forena. 
+stylesheets[all][] = ForenaSchools.css
+scripts[] = dataTables/media/js/jquery.dataTables.min.js
+scripts[] = fixedColumns/media/js/fixedColumns.min.js
+scripts[] = ForenaSchools.js

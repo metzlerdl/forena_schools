@@ -5,6 +5,8 @@ function ForenaSchools(context) {
 		"sScrollX": "100%", 
 		"sScrollY": "25em"
 	}); 
-	new FixedColumns( oTable, {"iLeftColumns": 2,
-			"iLeftWidth": 250 });
+	if (oTable){ 
+  	new FixedColumns( oTable, {"iLeftColumns": 2,
+  			"iLeftWidth": 250 });
+	}
 }
