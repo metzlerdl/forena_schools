@@ -10,6 +10,7 @@ FROM
   max_grade_level,
   XMLAGG(XMLELEMENT(name course,XMLATTRIBUTES(
     name AS course_name, 
+    sis_id,  
     last_name ||', '|| first_name AS teacher_name,
     staff_id, 
     group_id)
@@ -22,6 +23,7 @@ FROM
     c.group_id,
     s.staff_id,
     c.name,
+    f.sis_id, 
     f.last_name,
     f.first_name
   FROM s_groups c 
