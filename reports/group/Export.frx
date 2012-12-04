@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>Export Group</title>
+    <frx:category/>
+    <frx:options/>
+    <frx:fields/>
+    <frx:parameters></frx:parameters>
+    <frx:docgen/>
+  </head>
+  <body>
+
+  <div class="FrxTable" >
+    <table>
+      <thead>
+        <tr>
+          <th>code</th>
+          <th>name</th>
+          <th>grade_level</th>
+          <th>faculty_sis_id</th>
+          <th>bldg_code</th>
+          <th>sis_id</th>
+          <th>last_name</th>
+          <th>first_name</th></tr></thead>
+      <tbody>
+        <tr frx:block="ims/group/group_export" id="group_export" frx:foreach="*">
+          <td>{code}</td>
+          <td>{name}</td>
+          <td>{grade_level}</td>
+          <td>{faculty_sis_id}</td>
+          <td>{bldg_code}</td>
+          <td>{sis_id}</td>
+          <td>{last_name}</td>
+          <td>{first_name}</td></tr></tbody></table></div></body>
+</html>

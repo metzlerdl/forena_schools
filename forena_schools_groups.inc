@@ -84,7 +84,7 @@ function forena_schools_import_groups($formid, &$form_state) {
     $form['upload'] = array(
       '#type' => 'file', 
       '#title' => t('File Upload'), 
-      '#description' => 'Files to upload.  Files may contain the follwoing headers', 
+      '#description' => 'Files to upload.  Column headers should match thos provided in the ' . l('sample import file', 'reports/group.Export.csv') . '.', 
     );
   }
 
