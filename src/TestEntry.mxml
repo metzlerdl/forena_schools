@@ -95,11 +95,11 @@
 			
 			public function init():void { 
 			  groupId = FlexGlobals.topLevelApplication.parameters.group_id; 
+			  testListSvc.send({group_id: groupId});
 			  testId = FlexGlobals.topLevelApplication.parameters.test_id; 
 			  schedSeq = FlexGlobals.topLevelApplication.parameters.seq; 
 			  
-			  groupSvc.send({group_id: groupId}); 
-			  testListSvc.send({group_id: groupId});
+			  //groupSvc.send({group_id: groupId}); 
 			  testGrid.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, true, 100); 
 			  
 			  
@@ -120,9 +120,12 @@
 			}
 			
 
-			private function setTestData():void {
-			  if (testGrid.selectedIndex<0 && groupSvc.xml.row.length()) {
-				  testGrid.selectedItem=0; 
+			private function setTestData():void { 
+			  // test comment to see if its working
+		      if (groupSvc.xml) { 
+				  if (testGrid.selectedIndex<0 &&  groupSvc.xml.row.length()) {
+					  testGrid.selectedItem=0; 
+				  }
 			  }
 			  if (groupSvc.xml && !confirmLoad && groupSvc.xml.row.(attribute('modified') =='*').length() > 0) { 
 				  Alert.show('You have unsaved changes.  Save your scores before continuing?','Save data', Alert.YES + Alert.NO, this, confirmSave ); 
@@ -288,6 +291,7 @@
 				if (event.xml) {
 				  //_schedSeq=event.xml.row[0].seq; 
 				  //dateTaken=event.xml.row[0].start_date; 
+	
 				}
 			}
 			
@@ -297,7 +301,7 @@
 					if (x) { 
 					  dateTaken = x.target_date; 
 					  title = x.group_name + ' ' + x.year_label; 
-					  this.setTestData(); 
+					  if (groupSvc) this.setTestData(); 
 					}
 				}
 			}
