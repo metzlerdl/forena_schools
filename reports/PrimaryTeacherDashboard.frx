@@ -17,7 +17,6 @@
 		link="reports/group.Dashboard?group_id={@group_id}" />
 	<frx:field id="@editable"
 		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
-	<frx:field id="test_entry" default="test entry" link="flexpopup/TestEntry?group_id={@group_id}" target="te_{@group_id}">test entry</frx:field>
 </frx:fields>
 <frx:parameters />
 <frx:docgen />
@@ -49,7 +48,6 @@
 				</tr>
 				<tr frx:foreach="courses/course">
 					<td>{@name}</td>
-					<td>{test_entry}</td>
 				</tr>
 			</tbody>
 		</table>
