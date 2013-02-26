@@ -66,15 +66,15 @@ function forena_schools_menu() {
 	  'access arguments' => array('administer forena schools'),
 	  'file' => 'forena_schools.admin.inc',
 	);
-	
+
 	$items['forenaschools/year/edit'] = array(
-	  'type' => MENU_CALLBACK, 
-	  'access callback' => 'forena_schools_access', 
-	  'access arguments' => array('sys_admin'), 
-	  'page callback' => 'drupal_get_form', 
-	  'page arguments' => arraY('fornea_schools_year_form', 3), 
-	  'file' => 'forena_schools.admin.inc', 
-	); 
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => arraY('fornea_schools_year_form', 3),
+	  'file' => 'forena_schools.admin.inc',
+	);
 
 	// Admin Menus
 	$items['forenaschools/building/edit'] = array(
@@ -96,15 +96,16 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_impersonate_form'),
 	  'file' => 'forena_schools.admin.inc',
 	);
-	
+
 	$items['forenaschools/import/group'] = array(
-	  'title' => 'Import Student Groups', 
-	  'type' => MENU_NORMAL_ITEM, 
-	  'access arguments' => array('import student groups'), 
-	  'page callback' => 'drupal_get_form', 
+	  'title' => 'Import Student Groups',
+	  'type' => MENU_NORMAL_ITEM,
+	  'access arguments' => array('import student groups'),
+	  'page callback' => 'drupal_get_form',
 	  'page arguments' => array('forena_schools_import_groups'),
-	  'file' => 'forena_schools_groups.inc', 	  
-	); 
+	  'file' => 'forena_schools_groups.inc',
+	);
+
 	return $items;
 }
 
@@ -160,6 +161,10 @@ function forena_schools_connection_string() {
 	return $uri;
 }
 
+/**
+ * Implementation of hook_forena_repos_alter
+ * @param $repos
+ */
 function forena_schools_forena_repos_alter(&$repos) {
 	$m_path = drupal_get_path('module', 'forena_schools');
 	$repos['ims'] = array(
@@ -181,11 +186,29 @@ function forena_schools_forena_repos_alter(&$repos) {
     'data provider' => 'FrxFiles',
     'access callback' => 'forena_schools_access',
   );
-
-
 }
 
-
+/**
+ * Implementation of hook_forena_parameters_alter
+ * @param $report_name String implementation of report name
+ * @param $parms array parameters to be modified.
+ */
+function forena_schools_forena_parameters_alter($report_name, &$parms) {
+  require_once 'inc/ForenaSchools.inc';
+  $o = ForenaSchools::instance();
+  static $parms = '';
+  if (!$parms) {
+    $parms['buildings'] = array_keys($o->userBuildings());
+    $parms['grades'] = array_keys($o->userGradeLevels());
+    if (forena_schools_access('dist_admin')) {
+      $parms['admin'] = 1;
+    }
+    else {
+      $parms['admin'] = 0;
+    }
+  }
+  Frx::Data()->setContext('security', $parms);
+}
 
 function forena_schools_current_login() {
 	require_once('inc/ForenaSchools.inc');
@@ -285,6 +308,11 @@ function forena_schools_forena_controls() {
     'file' => 'inc/FrxPedagoggleScores.inc',
     'class' => 'FrxPedagoggleScores',
   );
+
+  $controls[] = array(
+    'file' => 'inc/FrxSchoolsGroupAdd.inc',
+    'class' => 'FrxSchoolsGroupAdd',
+  );
   return $controls;
 }
 
@@ -343,7 +371,6 @@ function forena_schools_data() {
 /**
  * Implementation of hook_perm
  *
- * @return unknown
  */
 function forena_schools_permission() {
   $perms = array(
@@ -351,7 +378,7 @@ function forena_schools_permission() {
     'manage profiles' => array('title' => t('Administer Forena Reports')),
     'manage assessments' => array('title' => t('Define Assessments')),
     'import assessments' => array('title' => t('Import Assessments')),
-    'import student groups' => array('title' => t('Import Student Groups')), 
+    'import student groups' => array('title' => t('Import Student Groups')),
     'forena_schools impersonate' => array('title' => t('Impersonate User')),
     );
   return $perms;
@@ -371,7 +398,6 @@ function forena_schools_start_import_batch($title, $script, &$context) {
 }
 
 function forena_schools_cronapi($op, $job=NULL) {
-
 	$jobs = variable_get('forena_schools_import_jobs', array());
 	$items = array();
 	if ($jobs) foreach ($jobs as $i => $job) {
@@ -387,7 +413,10 @@ function forena_schools_cronapi($op, $job=NULL) {
 	return $items;
 }
 
-
+/**
+ * Cron hook
+ * @param $job_num
+ */
 function forena_schools_import_cron($job_num) {
 	require_once 'inc/ForenaSchoolsImport.inc';
 	$jobs = variable_get('forena_schools_import_jobs', array());
@@ -410,3 +439,72 @@ function forena_schools_cas_user_alter(&$cas_user) {
 	$cas_user['name'] = strtolower($cas_user['name']);
 }
 
+/**
+ * Facilitates the adding of data to a specified group. Also new groups can be created.
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $groups
+ * @param unknown_type $ids
+ */
+function forena_schools_group_add_js($formid, &$form_state, $groups = array(), $ids=array(), $data=array()) {
+  $form['defaults'] = array(
+    '#type' => 'value',
+    '#value' => $data,
+  );
+  $form['all_ids'] = array(
+    '#type' => 'value',
+    '#value' => $ids,
+  );
+
+  $form['ids_json'] = array(
+    '#type' => 'hidden',
+    '#value' => '',
+  );
+
+  $form['group'] = array(
+    '#type' => 'select',
+    '#options' => $groups,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Add',
+  );
+  return $form;
+}
+
+function forena_schools_group_add_js_submit($form, &$form_state) {
+  $g = ForenaSchoolsGroup::instance();
+  $defaults = $form_state['values']['defaults'];
+  // Determine whether we have selected members to add.
+  if ($form_state['values']['ids_json']) {
+    $ids = json_decode( $form_state['values']['ids_json']);
+  }
+  else {
+    $ids = &$form_state['values']['all_ids'];
+  }
+
+  // Make sure we have a groupl
+  $new_group = FALSE;
+  if ($form_state['values']['group']) {
+    $g->loadByGroupId($form_state['values']['group']);
+    $ids = array_merge($g->members,$ids);
+  }
+  else {
+    $user = ForenaSchools::instance()->user;
+    $person_id = $user['person_id'];
+    $group = array(
+      'name' => 'New Group',
+      'category' => '',
+      'bldg_id' => $defaults['bldg_id'],
+      'school_year' => $defaults['school_year'],
+      'group_type' => $defaults['group_type'],
+      'source' => 'user',
+      'owner_id' => $person_id
+    );
+    $g->save($group);
+    $group_id = $g->group['group_id'];
+    $form_state['redirect'] = array('flex/GroupEditor', array('query' => array('group_id' => $group_id, 'destination' => $_GET['q'])));
+  }
+  $g->saveMembers($ids);
+}

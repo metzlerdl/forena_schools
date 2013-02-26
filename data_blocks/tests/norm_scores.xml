@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--ACCESS=teacher  -->
+<scores>
+  <row>
+    <data>1</data><label>minimal</label>
+  </row>
+    <row>
+    <data>2</data><label>below expectations</label>
+  </row>
+    <row>
+    <data>3</data><label>met expectations</label>
+  </row>
+  <row>
+    <data>4</data><label>exceeded expectations</label>
+  </row>
+</scores>

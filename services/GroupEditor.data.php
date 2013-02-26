@@ -6,7 +6,7 @@ class GroupEditor extends ForenaSchools {
   public function __construct() {
   	parent::__construct();
   	//Determine which group we might be talking about
-  	$this->group_id = $_REQUEST['group_id'];
+  	$this->group_id = @$_REQUEST['group_id'];
 
   }
 

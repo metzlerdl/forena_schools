@@ -49,13 +49,12 @@
 		<table >
 			<tbody frx:foreach="*" id="course">
 				<tr>
-					<th colspan="3"><h4>{grade_heading}</h4>
+					<th colspan="2"><h4>{grade_heading}</h4>
 					</th>
 				</tr>
 				<tr frx:foreach="courses/course" id="forena-8">
 					<td>{@teacher_name} ({@sis_id})</td>
 					<td>{@course_name}</td>
-					<td>{manage}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -63,10 +62,14 @@
 		
 		<h3>Collections</h3>
 		<table >
+		  <tr>
+		    <th colspan="2">{grade_heading}</th>
+		  </tr>
 			<tbody>
 				<tr frx:foreach="*" id="coll">
 					<td>{collection_name}</td>
 					<td>{editable}</td>
+					<td>{manage}</td>
 				</tr>
 			</tbody>
 		</table>

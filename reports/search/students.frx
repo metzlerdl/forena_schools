@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Search Students</title>
+<frx:category>Search</frx:category>
+<frx:options/>
+<frx:fields>
+  <frx:field id="name" link="reports/Student?person_id={person_id}" target="student_{person_id}"/>
+</frx:fields>
+<frx:parameters>
+	<frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
+	<frx:parm id="bldg_id" type="select" data_source="ims/building/schools" require="1"/>
+	<frx:parm id="grade_level"/>
+	<frx:parm id="last"/>
+</frx:parameters>
+<frx:docgen>
+  <frx:doc type="csv"/>
+  <frx:doc type="xls"/>
+</frx:docgen>
+<frx:menu path="schools/:bldg_id/search/students" type="default-local-task" title="Students"/> 
+</head>
+<body>
+  <div id="building" frx:block="ims/building/building" frx:foreach="*">
+    <h1 frx:renderer="FrxTitle">{building.name} Search</h1>
+  </div>
+  <div frx:renderer="FrxParameterForm" title="Search Criteria" submit="Search">
+    <p>Search for students who attended during the school year {school_year}</p>
+    <p>and has a last name beginning with {last}</p>
+    <p>{submit}</p>
+  </div>
+	<div id="students_block" class="FrxTable" frx:block="ims/search/students">
+		<h2>Results</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>name</th>
+					<th>grade</th>
+					<th>bldg_name</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="students" frx:foreach="*">
+					<td>{name}</td>
+					<td>{grade}</td>
+					<td>{bldg_name}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

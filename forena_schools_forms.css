@@ -1,0 +1,5 @@
+@CHARSET "UTF-8";
+
+.fs-search-inline div, .fs-search-inline label {
+  	display: inline; 
+}

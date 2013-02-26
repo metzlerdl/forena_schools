@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Student Search</title>
+<frx:category>Search</frx:category>
+<frx:options/>
+<frx:fields>
+  <frx:field id="name" link="reports/Student?person_id={person_id}" target="student_{person_id}"/>
+
+</frx:fields>
+<frx:parameters>
+	<frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
+	<frx:parm id="grade_level" type="selectajax" data_source="ims/grade_levels" require="1"/>
+	<frx:parm id="max_grade_level" type="select" data_source="ims/grade_levels" label=""/>
+	<frx:parm id="test_id" type="selectajax" data_source="ims/building/tests" label="test"/> 
+	<frx:parm id="seq" type="select" data_source="ims/tests/schedules" label="schedule"/> 
+	<frx:parm id="measure_id" type="select" data_source="ims/tests/measures"/> 
+	<frx:parm id="norm_score" type="multiselect" data_source="ims/tests/norm_scores">2</frx:parm> 
+	<frx:parm id="last"/>
+</frx:parameters>
+<frx:docgen>
+  <frx:doc type="csv"/>
+  <frx:doc type="xls"/>
+</frx:docgen>
+<frx:menu path="schools/:bldg_id/search/performance" type="local-task" title="Performance"/> 
+</head>
+<body>
+  <div id="building" frx:block="ims/building/building" frx:foreach="*">
+    <h1 frx:renderer="FrxTitle">{building.name} Search</h1>
+  </div>
+  <div frx:renderer="FrxParameterForm" title="Search Criteria" submit="Search">
+   <p>Search for students in grades {grade_level} through {max_grade_level}
+     who were issued {test_id} assessments during the {school_year} school year
+     that meet the following criteria.
+   </p>
+    <div><label for="parm-edit-seq">Schedule</label> {seq}</div>
+    <div><label for="parm-edit-measure_id">Measure</label> {measure_id}</div> 
+    <div><label for="parm-edit-norm_score">Score</label>{norm_score}</div>
+    <p>{submit}</p>
+  </div>
+	<div id="students_block" class="FrxTable" frx:block="ims/search/performance">
+		<h2>Results</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>name</th>
+					<th>grade</th>
+					<th>bldg_name</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="students" frx:foreach="*">
+					<td>{name}</td>
+					<td>{grade}</td>
+					<td>{bldg_name}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

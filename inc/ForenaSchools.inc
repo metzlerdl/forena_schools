@@ -10,7 +10,7 @@ class ForenaSchools {
 		$this->db = ForenaSchoolsDB::instance();
 		//Determine current user
 		GLOBAL $user;
-		$login = @$user->name; 
+		$login = @$user->name;
 		if ($this->db && $user->uid) {
 			$email = $user->mail;
 			$sql = 'SELECT p.*,s.role,s.bldg_id FROM p_people p JOIN p_staff s
@@ -52,6 +52,7 @@ class ForenaSchools {
 
 	/**
 	 * Factory method for generating application instance
+	 * @return ForenaSchools
 	 */
 	static function instance() {
 		static $instance = '';
@@ -182,17 +183,99 @@ class ForenaSchools {
 	  }
 	  return trim($dir, '/');
 	}
-	
+
 	/**
-	 * List All School years for sleection. 
+	 * List All School years for sleection.
 	 */
-	public function schoolYearList() { 
-	  $years = array(); 
-	  $rs = db_query('SELECT school_year, label FROM i_school_years ORDER BY start_date desc'); 
-	  if ($rs) foreach ($rs as $row) { 
-	    $years[$row->school_year] = $row->label; 
+	public function schoolYearList() {
+	  $years = array();
+	  $rs = db_query('SELECT school_year, label FROM i_school_years ORDER BY start_date desc');
+	  if ($rs) foreach ($rs as $row) {
+	    $years[$row->school_year] = $row->label;
 	  }
-	  return $years; 
+	  return $years;
 	}
+
+	/**
+	 * Return key value array for buildings the user has access to.
+	 * @return array
+	 */
+	public function userBuildings() {
+    $buildings = array();
+	  if ($this->access('dist_admin')) {
+	    //
+	    $rs = db_query('select b.bldg_id, b.name from i_buildings b WHERE bldg_id<>-1 order by name') ;
+	  }
+	  else {
+	    $rs= db_query('select b.bldg_id, b.name FROM i_buildings b JOIN p_staff s ON s.bldg_id = b.bldg_id
+	      JOIN p_people p ON p.person_id = s.person_id
+	      WHERE p.login = :login
+	      order by name',
+	      array(':login' => $this->current_login()));
+	  }
+    foreach ($rs as $row) {
+      $buildings[$row->bldg_id] = $row->name;
+    }
+    return $buildings;
+	}
+
+	/**
+	 * Return key value array for grade levels
+	 * that the user has access to.
+	 * @return array
+	 */
+	public function userGradeLevels() {
+	  $grade_levels = array();
+	  if ($this->access('dist_admin')) {
+	    // All defined grade levels.
+	    $rs = db_query('select grade_level, abbrev from i_grade_levels order by grade_level');
+	  }
+	  else {
+	    // In this case we're going to get min and  max grade levels
+	    // for the staff member.
+	    $rs = db_query('select grade_level, abbrev FROM i_grade_levels g
+	      JOIN
+	      (SELECT MIN(COALESCE(s.min_grade_level,b.min_grade)) AS min_grade,
+	        MAX(COALESCE(s.max_grade_level, b.max_grade)) AS max_grade
+	       FROM p_staff s JOIN i_buildings b ON b.bldg_id=s.bldg_id
+	         JOIN p_people p ON s.person_id=p.person_id
+	       WHERE p.login=:login
+	       ) v ON g.grade_level BETWEEN COALESCE(v.min_grade,0)
+	         AND COALESCE(v.max_grade, 12)',
+	      array(':login' => $this->current_login())
+	    );
+
+	  }
+
+	  foreach ($rs as $row) {
+	    $grade_levels[$row->grade_level] = $row->abbrev;
+	  }
+	  return $grade_levels;
+	}
+
+	/**
+	 * List of tests based on min and max grades
+	 * @param $min_grade int 0 - 12
+	 * @param $max_grade int 0 - 12
+	 */
+	public function userTests($min_grade, $max_grade) {
+	  $tests = array();
+
+	  $rs = db_query('SELECT test_id, name FROM a_tests t WHERE
+	    :min_grade BETWEEN min_grade and max_grade
+	    OR :max_grade BETWEEN min_grade and max_grade
+	    OR (:min_grade < min_grade AND :max_grade > max_grade)
+	    ORDER BY name
+	    ',
+	    array(':min_grade' => $min_grade,':max_grade' => $max_grade)
+	    );
+	  foreach ($rs as $row) {
+	    $tests[$row->test_id] = $row->name;
+	  }
+	  return $tests;
+	}
+
+
+
 
 }

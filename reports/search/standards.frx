@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Student Search</title>
+<frx:category>Standards</frx:category>
+<frx:options/>
+<frx:fields>
+  <frx:field id="name" link="reports/Student?person_id={person_id}" target="student_{person_id}"/>
+
+</frx:fields>
+<frx:parameters>
+	<frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
+	<frx:parm id="grade_level" type="selectajax" data_source="ims/grade_levels"/>
+	<frx:parm id="max_grade_level" type="select" data_source="ims/grade_levels"/>
+	<frx:parm id="test_id" type="selectajax" data_source="ims/building/tests"/> 
+	<frx:parm id="grad_subject" type="select" data_source="ims/tests/grad_subjects" /> 
+	<frx:parm id="norm_score" type="select" data_source="ims/tests/norm_scores">3</frx:parm>
+	<frx:parm id="last"/>
+</frx:parameters>
+<frx:docgen>
+  <frx:doc type="csv"/>
+  <frx:doc type="xls"/>
+</frx:docgen>
+<frx:menu path="schools/:bldg_id/search/standards" type="local-task" title="Standards"/> 
+</head>
+<body>
+  <div id="building" frx:block="ims/building/building" frx:foreach="*">
+    <h1 frx:renderer="FrxTitle">{building.name} Search</h1>
+  </div>
+  <div frx:renderer="FrxParameterForm" title="Search Criteria" submit="Search">
+    <p>Search for students who attended during the school year {school_year}
+    in grades {grade_level} through {max_grade_level} and have not recevied a 
+    required {grad_subject} score of that {norm_score}</p>
+    <p>{submit}</p>
+  </div>
+	<div id="students_block" class="FrxTable" frx:block="ims/search/standards">
+		<div frx:renderer="FrxSchoolsGroupAdd"/>
+		<h2>Results</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>name</th>
+					<th>grade</th>
+					<th>building</th>
+					<th>last taken</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="students" frx:foreach="*">
+					<td>{name}</td>
+					<td>{grade}</td>
+					<td>{bldg_name}</td>
+					<td>{last_taken}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
