@@ -6,7 +6,7 @@
 <head>
 <frx:options hidden="1"/> 
 <frx:fields> 
-   <frx:field id="name" link="reports/Student?person_id={person_id}&amp;profile_id={profile.profile_id}"/> 
+   <frx:field id="name" link="student/{person_id}"/> 
    <frx:field id="test_name" link="reports/group.TestResults?group_id={group_id}&amp;test_id={test_id}&amp;seq={seq}&amp;school_year={school_year}&amp;grade_level={grade_level}"/>
    <frx:field id="profile.name" link="reports/group.GroupProfile?group_id={parm.group_id}&amp;profile_id={profile_id}"/> 
    <frx:field id="entry.sched_label" link="flexpopup/TestEntry?group_id={group_id}&amp;test_id={test_id}&amp;seq={seq}" target="popup_test_entry_{group_id}"/>
@@ -16,7 +16,7 @@
 </head>
 <body>
  <div frx:block="ims/group/details" id="group" frx:foreach="*" class="grid_12">
-   <h1 Frx:renderer="FrxTitle">{group.name}, {group.year_label}</h1>
+   <h1 frx:renderer="FrxTitle">{group.name}, {group.year_label}</h1>
    <h4>{first_name} {last_name}</h4>
  </div>
  <div class="grid_5">

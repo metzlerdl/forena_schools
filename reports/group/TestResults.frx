@@ -10,7 +10,7 @@
 		link="reports/BuildingDashboard?bldg_id={bldg_id}" />
 	<frx:field id="grade_name"
 		link="{bldg.building_dashboard}?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}" />
-	<frx:field id="last_name" link="reports/Student?person_id={person_id}" />
+	<frx:field id="last_name" link="student/{person_id}" />
 	<frx:field id="export"
 		link="reports/group.TestResults.csv?test_id={parm.test_id}&amp;group_id={parm.group_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
 </frx:fields>

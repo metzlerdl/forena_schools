@@ -8,7 +8,7 @@
 <frx:category>Standards</frx:category>
 <frx:options/>
 <frx:fields>
-  <frx:field id="name" link="reports/Student?person_id={person_id}" target="student_{person_id}"/>
+  <frx:field id="name" link="student/{person_id}" target="student_{person_id}"/>
 
 </frx:fields>
 <frx:parameters>
