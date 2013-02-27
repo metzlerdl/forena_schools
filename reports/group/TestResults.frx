@@ -17,13 +17,30 @@
 <title>Test Results</title>
 </head>
 <body>
+	<div id="schedule" frx:block="ims/tests/schedule" frx:foreach="*" >
+ </div> 
   <div frx:block="ims/group/details" id="group" frx:foreach="*">
-   <h2>{group.name}, {year_label}</h2>
+   <h1 frx:renderer="frxTitle">{group.name}, {year_label} {test_name} - {sched_label}</h1>
    <h3>{first_name} {last_name}</h3>
  </div>
-	<div id="schedule" frx:block="ims/tests/schedule" frx:foreach="*" >
-			<h3>{test_name} - {sched_label}</h3>
- </div> 
+<h3>Scores</h3>
+<div class="pedagoggle-scores"
+				frx:block="ims/group/group_test_scores">
+				<table frx:renderer="FrxPedagoggleScores" frx:profile="schedule">
+					<thead>
+						<tr>
+							<th>Last Name</th>
+							<th>First Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{last_name}</td>
+							<td>{first_name}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
  <h3>Statistics</h3>
  <div
 				frx:src="reports/group.TestStatsGraph.svg?group_id={parm.group_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}"
@@ -61,24 +78,6 @@
 					</tbody>
 				</table>
 </div>
-<h3>Scores</h3>
-<div class="pedagoggle-scores"
-				frx:block="ims/group/group_test_scores">
-				<table frx:renderer="FrxPedagoggleScores" frx:profile="schedule">
-					<thead>
-						<tr>
-							<th>Last Name</th>
-							<th>First Name</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>{last_name}</td>
-							<td>{first_name}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
 <div id="footer-block">
 		<ul class="nav hnav">
 			<li>{export}</li>
