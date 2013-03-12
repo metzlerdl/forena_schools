@@ -19,10 +19,11 @@
 </frx:fields>
 <frx:parameters />
 <frx:docgen />
+<frx:menu path="schools/:bldg_id" type="callback"/>  
 </head>
 <body>
 		<div frx:block="ims/building/grade_levels" id="bldg"  frx:foreach="*" class="clearfix">
-			<h2>{bldg_name}</h2>
+			<h1 frx:renderer="FrxTitle">{bldg_name}</h1>
 			<div id="bldg" class="nav grid_2" >
 				<h3>Grades</h3>
 				<ul >

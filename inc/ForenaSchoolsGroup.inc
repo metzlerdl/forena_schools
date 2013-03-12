@@ -238,6 +238,20 @@ class ForenaSchoolsGroup {
   }
 
   /**
+   * Delete the current group by its group id.
+   */
+  public function delete() {
+    if (@$this->group['group_id']) {
+      db_delete('s_group_memebers')
+       ->condition('group_id', $this->group['group_id'])
+       ->execute();
+      db_delete('s_groups')
+       ->condition('group_id', $this->group['group_id'])
+       ->execute();
+    }
+  }
+
+  /**
    * This is a
    * Enter description here ...
    * @param unknown_type $data

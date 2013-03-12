@@ -125,6 +125,16 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_profile_delete', 1),
 	  'file' => 'forena_schools.profiles.inc',
 	);
+
+	$items['group/%/delete'] = array(
+	  'title' => 'Delete Group',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguements' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_group_delete', 1),
+	  'file' => 'forena_schools.groups.inc',
+	);
 	return $items;
 }
 

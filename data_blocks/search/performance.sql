@@ -25,7 +25,7 @@ AND
   SELECT 1 FROM a_assessments a 
     JOIN a_scores sc ON sc.assessment_id=a.assessment_id
   WHERE a.person_id = p.person_id AND sc.measure_id=:measure_id
-    AND sc.norm_score in (:norm_score)
+    AND floor(sc.norm_score) in (:norm_score)
 --IF=:seq
     AND a.seq=:seq
 --END
