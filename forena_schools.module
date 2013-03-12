@@ -215,18 +215,27 @@ function forena_schools_forena_repos_alter(&$repos) {
 function forena_schools_forena_parameters_alter($report_name, &$parms) {
   require_once 'inc/ForenaSchools.inc';
   $o = ForenaSchools::instance();
-  static $parms = '';
-  if (!$parms) {
-    $parms['buildings'] = array_keys($o->userBuildings());
-    $parms['grades'] = array_keys($o->userGradeLevels());
+  static $sec = '';
+  static $filter = '';
+  if (!$filter) $filter = array();
+  if ( !@$parms['school_year']) {
+    $school_years = array_keys(ForenaSchools::instance()->schoolYearList());
+    $school_year = array_shift($school_years);
+    $filter['school_year'] = $school_year;
+  }
+  if (!$sec) {
+    $sec['buildings'] = array_keys($o->userBuildings());
+    $sec['grades'] = array_keys($o->userGradeLevels());
     if (forena_schools_access('dist_admin')) {
-      $parms['admin'] = 1;
+      $sec['admin'] = 1;
     }
     else {
-      $parms['admin'] = 0;
+      $sec['admin'] = 0;
     }
   }
-  Frx::Data()->setContext('security', $parms);
+  $filter = array_merge($filter, $parms);
+  Frx::Data()->setContext('security', $sec);
+  Frx::Data()->setContext('filter', $filter);
 }
 
 function forena_schools_current_login() {

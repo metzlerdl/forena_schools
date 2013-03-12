@@ -13,6 +13,7 @@ select p.profile_id,
   CASE 
     WHEN p.school_year_offset = 0 THEN 'Current Year'
     WHEN p.school_year_offset = -1 THEN 'Prior Year'
+    WHEN p.school_year_offset = -12 THEN 'Any Year'
     END AS profile_type
 FROM a_profiles p LEFT JOIN i_buildings b ON b.bldg_id=p.bldg_id
   LEFT JOIN i_grade_levels gmin ON gmin.grade_level = p.min_grade

@@ -26,6 +26,11 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
 
   // Grade Levels
   $grade_levels = $fs->userGradeLevels();
+  $offset_years = array(
+    '0' => 'Current Year',
+    '-1' => 'Prior Year',
+    '-12' => 'Any Year',
+  );
 
   // Buidings
   $buildings = $fs->userBuildings();
@@ -66,6 +71,14 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     '#default_value' => $data['max_grade'],
   );
 
+  $form['school_year_offset'] = array(
+    '#type' => 'select',
+    '#title' => 'School Years',
+    '#options' => $offset_years,
+    '#description' => 'Controls which years to display data for',
+    '#default_value' => $data['school_year_offset'],
+  );
+
   $form['bldg_id'] = array(
     '#type' => 'select',
     '#title' => 'Building',
@@ -73,6 +86,7 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     '#required' => TRUE,
     '#default_value' => $data['bldg_id'],
   );
+
 
   $form['weight'] = array(
     '#type' => 'textfield',
@@ -206,6 +220,7 @@ function forena_schools_profile_save($form, &$form_state) {
   $p = ForenaSchoolsProfile::instance();
   if ($form_state['values']['profile_id']) $p->load($form_state['values']['profile_id']);
   $p->save($form_state['values']);
+  $form_state['redirect'] = 'reports/district.Profiles';
 }
 
 /**

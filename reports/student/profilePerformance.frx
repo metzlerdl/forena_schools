@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Profile Graph Test</title>
+<frx:category>Student</frx:category>
+<frx:options />
+<frx:fields />
+<frx:parameters>
+	<frx:parm id="profile_id"  label="Profile"  type="select" data_source="ims/student/profiles" data_field="profile_id" label_field="name"/> 
+	<frx:parm id="school_year" type="hidden"></frx:parm>
+</frx:parameters>
+<frx:docgen />
+<frx:menu path="student/:person_id/profile" type="local-task" title="Performance"/>
+</head>
+<body>
+	<div id="person" frx:block="ims/student/person_info" frx:foreach="*" >
+	  <h1 frx:renderer="FrxTitle">{last_name}, {first_name}</h1>
+	</div>
+	<div frx:renderer="FrxParameterForm" collapsible='0' title="Select Profile"/>
+  <div id="profile" frx:block="ims/profiles/profile" frx:foreach="*">
+    <h2>{name} </h2>
+  </div>
+  <div frx:renderer="FrxInclude" src="reports/student.profileGraph.svg?person_id={parm.person_id}&amp;profile_id={parm.profile_id}&amp;school_year={filter.school_year}"
+       frx:width="600" frx:height="400"/> 
+  <h3>Scores</h3>
+
+	<div id="subject_performance"
+		frx:block="ims/student/profile_performance">
+		<table>
+		<thead>
+		 <tr>
+		   <th>Date</th>
+		   <th>Measure</th>
+		   <th>Score</th>
+		   <th>Normalized Score</th>
+		 </tr>
+		</thead>
+		<tbody>
+		<tr frx:foreach="*">
+		  <td>{date_taken}</td>
+		  <td>{test_abbrev} {name}</td>
+		  <td>{score}</td>
+		  <td>{norm_score}</td>
+		</tr>
+		</tbody></table>
+	</div>
+</body>
+</html>

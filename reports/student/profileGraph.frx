@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Profile Graph Test</title>
+<frx:category>Student</frx:category>
+<frx:options />
+<frx:fields />
+<frx:parameters>
+	<frx:parm id="profile_id" type="select" data_source="ims/student/profiles" data_field="profile_id" label_field="name"/> 
+	<frx:parm id="school_year" type="hidden"></frx:parm>
+</frx:parameters>
+<frx:docgen />
+</head>
+<body>
+
+	<div id="subject_performance"
+		frx:block="ims/student/profile_performance">
+		<svg frx:type="scatterplot" frx:renderer="FrxSVGGraph"
+			frx:options="style=&amp;label=&amp;series[0]=%7Bnorm_score%7D&amp;seriesx[0]=%7Bgrade%7D&amp;seriesx[1]=&amp;seriesx[2]=&amp;seriesx[3]=&amp;link=" />
+		<table>
+		<tr frx:foreach="*">
+		  <td><span frx:renderer="FrxXMLSource"/></td>
+		</tr></table>
+	</div>
+</body>
+</html>

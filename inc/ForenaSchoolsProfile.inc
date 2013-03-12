@@ -37,6 +37,7 @@ class ForenaSchoolsProfile {
           'name' => $profile['name'],
           'min_grade' => $profile['min_grade'],
           'max_grade' => $profile['max_grade'],
+          'school_year_offset' => $profile['school_year_offset'],
           'bldg_id' => $profile['bldg_id'],
           'weight' => $profile['weight'],
         ))
@@ -49,6 +50,7 @@ class ForenaSchoolsProfile {
           'name' => $profile['name'],
           'min_grade' => $profile['min_grade'],
           'max_grade' => $profile['max_grade'],
+          'school_year_offset' => $profile['school_year_offset'],
           'bldg_id' => $profile['bldg_id'],
           'weight' => $profile['weight'],
         ))
@@ -93,11 +95,17 @@ class ForenaSchoolsProfile {
    * Load measures into an array structure.
    */
   public function loadMeasures() {
-    $rs = db_query('select pm.*, m.name, m.abbrev from {a_profile_measures} pm
+    $rs = db_query("select pm.*,
+        m.name,
+        m.abbrev,
+        COALESCE(s.label, 'Any') AS sched_label
+      FROM {a_profile_measures} pm
       JOIN  {a_test_measures} m
         ON pm.measure_id = m.measure_id
+      LEFT JOIN  {a_test_schedules} s
+        ON s.seq = pm.seq
       WHERE profile_id = :profile_id
-      ORDER BY sort_order', array(':profile_id' => $this->profile_id));
+      ORDER BY sort_order", array(':profile_id' => $this->profile_id));
     $measures = array();
     foreach ($rs as $row) {
       $measures[] = array(
@@ -105,6 +113,8 @@ class ForenaSchoolsProfile {
         'seq' => $row->seq,
         'label' => $row->label,
         'name' => $row->name,
+        'abbrev' => $row->abbrev,
+        'sched_label' => $row->sched_label,
       );
     }
     $this->measures = $this->profile['measures']  = $measures;

@@ -14,7 +14,7 @@
   <frx:field id="all_subjects" link="student/{parm.person_id}?grade_level={parm.grade_level}">All</frx:field>
   <frx:field id="subject" link="student/{parm.person_id}?grade_level={parm.grade_level}&amp;subject={subject}"/>
 </frx:fields>
-<frx:menu path="student/:person_id/view" type="default-local-task" title="view"/>
+<frx:menu path="student/:person_id/view" type="default-local-task" title="general"/>
 <frx:parameters>
 </frx:parameters>
 <frx:docgen />

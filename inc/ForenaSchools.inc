@@ -188,10 +188,13 @@ class ForenaSchools {
 	 * List All School years for sleection.
 	 */
 	public function schoolYearList() {
-	  $years = array();
-	  $rs = db_query('SELECT school_year, label FROM i_school_years ORDER BY start_date desc');
-	  if ($rs) foreach ($rs as $row) {
-	    $years[$row->school_year] = $row->label;
+	  static $years = '';
+	  if (!$years) {
+	    $years = array();
+  	  $rs = db_query('SELECT school_year, label FROM i_school_years ORDER BY start_date desc');
+  	  if ($rs) foreach ($rs as $row) {
+  	    $years[$row->school_year] = $row->label;
+  	  }
 	  }
 	  return $years;
 	}
