@@ -106,6 +106,25 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools_groups.inc',
 	);
 
+	$items['profile/%/edit'] = array(
+	  'title' => 'Edit Profile',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_profile_form', 1),
+	  'file' => 'forena_schools.profiles.inc',
+	);
+
+	$items['profile/%/delete'] = array(
+	  'title' => 'Edit Profile',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_profile_delete', 1),
+	  'file' => 'forena_schools.profiles.inc',
+	);
 	return $items;
 }
 
@@ -508,3 +527,5 @@ function forena_schools_group_add_js_submit($form, &$form_state) {
   }
   $g->saveMembers($ids);
 }
+
+

@@ -16,10 +16,11 @@ class GradeView extends ForenaSchools {
 
 	public function profiles() {
 		return $this->db->query_xml(
-		  'SELECT profile_id, name,  a_profile_measures_xml(profile_id) AS measures from a_profiles p
+		  "SELECT profile_id, name,  a_profile_measures_xml(profile_id) AS measures from a_profiles p
+		      JOIN a_profile_displays d ON p.profile_id=d.profile_id
 		    WHERE (bldg_id=:bldg_id OR bldg_id=-1) AND :grade_level BETWEEN min_grade and max_grade
-		      AND analysis_only = false
-		    ORDER BY p.weight, p.min_grade, p.max_grade, p.name' ,
+		      AND d.display = 'Grade Level'
+		    ORDER BY p.weight, p.min_grade, p.max_grade, p.name" ,
 		  $_POST
 		);
 	}

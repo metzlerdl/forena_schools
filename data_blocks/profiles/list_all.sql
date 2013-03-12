@@ -7,8 +7,10 @@ select p.profile_id,
     ELSE gmin.name || ' - ' || gmax.name END AS grades, gmin.name as min_grade,
   p.min_grade, 
   p.max_grade,
+  (SELECT display FROM a_profile_displays d WHERE d.profile_id= p.profile_id AND d.display = 'Group') AS group_display, 
+  (SELECT display FROM a_profile_displays d1 WHERE d1.profile_id= p.profile_id AND d1.display = 'Grade Level') AS grade_display, 
+  (SELECT display FROM a_profile_displays d2 WHERE d2.profile_id= p.profile_id AND d2.display = 'Student') AS student_display, 
   CASE 
-    WHEN p.analysis_only = true THEN 'Analysis Only'
     WHEN p.school_year_offset = 0 THEN 'Current Year'
     WHEN p.school_year_offset = -1 THEN 'Prior Year'
     END AS profile_type

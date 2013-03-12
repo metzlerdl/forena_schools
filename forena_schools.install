@@ -17,6 +17,32 @@ function forena_schools_update_7007() {
   ));
 }
 
+function forena_schools_update_7008() {
+  db_create_table('a_profile_displays',
+   array(
+    'description' => 'Test Profile displays',
+    'fields' => array(
+      'profile_id' => array(
+        'type' => 'int',
+        'size' => 'big',
+        'unsigned' => TRUE,
+      ),
+
+      'display' => array(
+        'type' => 'varchar',
+        'length' => 30,
+      ),
+    ),
+    'primary key' => array('profile_id', 'display'),
+    )
+   );
+}
+
+function forena_schools_update_7009() {
+  db_query("insert into {a_profile_displays} (profile_id, display) SELECT profile_id, 'Grade Level' from {a_profiles} where analysis_only ='0'");
+  db_query("insert into {a_profile_displays} (profile_id, display) SELECT profile_id, 'Group' from {a_profiles} where analysis_only = '0'" );
+}
+
 /**
  * Loads configuration data from a simple xml file.  Usually saved from a forena block.
  * @param unknown_type $file

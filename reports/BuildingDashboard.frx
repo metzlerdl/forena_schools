@@ -11,7 +11,7 @@
 </frx:parameters>
 <frx:fields>
 	<frx:field id="student_search"
-		link="assessments/search/student?bldg_id={bldg_id}">Student Search</frx:field>
+		link="schools/{bldg_id}/search">Student Search</frx:field>
 	<frx:field id="@grade_name"
 		link="{bldg.building_dashboard}?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="teacher_name" link="{bldg.teacher_dashboard}?staff_id={staff_id}&amp;school_year={parm.school_year}"></frx:field>

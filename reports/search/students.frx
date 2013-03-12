@@ -12,7 +12,6 @@
 </frx:fields>
 <frx:parameters>
 	<frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
-	<frx:parm id="bldg_id" type="select" data_source="ims/building/schools" require="1"/>
 	<frx:parm id="grade_level"/>
 	<frx:parm id="last"/>
 </frx:parameters>

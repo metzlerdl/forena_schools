@@ -2,8 +2,9 @@
 <head>
 <title>Profile Definitions</title>
 <frx:fields>
-  <frx:field id="name" link="flex/ProfileEditor?profile_id={profile_id}&amp;popup=true" target="popup{profile_id}"/>
+  <frx:field id="name" link="profile/{profile_id}/edit"/>
   <frx:field id="add" link="flex/ProfileEditor?popup=true" target="popupNewProfile">Add Assessment Profile</frx:field>
+  <frx:field id="delete_profile" link="profile/{profile_id}/delete">Delete</frx:field>
 </frx:fields>
 </head>
 <body>
@@ -17,7 +18,9 @@
         <tr><th>Building</th>
         <th>Profile</th>
         <th>Grade Levels</th>
-        <th>Type</th></tr>
+        <th>Type</th>
+        <th>Displays</th>
+        <th>Action</th></tr>
       </thead>
       <tbody>
         <tr frx:foreach="*">
@@ -25,6 +28,8 @@
           <td>{name}</td>
           <td>{grades}</td>
           <td>{profile_type}</td>
+          <td>{grade_display} {group_display} {student_display}</td>
+          <td>{delete_profile}</td>
         </tr>
       </tbody>
     </table>
