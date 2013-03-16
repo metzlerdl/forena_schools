@@ -148,7 +148,7 @@ function forena_schools_import_group_submit($form, &$form_state) {
       'operations' => array(
         array('forena_schools_process_group_import', array($path, $form_state['values']['defaults'])),
         ),
-      'file' => $mpath . '/forena_schools_groups.inc',
+      'file' => $mpath . '/forena_schools.groups.inc',
     );
 
     batch_set($batch);
@@ -190,6 +190,102 @@ function forena_schools_process_group_import($filename, $defaults,  &$context) {
   }
 }
 
+function forena_schools_group_form($formid, &$form_state, $group_id) {
+  // Load current group
+  if (!isset($form_state['storage']['group'])) {
+    $g = ForenaSchoolsGroup::instance();
+    $form_state['storage']['group'] = $g->loadByGroupId($group_id);
+    $g->loadMembers();
+    $form_state['storage']['group_members'] = $g->members;
+  }
+  $fs = ForenaSchools::instance();
+  $group = $form_state['storage']['group'];
+  $members = $form_state['storage']['group_members'];
+  $years = $fs->schoolYearList();
+  $buildings = $fs->userBuildings();
+  $staff = ForenaSchoolsBuilding::instance()->listStaff($group['bldg_id']);
+  drupal_set_title($group['name'] . ', ' . $years[$group['school_year']]);
+
+  // Buld group form
+  $form['group_id'] = array(
+    '#type' => 'value',
+    '#value' =>$group['group_id'],
+  );
+
+  $form['bldg_id'] = array(
+    '#type' => 'select',
+    '#title' => 'Building',
+    '#default_value' => $group['bldg_id'],
+    '#options' => $buildings,
+  );
+
+  $form['owner_id'] = array(
+    '#title' => 'Owner',
+    '#type' => 'select',
+    '#default_value' => $group['owner_id'],
+    '#options' => $staff,
+  );
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Name',
+    '#description' => 'Name as it will appear to user',
+    '#default_value' => $group['name'],
+    '#maxlen' => 128,
+  );
+
+  $member_list = array();
+  if ($members) foreach($members as $key => $member) {
+    $member_list[$key] = $member['last_name'] . ', ' . $member['first_name'];
+  }
+  $form['members_list'] = array('#type' => 'fieldset', '#title' => 'Members');
+  $form['members_list']['members_to_remove'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $member_list,
+  );
+  $form['members_list']['remove'] = array(
+    '#type' => 'submit',
+    '#value' => 'Remove',
+    '#submit' => array('forena_schools_group_remove_members'),
+  );
+
+  $form['actions'] = array(
+    '#type' => 'actions'
+  );
+
+  $form['actions']['save'] = array(
+    '#type' => 'submit',
+    '#submit' => array('forena_schools_group_save'),
+    '#value' => 'Save',
+  );
+
+  if (!$group['source']) {
+    $form['actions']['delete'] = array(
+      '#type' => 'markup',
+      '#markup' => l(t('Delete'), 'group/'. $group['group_id']. '/delete'),
+    );
+  }
+  return $form;
+}
+
+function forena_schools_group_remove_members($form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+  foreach($form_state['values']['members_to_remove'] as $student_id) {
+    if ($student_id) unset($form_state['storage']['group_members'][$student_id]);
+  }
+  drupal_set_message('Members removed.  Press save to alter group');
+}
+
+function forena_schools_group_save($form, &$form_state) {
+  $g = ForenaSchoolsGroup::instance();
+  $group =  $g->loadByGroupId($form_state['values']['group_id']);
+  $group = array_merge($group, $form_state['values']);
+  $g->save($group);
+  $members = $form_state['storage']['group_members'];
+  $g->saveMembers($members);
+  $form_state['redirect'] = 'group/' . $form_state['values']['group_id'];
+}
+
 /**
  * Delete a group
  * @param  $form array
@@ -206,7 +302,6 @@ function forena_schools_group_delete($form, &$form_state, $group_id) {
   );
   if ($group) {
     $form = confirm_form($form, 'Delete group' . $group['name'], '/group/' . $group_id, 'This actian cannot be undone!', 'Delete', 'Cancel');
-
   }
   return $form;
 }

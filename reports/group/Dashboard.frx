@@ -12,6 +12,7 @@
    <frx:field id="entry.sched_label" link="flexpopup/TestEntry?group_id={group_id}&amp;test_id={test_id}&amp;seq={seq}" target="popup_test_entry_{group_id}"/>
    <frx:field id="edit_group" link="flexpopup/GroupEditor?group_id={parm.group_id}" target="popup_group_edit_{parm.group_id}">Edit Group</frx:field>  
 </frx:fields>
+<frx:menu path="group/:group_id/dashboard" title="View" type="default-local-task"/> 
 <title>Group</title>
 </head>
 <body>

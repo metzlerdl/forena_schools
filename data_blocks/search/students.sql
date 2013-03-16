@@ -24,6 +24,8 @@ AND s.grade_level BETWEEN :grade_level and CAST(COALESCE(:max_grade_level, :grad
 --END
 --IF=:last
 AND p.last_name like concat(:last, '%')
+--ELSE
+AND 1=2
 --END
 --IF=:measure_id&:norm_score
 AND 

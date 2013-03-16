@@ -14,7 +14,7 @@
 	<frx:field id="@grade_name"
 		link="{bldg.building_dashboard}?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="@name"
-		link="reports/group.Dashboard?group_id={@group_id}" />
+		link="group/{@group_id}" />
 	<frx:field id="@editable"
 		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
 </frx:fields>

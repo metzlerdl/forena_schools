@@ -4,7 +4,7 @@
 ]>
 <html xmlns:frx="urn:FrxReports">
 <head>
-<title>Building Dashboard</title>
+<title>Grade Level View</title>
 <frx:category>District</frx:category>
 <frx:options hidden="1" form="" />
 <frx:parameters>
@@ -13,7 +13,8 @@
   <frx:field id="profile_name" link="reports/GradeView?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}&amp;school_year={parm.school_year}"/> 
   <frx:field id="test_entry" link="flexpopup/TestEntry?group_id={@group_id}" target="popupTestEntry{@group_id}">Test Entry</frx:field> 
   <frx:field id="@teacher_name" link="{bldg.teacher_dashboard}?staff_id={@staff_id}"/>
-  <frx:field id="@course_name" link="reports/group.Dashboard?group_id={@group_id}"/> 
+  <frx:field id="@course_name" link="group/{@group_id}"/> 
+  <frx:field id="group_name" link="group/{group_id}"/> 
   <frx:field id="manage" link="flexpopup/GroupEditor?group_id={@group_id}" target="popupGroupEditor{@group_id}">manage</frx:field>
   <frx:field id="year_label" link="reports/PrimaryDashboard?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={school_year}"/>
   <frx:field id="@grade_name" link="reports/PrimaryDashboard?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}"/>
@@ -58,18 +59,15 @@
 				</tr>
 			</tbody>
 		</table>
-		<div frx:block="ims/collections" id="collections">
+		<div frx:block="ims/building/groups_for_grade_level" id="collections" 
+		  frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
 		
-		<h3>Collections</h3>
+		<h3>Intervention Groups</h3>
 		<table >
-		  <tr>
-		    <th colspan="2">{grade_heading}</th>
-		  </tr>
 			<tbody>
 				<tr frx:foreach="*" id="coll">
-					<td>{collection_name}</td>
-					<td>{editable}</td>
-					<td>{manage}</td>
+					<td>{group_name}</td>
+					<td>{grade}</td>
 				</tr>
 			</tbody>
 		</table>

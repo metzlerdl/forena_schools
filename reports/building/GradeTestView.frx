@@ -23,6 +23,23 @@
 	<div id="test_block" frx:block="ims/tests/schedule">
 		<div frx:foreach="*" id="profile">
 			<h3>{test_name} - {sched_label}</h3>
+			<div class="pedagoggle-scores"
+				frx:block="ims/building/grade_test_scores"
+				frx:parameters="school_year={profile.school_year}&amp;seq={seq}&amp;grade_level={parm.grade_level}&amp;bldg_id={parm.bldg_id}&amp;test_id={parm.test_id}">
+				<table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
+					<thead>
+						<tr>
+							<th>Name</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{last_name}, {first_name}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			<div
 				frx:src="reports/building.TestStatsGraph.svg?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={profile.school_year}&amp;seq={profile.seq}"
 				frx:renderer="FrxInclude" frx:height="600" frx:width="800" />
@@ -55,24 +72,6 @@
 							<td>{bl3_percent}</td>
 							<td>{bl4_percent}</td>
 							<td>{b_percent_met}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="pedagoggle-scores"
-				frx:block="ims/building/grade_test_scores"
-				frx:parameters="school_year={profile.school_year}&amp;seq={seq}&amp;grade_level={parm.grade_level}&amp;bldg_id={parm.bldg_id}&amp;test_id={parm.test_id}">
-				<table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
-					<thead>
-						<tr>
-							<th>Last Name</th>
-							<th>First Name</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>{last_name}</td>
-							<td>{first_name}</td>
 						</tr>
 					</tbody>
 				</table>

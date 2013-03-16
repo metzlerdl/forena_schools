@@ -25,14 +25,12 @@
       <table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
         <thead>
           <tr>
-            <th>Last Name</th>
-            <th>First Name</th>
+            <th>Name</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{last_name}</td>
-            <td>{first_name}</td>
+            <td>{last_name}, {first_name}</td>
           </tr>
         </tbody>
       </table>

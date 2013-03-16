@@ -59,6 +59,7 @@
 				</tr>
 			</tbody>
 		</table>
+	  <div frx:renderer="FrxSchoolsGroupAdd"/>
 	</div>
 </body>
 </html>
