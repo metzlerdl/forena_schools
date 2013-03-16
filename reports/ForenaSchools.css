@@ -24,6 +24,10 @@ td.score {
 	text-align: right; 
 }
 
+table.pedagoggle-scores {
+	margin: 0; 
+	}
+
 .pedagoggle-scores td, .pedagoggle-scores th { 
 	font-size: 0.8em; 
 }

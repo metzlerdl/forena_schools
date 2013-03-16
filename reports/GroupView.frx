@@ -29,7 +29,7 @@
         </thead>
         <tbody>
           <tr>
-            <td>{last_name}, {first{name}</td>
+            <td>{last_name}, {first_name}</td>
           </tr>
         </tbody>
       </table>
