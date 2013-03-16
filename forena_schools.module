@@ -553,7 +553,7 @@ function forena_schools_group_add_js_submit($form, &$form_state) {
     );
     $g->save($group);
     $group_id = $g->group['group_id'];
-    $form_state['redirect'] = array('group/' . $group_id);
+    $form_state['redirect'] = array('group/' . $group_id. '/edit');
   }
   $g->saveMembers($ids);
 }

@@ -16,6 +16,7 @@ select v.* FROM
   WHERE bldg_id=:bldg_id AND :grade_level 
     between t.min_grade and t.max_grade
    AND s.school_year = coalesce(:school_year,i_school_year()) 
+   AND s.grade_level = :grade_level
 ) v
 WHERE r=1
 ORDER BY test_name
