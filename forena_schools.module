@@ -106,6 +106,16 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools.groups.inc',
 	);
 
+	$items['profile/add'] = array(
+	  'title' => 'Create New Profile',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_profile_form', ''),
+	  'file' => 'forena_schools.profiles.inc',
+	);
+
 	$items['profile/%/edit'] = array(
 	  'title' => 'Edit Profile',
 	  'type' => MENU_CALLBACK,

@@ -3,7 +3,7 @@
 <title>Profile Definitions</title>
 <frx:fields>
   <frx:field id="name" link="profile/{profile_id}/edit"/>
-  <frx:field id="add" link="flex/ProfileEditor?popup=true" target="popupNewProfile">Add Assessment Profile</frx:field>
+  <frx:field id="add" link="profile/add">Add Assessment Profile</frx:field>
   <frx:field id="delete_profile" link="profile/{profile_id}/delete">Delete</frx:field>
 </frx:fields>
 </head>

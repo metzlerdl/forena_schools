@@ -263,7 +263,11 @@ class ForenaSchools {
 	 */
 	public function userTests($min_grade, $max_grade) {
 	  $tests = array();
-
+    if (!$min_grade) {
+      $grade_levels = array_keys($this->userGradeLevels());
+      $min_grade= array_shift($grade_levels);
+      $max_grade= array_pop($grade_levels);
+    }
 	  $rs = db_query('SELECT test_id, name FROM a_tests t WHERE
 	    :min_grade BETWEEN min_grade and max_grade
 	    OR :max_grade BETWEEN min_grade and max_grade

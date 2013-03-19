@@ -140,13 +140,21 @@ class ForenaSchoolsProfile {
    */
   public function load($profile_id) {
     // Fetch basic profile fields
-    $this->profile_id = $profile_id;
-    $rs = db_query('SELECT * FROM {a_profiles} WHERE profile_id=:profile_id', array(':profile_id' => $profile_id));
-    if ($rs) {
-      $this->profile = $rs->fetchAssoc();
+    if ($profile_id) {
+      $this->profile_id = $profile_id;
+      $rs = db_query('SELECT * FROM {a_profiles} WHERE profile_id=:profile_id', array(':profile_id' => $profile_id));
+      if ($rs) {
+        $this->profile = $rs->fetchAssoc();
+      }
+      $this->loadMeasures();
+      $this->loadDisplays();
     }
-    $this->loadMeasures();
-    $this->loadDisplays();
+    else {
+      $this->profile =
+        array('profile_id' => '', 'school_year_offset' => 0, 'name' => '','code' => '', 'min_grade' => '', 'max_grade' => '', 'bldg_id' => -1, 'weight' => 0);
+      $this->displays = $this->profile['displays'] = array();
+      $this->measures = $this->profile['measures'] =  array();
+    }
     return $this->profile;
   }
 
