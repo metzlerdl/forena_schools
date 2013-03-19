@@ -3,6 +3,7 @@
 <title>Profile Definitions</title>
 <frx:fields>
   <frx:field id="name" link="profile/{profile_id}/edit"/>
+  <frx:field id="old_profile_edit" link="flexpopup/ProfileEditor?profile_id={profile_id}" target="popup_{profile_id}">Legacy Edit</frx:field>
   <frx:field id="add" link="profile/add">Add Assessment Profile</frx:field>
   <frx:field id="delete_profile" link="profile/{profile_id}/delete">Delete</frx:field>
 </frx:fields>
@@ -29,7 +30,7 @@
           <td>{grades}</td>
           <td>{profile_type}</td>
           <td>{grade_display} {group_display} {student_display}</td>
-          <td>{delete_profile}</td>
+          <td>{delete_profile} {old_profile_edit}</td>
         </tr>
       </tbody>
     </table>
