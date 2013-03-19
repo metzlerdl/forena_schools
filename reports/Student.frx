@@ -14,7 +14,7 @@
   <frx:field id="all_subjects" link="student/{parm.person_id}?grade_level={parm.grade_level}">All</frx:field>
   <frx:field id="subject" link="student/{parm.person_id}?grade_level={parm.grade_level}&amp;subject={subject}"/>
 </frx:fields>
-<frx:menu path="student/:person_id/view" type="default-local-task" title="general"/>
+<frx:menu path="student/:person_id/view" type="default-local-task" title="General"/>
 <frx:parameters>
   <frx:parm id="grade_level" label="Grade" type="selectajax" data_source="ims/student/enrollment" data_field="grade_level" label_field="grade" />
   <frx:parm id="subject" label="Subject" type="selectajax" data_source="ims/subjects" data_field="subject" label_field="subject" /> 
