@@ -21,9 +21,6 @@
    <h4>{first_name} {last_name}</h4>
  </div>
  <div class="grid_5">
- <div frx:block="ims/building/role" frx:parameters="role=bldg_admin&amp;bldg_id={group.bldg_id}">
-   {edit_group}
- </div>
  <div  frx:block="ims/group/testing_summary" id="test-query">
    <table>
      <thead>

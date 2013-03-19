@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <html xmlns:frx="urn:FrxReports">
 <head>
-<title>District View</title>
+<title>District Dashboard</title>
 <frx:category>District</frx:category>
 <frx:options hidden="1"/>
 <frx:fields>

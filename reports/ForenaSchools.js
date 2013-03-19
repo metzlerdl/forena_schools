@@ -6,7 +6,7 @@
         "bPaginate": false, 
         "bSort": true,
         "sScrollX": "100%",
-        "sScrollY": "30em",
+        "sScrollY": "500",
         "bScrollCollapse": true
       }); 
       if (oTable) { 

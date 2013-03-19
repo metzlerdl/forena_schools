@@ -15,8 +15,8 @@
 		link="{bldg.building_dashboard}?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="@name"
 		link="group/{@group_id}" />
-	<frx:field id="@editable"
-		link="reports/CollectionEditor?stu_coll_id={collection_id}&amp;name={collection_name}" >edit</frx:field>
+	<frx:field id="group_name"
+		link="group/{group_id}" />
 </frx:fields>
 <frx:parameters />
 <frx:docgen />
@@ -51,13 +51,14 @@
 				</tr>
 			</tbody>
 		</table>
-		<h3>Collections</h3>
-		<table frx:block="ims/collections">
+		<div frx:block="ims/teacher/groups">
+		<h3>Intervention Groups</h3>
+		<table >
 			<tr frx:foreach="*">
-				<td>{collection_name}</td>
-				<td>{editable}</td>
+				<td>{group_name}</td>
 			</tr>
 		</table>
+		</div>
 	</div>
   <div id="school_years" class="grid_12" frx:block="ims/school_years">
     <h4>Show courses for year</h4>

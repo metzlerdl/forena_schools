@@ -16,11 +16,23 @@
 </frx:fields>
 <frx:menu path="student/:person_id/view" type="default-local-task" title="general"/>
 <frx:parameters>
+  <frx:parm id="grade_level" label="Grade" type="selectajax" data_source="ims/student/enrollment" data_field="grade_level" label_field="grade" />
+  <frx:parm id="subject" label="Subject" type="selectajax" data_source="ims/subjects" data_field="subject" label_field="subject" /> 
 </frx:parameters>
-<frx:docgen />
+<frx:docgen>
+  <frx:doc type="pdf"/>
+</frx:docgen>
 </head>
 <body>
-	<div id="person" frx:block="ims/student/person_info" frx:foreach="*"  class="grid_8" >
+
+	<div id="person" frx:block="ims/student/person_info" frx:foreach="*"  >
+
+	  <div class="pdf-only">
+	    <h2>{skin.district}</h2>
+	    <h2>{last_name}, {first_name}</h2>
+	  </div>
+    <p><strong>SIS ID: </strong>{person.sis_id}<br/>
+    <strong>State Student ID: </strong>{person.state_student_id}</p>
 	  <h1 frx:renderer="FrxTitle">{last_name}, {first_name}</h1>
 	  <h3>Contact Info</h3>
 	  <div class="address">
@@ -31,29 +43,7 @@
 	  <div frx:if="{email}">{email}</div>
 	  
   </div>
-  <div class="grid_3" style="border: solid 1px; padding:  1em;">
-    <h3>IDs</h3>
-    <div><h4>SIS ID</h4>{person.sis_id}</div>
-    <div><h4>State Student ID</h4>
-     {person.state_student_id}
-    </div> 
-  </div>
-  <div class="grid_12">
-  <div id="enrollment" frx:block="ims/student/enrollment"  >
-      <p>filter by grade</p>
-      <ul class="hnav nav">
-        <li>{all_grades}</li>
-        <li frx:foreach="*" class="{selected}" >{grade}</li>
-      </ul>
-  </div>
-  <div id="subjects" frx:block="ims/subjects">
-      <p>filter by subject</p>
-      <ul class="hnav nav">
-        <li>{all_subjects}</li>
-        <li frx:foreach="*" class="{selected}">{subject}</li>
-      </ul>
-  </div>
-	</div>
+  <div frx:renderer="FrxParameterForm" title="Assessment Selection" collapsible="0" submit="Select"/> 
   <div id="assessments" frx:block="ims/student/assessments" frx:foreach="*">
     <div class="grid_12">
     <h4 class="hrule">{grade_name} {sched_label} {test_name}</h4>

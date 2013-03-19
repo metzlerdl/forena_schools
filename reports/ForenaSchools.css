@@ -3,6 +3,10 @@
 	
 td { padding: 5px; }
 
+.pdf-only {
+ display:none; 
+}
+
 td.l1{
 	background-color: #E3B5B5; 
 	

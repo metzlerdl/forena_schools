@@ -1,0 +1,7 @@
+.no-pdf, h1 {
+	display: none;  
+	}
+		
+.pdf-only {
+	display: block; 
+	}
