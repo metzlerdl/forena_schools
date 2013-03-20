@@ -76,7 +76,7 @@
 		<s:FormItem label="Ends" width="100%">
 			<mx:DateField id="endInput" text="@{editScheduleXML.@ends}" editable="true" width="150"/>
 		</s:FormItem>
-		<s:FormItem label="Ends" width="100%">
+		<s:FormItem label="Target" width="100%">
 			<mx:DateField id="targetInput" text="@{editScheduleXML.@target}" editable="true" width="150"/>
 		</s:FormItem>
 	</s:Form>

@@ -37,7 +37,7 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
   $buildings['-1'] = 'District Wide';
 
   // Displays
-  $displays = array('Student', 'Group', 'Grade Level');
+  $displays = array('Performance', 'Group', 'Grade Level');
   $displays = array_combine($displays, $displays);
 
   // Tests

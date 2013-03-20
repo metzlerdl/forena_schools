@@ -6,5 +6,5 @@ SELECT p.profile_id, s.person_id, s.student_id, p.name FROM
   JOIN a_profile_displays d ON d.profile_id=p.profile_id   
 WHERE person_id=:person_id
   AND :filter.school_year = s.school_year
-  AND d.display = 'Student'
+  AND d.display = 'Performance'
 ORDER BY weight, name

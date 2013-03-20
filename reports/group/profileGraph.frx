@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Profile Graph Test</title>
+<frx:category>Student</frx:category>
+<frx:options />
+<frx:fields >
+  <frx:field id="export" link="report_doc/profileGraph.csv?group_id={parm.group_id}&amp;profile_id={parm.profile_id}" >Export Data</frx:field>
+</frx:fields>
+<frx:parameters>
+	<frx:parm id="profile_id" type="select" data_source="ims/group/performance_profiles" data_field="profile_id" label_field="name"/> 
+	<frx:parm id="school_year" type="hidden"></frx:parm>
+</frx:parameters>
+<frx:docgen />
+</head>
+<body>
+
+	<div id="subject_performance"
+		frx:block="ims/group/profile_performance">
+		<svg frx:type="scatterplot" frx:renderer="FrxSVGGraph"
+		  frx:series_1="{norm_score}"
+		  frx:seriesx_1="{grade}"
+		  frx:best_fit="straight"
+		  />
+		<table>
+		<thead>
+		 <tr>
+		   <th>Date</th>
+		   <th>Name</th>
+		   <th>Measure</th>
+		   <th>Score</th>
+		   <th>Normalized Score</th>
+		 </tr>
+		</thead>
+		<tbody>
+		<tr frx:foreach="*">
+		  <td>{date_taken}</td>
+		  <td>{last_name}, {first_name}</td>
+		  <td>{test_abbrev} {name}</td>
+		  <td>{score}</td>
+		  <td>{norm_score}</td>
+		</tr>
+		</tbody></table>
+		<p>{export}</p>
+	</div>
+</body>
+</html>

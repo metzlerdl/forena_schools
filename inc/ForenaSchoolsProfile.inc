@@ -88,7 +88,6 @@ class ForenaSchoolsProfile {
       $m1 = array_keys($this->measures);
       $m2 = array_keys($profile['measures']);
       $measures_to_delete = array_diff($m1, $m2);
-      dpm($measures_to_delete, 'to delete');
       if ($measures_to_delete) {
         db_delete('a_profile_measures')
           ->condition('profile_id', $this->profile_id)

@@ -19,7 +19,10 @@
 	<div id="subject_performance"
 		frx:block="ims/student/profile_performance">
 		<svg frx:type="scatterplot" frx:renderer="FrxSVGGraph"
-			frx:options="style=&amp;label=&amp;series[0]=%7Bnorm_score%7D&amp;seriesx[0]=%7Bgrade%7D&amp;seriesx[1]=&amp;seriesx[2]=&amp;seriesx[3]=&amp;link=" />
+		  frx:series_1="{norm_score}"
+		  frx:seriesx_1="{grade}"
+		  frx:best_fit="straight"
+		  />
 		<table>
 		<tr frx:foreach="*">
 		  <td><span frx:renderer="FrxXMLSource"/></td>
