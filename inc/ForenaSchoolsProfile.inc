@@ -59,7 +59,48 @@ class ForenaSchoolsProfile {
 
     //Now insert update the measures
     $existing_measures = $this->measures;
-    $new_measures = $profile['measures'];
+    $i=0;
+    // Update
+    if ($profile['measures']) foreach ($profile['measures'] as $k=>$measure) {
+      if(isset($existing_measures[$k])) {
+        db_update('a_profile_measures')
+          ->fields(array(
+            'measure_id' => $measure['measure_id'],
+            'seq' => $measure['seq'],
+          ))
+          ->condition('profile_id', $this->profile_id)
+          ->condition('sort_order', $i)
+          ->execute();
+      }
+      else {
+        db_insert('a_profile_measures')->
+          fields(array(
+            'profile_id' => $this->profile_id,
+            'measure_id' => $measure['measure_id'],
+            'seq' => $measure['seq'],
+            'sort_order' => $i,
+          ))
+          ->execute();
+      }
+      $i++;
+    }
+    if ($profile['measures']) {
+      $m1 = array_keys($this->measures);
+      $m2 = array_keys($profile['measures']);
+      $measures_to_delete = array_diff($m1, $m2);
+      dpm($measures_to_delete, 'to delete');
+      if ($measures_to_delete) {
+        db_delete('a_profile_measures')
+          ->condition('profile_id', $this->profile_id)
+          ->condition('sort_order', $measures_to_delete)
+          ->execute();
+      }
+    }
+    else {
+      db_delete('a_profile_measures')
+        ->condition('profile_id', $this->profile_id)
+        ->execute();
+    }
 
     //Update the displays
     $new_displays = array();
@@ -108,7 +149,7 @@ class ForenaSchoolsProfile {
       ORDER BY sort_order", array(':profile_id' => $this->profile_id));
     $measures = array();
     foreach ($rs as $row) {
-      $measures[] = array(
+      $measures[(int)$row->sort_order] = array(
         'measure_id' => $row->measure_id,
         'seq' => $row->seq,
         'label' => $row->label,

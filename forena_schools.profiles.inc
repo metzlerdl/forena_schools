@@ -113,7 +113,7 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
 
   $i = 0;
   // Measures section of display.
-  if ($data['measures']) foreach($data['measures'] as $measure) {
+  if ($data['measures']) foreach($data['measures'] as $key=>$measure) {
     $i++;
     $ctl = array(
       '#type' => 'fieldset',
@@ -123,6 +123,11 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     $ctl['measure_id'] = array(
       '#type' => 'value',
       '#value' => $measure['measure_id'],
+    );
+
+    $ctl['seq'] = array(
+      '#type' => 'value',
+      '#value' => $measure['seq'],
     );
 
     $ctl['name'] = array(
@@ -171,7 +176,7 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
   $test_id = @$form_state['values']['add_measures']['test_id'];
 
   $measures = array();
-  $schedules = array('' => 'Any');
+  $schedules = array('0' => 'Any');
 
   $t = ForenaSchoolsTest::instance();
   if ($test_id) $measures = $t->listMeasures($test_id);
@@ -210,7 +215,11 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     "#submit" => array('forena_schools_profile_save'),
     '#value' => t('Save'),
   );
-
+  $form['save_close'] = array(
+    '#type' => 'submit',
+    "#submit" => array('forena_schools_profile_save'),
+    '#value' => t('Save and Close'),
+  );
 
   return $form;
 }
@@ -219,8 +228,12 @@ function forena_schools_profile_save($form, &$form_state) {
 
   $p = ForenaSchoolsProfile::instance();
   if ($form_state['values']['profile_id']) $p->load($form_state['values']['profile_id']);
+  unset($form_state['values']['measures']['measures__active_tab']);
   $p->save($form_state['values']);
-  $form_state['redirect'] = 'reports/district.Profiles';
+  if (strpos($_POST['op'], 'Close')!==FALSE) {
+
+    $form_state['redirect'] = 'reports/district.Profiles';
+  }
 }
 
 /**
@@ -249,7 +262,7 @@ function forena_schools_profile_add_measures($form, &$form_state) {
   // Schedule
   $seq = $form_state['values']['add_measures']['seq'];
   $valid_schedules = ForenaSchoolsTest::instance()->listSchedules($test_id);
-  $seq = isset($valid_schedules[$seq]) ? $seq : '';
+  $seq = isset($valid_schedules[$seq]) ? $seq : '0';
   $label = isset($valid_schedules[$seq]) ? $valid_schedules[$seq] : 'Any';
 
   if ($new_measures) foreach ($new_measures as $measure_id) {
@@ -299,7 +312,6 @@ function forena_schools_profile_delete($formid, &$form_state, $profile_id) {
       '#type' => 'value',
       '#value' => $profile_id,
     );
-
 
     $path = 'reports/district.Profiles';
     $form = confirm_form($form, 'Delete profile ' . $profile['name'],  $path,  'Deleting a profile is permanent.  Are you sure', 'Delete', 'Cancel');
