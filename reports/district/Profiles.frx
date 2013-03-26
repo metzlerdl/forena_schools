@@ -29,7 +29,7 @@
           <td>{name}</td>
           <td>{grades}</td>
           <td>{profile_type}</td>
-          <td>{grade_display} {group_display} {student_display}</td>
+          <td>{grade_display} {group_display} {performance_display}</td>
           <td>{delete_profile} {old_profile_edit}</td>
         </tr>
       </tbody>

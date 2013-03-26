@@ -22,6 +22,8 @@
 		  frx:series_1="{norm_score}"
 		  frx:seriesx_1="{grade}"
 		  frx:best_fit="straight"
+      frx:label_x="Grade Level"
+      frx:label_y='Norm Score'
 		  />
 		<table>
 		<tr frx:foreach="*">
