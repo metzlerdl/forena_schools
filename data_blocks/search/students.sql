@@ -23,7 +23,7 @@ AND s.grade_level in (:security.grades)
 AND s.grade_level BETWEEN :grade_level and CAST(COALESCE(:max_grade_level, :grade_level) AS int)
 --END
 --IF=:last
-AND p.last_name like concat(:last, '%')
+AND p.last_name ilike concat(:last, '%')
 --ELSE
 AND 1=2
 --END
