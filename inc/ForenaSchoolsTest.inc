@@ -48,7 +48,7 @@ class ForenaSchoolsTest {
     );
 
     if ($rs) {
-      $rs->fetchAll(PDO::FETCH_ASSOC);
+      $rs->fetchAllAssoc('measure_id', PDO::FETCH_ASSOC);
     }
     else {
       $this->measures = array();
@@ -59,7 +59,7 @@ class ForenaSchoolsTest {
   function loadSchedules() {
     $rs = db_query('SELECT * FROM {a_test_schedules} WHERE test_id = :test_id', array(':test_id' => $this->test_id));
     if ($rs) {
-      $this->schedules = $rs->fetchAll(PDO::FETCH_ASSOC);
+      $this->schedules = $rs->fetchAllAssoc('seq', PDO::FETCH_ASSOC);
     }
     else {
       $this->schedules = array();
@@ -67,10 +67,43 @@ class ForenaSchoolsTest {
     return $this->schedules;
   }
 
+  // Load all validations
+  function loadValidations() {
+    $validations = array();
+    $rs = db_query('SELECT * FROM {a_test_validations} WHERE test_id = :test_id
+      ORDER BY measure_id, grade_level', array(':test_id' => $this->test_id));
+    if ($rs) {
+      $validations = $rs->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else {
+      $this->validations = array();
+    }
+    foreach ($validations as $valid) {
+      $validations[$valid['measure_id']][$valid['grade_level']][$valid['seq']] = $valid;
+    }
+    $this->validations = $validations;
+    return $this->validations;
+  }
+
   // Load Schedules
   function listSchedules($test_id='') {
     if (!$test_id) $test_id = $this->test_id;
     $rs = db_query('SELECT seq, label FROM {a_test_schedules} WHERE test_id = :test_id', array(':test_id' => $test_id));
+    if ($rs) {
+      return $rs->fetchAllKeyed(0, 1);
+    }
+    else {
+      return array();
+    }
+  }
+
+  /**
+   * Return list of tests for a grade
+   * Enter description here ...
+   * @param  $grade_level Qualifying grade level.
+   */
+  function gradeLevelTests($grade_level) {
+    $rs = db_query('SELECT test_id, name FROM {a_tests} WHERE :grade_level BETWEEN min_grade AND max_grade ORDER BY name', array(':grade_level' => $grade_level));
     if ($rs) {
       return $rs->fetchAllKeyed(0, 1);
     }

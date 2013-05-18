@@ -156,6 +156,16 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_group_delete', 1),
 	  'file' => 'forena_schools.groups.inc',
 	);
+
+	$items['student/%/testentry'] = array(
+	  'title' => 'Test',
+	  'type' => MENU_LOCAL_TASK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_single_entry_form',1),
+	  'file' => 'forena_schools.test_entry.inc',
+	);
 	return $items;
 }
 
