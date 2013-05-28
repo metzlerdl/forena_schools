@@ -29,7 +29,6 @@ class ForenaSchoolsProfile {
    * @param $profile associate array containg profile data.
    */
   public function save($profile) {
-
     // First insert or update the base profile record.
     if ($this->profile_id) {
       db_update('a_profiles')

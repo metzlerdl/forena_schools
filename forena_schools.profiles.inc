@@ -227,12 +227,18 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
 function forena_schools_profile_save($form, &$form_state) {
 
   $p = ForenaSchoolsProfile::instance();
+  $profile_id = $form_state['values']['profile_id'];
   if ($form_state['values']['profile_id']) $p->load($form_state['values']['profile_id']);
   unset($form_state['values']['measures']['measures__active_tab']);
   $p->save($form_state['values']);
   if (strpos($_POST['op'], 'Close')!==FALSE) {
 
     $form_state['redirect'] = 'reports/district.Profiles';
+  }
+  else {
+    if ($profile_id != $p->profile_id) {
+      $form_state['redirect'] = 'profile/' . $p->profile_id . '/edit';
+    }
   }
 }
 
