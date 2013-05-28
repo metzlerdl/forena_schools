@@ -15,7 +15,9 @@
 	<frx:parm id="school_year" type="hidden"></frx:parm>
 </frx:parameters>
 <frx:docgen />
-<frx:menu />
+<!-- 
+<frx:menu path="group/:group_id/profile" type="local-task" title="Performance"/>
+-->
 </head>
 <body>
  <div frx:block="ims/group/details" id="group" frx:foreach="*" class="grid_12">

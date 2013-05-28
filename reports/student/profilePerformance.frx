@@ -13,7 +13,8 @@
 	<frx:parm id="school_year" type="hidden"></frx:parm>
 </frx:parameters>
 <frx:docgen />
-<frx:menu/>
+<!--  <frx:menu path="student/:person_id/profile" type="local-task" title="Performance"/>
+-->
 </head>
 <body>
 	<div id="person" frx:block="ims/student/person_info" frx:foreach="*" >
