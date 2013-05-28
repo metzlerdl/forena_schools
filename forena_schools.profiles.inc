@@ -329,6 +329,6 @@ function forena_schools_profile_delete_submit($form, &$form_state) {
   $p = ForenaSchoolsProfile::instance();
   if ($p->load($form_state['values']['profile_id'])) {
     $p->delete();
-    $form_state['redirect'] = 'reports/district.profiles';
+    $form_state['redirect'] = 'reports/district.Profiles';
   }
 }
