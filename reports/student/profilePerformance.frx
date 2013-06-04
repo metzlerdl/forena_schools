@@ -4,7 +4,7 @@
 ]>
 <html xmlns:frx="urn:FrxReports">
 <head>
-<title>Profile Graph Test</title>
+<title>Sample Student Profile Graph</title>
 <frx:category>Student</frx:category>
 <frx:options />
 <frx:fields />
@@ -30,6 +30,13 @@
 
 	<div id="subject_performance"
 		frx:block="ims/student/profile_performance">
+		    <svg frx:type="scatterplot" frx:renderer="FrxSVGGraph"
+      frx:series_1="{norm_score}"
+      frx:seriesx_1="{grade}"
+      frx:best_fit="straight"
+      frx:label_x="Grade Level"
+      frx:label_y='Norm Score'
+      />
 		<table>
 		<thead>
 		 <tr>
