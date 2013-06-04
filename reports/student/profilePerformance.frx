@@ -20,11 +20,11 @@
 	<div id="person" frx:block="ims/student/person_info" frx:foreach="*" >
 	  <h1 frx:renderer="FrxTitle">{last_name}, {first_name}</h1>
 	</div>
-	<div frx:renderer="FrxParameterForm" collapsible='0' title="Select Profile"/>
+	<div frx:renderer="FrxParameterForm" frx:collapsible='0' title="Select Profile"/>
   <div id="profile" frx:block="ims/profiles/profile" frx:foreach="*">
     <h2>{name} </h2>
   </div>
-  <div frx:renderer="FrxInclude" src="reports/student.profileGraph.svg?person_id={parm.person_id}&amp;profile_id={parm.profile_id}&amp;school_year={filter.school_year}"
+  <div frx:renderer="FrxInclude" frx:src="reports/student.profileGraph.svg?person_id={parm.person_id}&amp;profile_id={parm.profile_id}&amp;school_year={filter.school_year}"
        frx:width="600" frx:height="400"/> 
   <h3>Scores</h3>
 

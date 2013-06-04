@@ -58,7 +58,22 @@ class ForenaSchoolsStudent {
       FROM {p_people} p
       	JOIN {p_students} s ON s.person_id=p.person_id
       WHERE p.sis_id = :sis_id AND s.school_year = :school_year',
-      array(':person_id' => $person_id, ':schooL_ear' => $schooL_year)
+      array(':person_id' => $person_id, ':school_year' => $schooL_year)
+    );
+    if ($rs) {
+      $student = $rs->fetchAssoc();
+      $this->student = $student;
+    }
+    return $this->student;
+  }
+
+  public function loadByGradeLevel($person_id, $grade_level) {
+    $rs = db_query(
+      'SELECT s.*, last_name, first_name
+      FROM {p_people} p JOIN {p_students} s on p.person_id = s.person_id
+      WHERE p.person_id = :person_id AND s.grade_level = :grade_level
+      ORDER BY school_year desc',
+      array(':person_id' => $person_id, ':school_year' => $school_year)
     );
     if ($rs) {
       $student = $rs->fetchAssoc();

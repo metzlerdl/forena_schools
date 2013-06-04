@@ -12,7 +12,6 @@
 </frx:fields>
 <frx:parameters>
 	<frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
-	<frx:parm id="grade_level"/>
 	<frx:parm id="last"/>
 </frx:parameters>
 <frx:docgen>
@@ -25,7 +24,7 @@
   <div id="building" frx:block="ims/building/building" frx:foreach="*">
     <h1 frx:renderer="FrxTitle">{building.name} Search</h1>
   </div>
-  <div frx:renderer="FrxParameterForm" title="Search Criteria" submit="Search">
+  <div frx:renderer="FrxParameterForm" frx:title="Search Criteria" frx:submit="Search">
     <p>Search for students who attended during the school year {school_year}</p>
     <p>and has a last name beginning with {last}</p>
     <p>{submit}</p>
