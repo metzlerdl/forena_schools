@@ -9,3 +9,4 @@ Following is a list of items that I don't want to forget to do.
 * Add indexes and foreign keys to the schema api.   
 
 Aided by brandon.
+Approved by Dave
