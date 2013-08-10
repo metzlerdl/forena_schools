@@ -316,9 +316,9 @@ class ForenaSchoolsGroup {
     return $output;
   }
 
-  public function userGroups($type='intervention', $bldg_id='', $grade_level='') {
+  public function userGroups($type='intervention', $bldg_id='', $min_grade='', $max_grade='') {
     $groups = array();
-    if (forena_schools_access('dist_admin')) {
+    if (forena_schools_access('dist_admin') && !$bldg_id) {
       $rs = db_query('select * FROM s_groups g
         JOIN p_people p ON g.owner_id = p.person_id WHERE login=:login
           AND group_type = :type',
@@ -327,9 +327,11 @@ class ForenaSchoolsGroup {
     }
     elseif (forena_schools_access('bldg_admin')) {
       $rs = db_query('select * from s_groups where bldg_id = :bldg_id
-        AND :grade_level BETWEEN min_grade_level AND max_grade_level
+        AND (:min_grade BETWEEN min_grade_level AND max_grade_level
+        OR :max_grade BETWEEN min_grade_level AND max_grade_level
+        OR (min_grade_level > :min_grade AND max_grade_level < :max_grade))
         AND :type = group_type',
-      array(':bldg_id' => $bldg_id, ':grade_level' => $grade_level, ':type' => $type));
+      array(':bldg_id' => $bldg_id, ':min_grade' => $min_grade, ':max_grade' => $max_grade,  ':type' => $type));
     }
     else {
       $rs = db_query('select * FROM s_groups g

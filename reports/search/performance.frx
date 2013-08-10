@@ -17,7 +17,7 @@
 	<frx:parm id="max_grade_level" type="select" data_source="ims/grade_levels" label=""/>
 	<frx:parm id="test_id" type="selectajax" data_source="ims/building/tests" label="test"/> 
 	<frx:parm id="seq" type="select" data_source="ims/tests/schedules" label="schedule"/> 
-	<frx:parm id="measure_id" type="select" data_source="ims/tests/measures"/> 
+	<frx:parm id="measure_id" type="select" data_source="ims/tests/measures" /> 
 	<frx:parm id="norm_score" type="multiselect" data_source="ims/tests/norm_scores">2</frx:parm> 
 	<frx:parm id="last"/>
 </frx:parameters>
