@@ -1,5 +1,6 @@
 <?php
 require_once 'ForenaSchools.inc';
+require_once 'ForenaSchoolsAssessment.inc';
 require_once 'ForenaSchoolsYear.inc';
 require_once 'ForenaSchoolsValidation.inc';
 require_once 'ForenaSchoolsPerson.inc';

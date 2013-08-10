@@ -72,6 +72,15 @@ function forena_schools_single_entry_form($form, &$form_state, $person_id) {
     );
   }
   else {
+    $a = ForenaSchoolsAssessment::instance();
+    $test_id = $form_state['storage']['assessment']['test_id'];
+    $seq = $form_state['storage']['assessment']['seq'];
+    $a->load($test_id, $seq);
+    $measures = $a->test->measures;
+    dpm($a);
+    foreach ($measures as $measure) {
+      dpm($measure);
+    }
 
     $form['assessment'] = array('#type' => 'fieldset', '#title' => 'entry', '#tree' => TRUE);
     $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
@@ -94,6 +103,10 @@ function forena_schools_test_select_assessment($form, &$form_state) {
   }
 }
 
+function forena_schools_test_entry_form_submit($form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+}
+
 function forena_schools_test_select_ajax($form, &$form_state) {
   // Clear out sequence if test_id has changed.
   if ($form_state['storage']['test_id'] != $form_state['values']['test_id']) {
@@ -101,4 +114,14 @@ function forena_schools_test_select_ajax($form, &$form_state) {
   }
   $form_state['storage']['test_id'] = $form_state['values']['test_id'];
   return $form['select'];
+}
+
+function forena_schools_test_entry_form($form, &$form_state, $student_id, $test_id, $seq) {
+  $s = ForenaSchoolsStudent::instance();
+  $a = ForenaSchoolsAssessment::instance();
+  // Get the student
+  $student = $s->loadByStudentId($student_id);
+  $a->setStudent($student);
+  $a->load($test_id, $seq);
+
 }

@@ -159,7 +159,7 @@ function forena_schools_menu() {
 
 	$items['student/%/testentry'] = array(
 	  'title' => 'Test',
-	  'type' => MENU_LOCAL_TASK,
+	  'type' => MENU_CALLBACK,
 	  'access callback' => 'forena_schools_access',
 	  'access arguments' => array('dist_admin'),
 	  'page callback' => 'drupal_get_form',

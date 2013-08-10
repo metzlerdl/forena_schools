@@ -70,8 +70,8 @@ class ForenaSchoolsTest {
   // Load all validations
   function loadValidations() {
     $validations = array();
-    $rs = db_query('SELECT * FROM {a_test_validations} WHERE test_id = :test_id
-      ORDER BY measure_id, grade_level', array(':test_id' => $this->test_id));
+    $rs = db_query('SELECT * FROM {a_test_rules} r JOIN {a_test_measures} m ON m.measure_id=r.measure_id WHERE m.test_id = :test_id
+      ORDER BY r.measure_id, r.grade_level', array(':test_id' => $this->test_id));
     if ($rs) {
       $validations = $rs->fetchAll(PDO::FETCH_ASSOC);
     }
