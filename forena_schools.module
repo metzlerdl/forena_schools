@@ -149,9 +149,9 @@ function forena_schools_menu() {
 
 	$items['group/%/delete'] = array(
 	  'title' => 'Delete Group',
-	  'type' => MENU_CALLBACK,
+	  'type' => MENU_LOCAL_TASK,
 	  'access callback' => 'forena_schools_access',
-	  'access arguments' => array('dist_admin'),
+	  'access arguments' => array('teacher'),
 	  'page callback' => 'drupal_get_form',
 	  'page arguments' => array('forena_schools_group_delete', 1),
 	  'file' => 'forena_schools.groups.inc',

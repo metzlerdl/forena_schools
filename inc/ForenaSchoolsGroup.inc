@@ -242,7 +242,7 @@ class ForenaSchoolsGroup {
    */
   public function delete() {
     if (@$this->group['group_id']) {
-      db_delete('s_group_memebers')
+      db_delete('s_group_members')
        ->condition('group_id', $this->group['group_id'])
        ->execute();
       db_delete('s_groups')

@@ -296,6 +296,15 @@ function forena_schools_group_save($form, &$form_state) {
 function forena_schools_group_delete($form, &$form_state, $group_id) {
   $g = ForenaSchoolsGroup::instance();
   $group = $g->loadByGroupID($group_id);
+  $bldg_id = @$group['bldg_id'];
+
+  if (!forena_schools_access('dist_admin')) {
+    $groups = $g->userGroups($group['group_type'], $group['bldg_id'], $group['min_grade_level'], $group['max_grade_level']);
+    if (!@$groups[$group['group_id']]) {
+      drupal_access_denied();
+    }
+  }
+
   $form = array(
     '#type' => 'value',
     '#value' => $group_id,
