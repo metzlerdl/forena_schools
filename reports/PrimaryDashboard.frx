@@ -45,6 +45,19 @@
         </tbody>
       </table>	
 		</div>
+		<div frx:block="ims/building/groups_for_grade_level" id="collections" 
+		  frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
+		
+		<h3>Intervention Groups</h3>
+		<table >
+			<tbody>
+				<tr frx:foreach="*" id="coll">
+					<td>{group_name}</td>
+					<td>{grade}</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
 		<h3>Classes</h3>
 		<p>{add_course}</p>
 		<table >
@@ -59,19 +72,6 @@
 				</tr>
 			</tbody>
 		</table>
-		<div frx:block="ims/building/groups_for_grade_level" id="collections" 
-		  frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
-		
-		<h3>Intervention Groups</h3>
-		<table >
-			<tbody>
-				<tr frx:foreach="*" id="coll">
-					<td>{group_name}</td>
-					<td>{grade}</td>
-				</tr>
-			</tbody>
-		</table>
-		</div>
 	</div>
 	<div class="nav grid_4">
 

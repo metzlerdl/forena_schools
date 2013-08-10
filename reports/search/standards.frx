@@ -24,13 +24,13 @@
   <frx:doc type="csv"/>
   <frx:doc type="xls"/>
 </frx:docgen>
-<frx:menu path="schools/:bldg_id/search/standards" type="local-task" title="Standards"/> 
+<frx:menu path="schools/:bldg_id/search/standards" type="local-task" title="Grad Requirements"/> 
 </head>
 <body>
   <div id="building" frx:block="ims/building/building" frx:foreach="*">
     <h1 frx:renderer="FrxTitle">{building.name} Search</h1>
   </div>
-  <div frx:renderer="FrxParameterForm" title="Search Criteria" submit="Search">
+  <div frx:renderer="FrxParameterForm" frx:title="Search Criteria" frx:submit="Search">
     <p>Search for students who attended during the school year {school_year}
     in grades {grade_level} through {max_grade_level} and have not recevied a 
     required {grad_subject} score of that {norm_score}</p>
