@@ -58,10 +58,29 @@ function forena_schools_school_year_form($formid, &$form_state, $school_year='')
   $form['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
+    '#validate' => array('forena_schools_year_validate'),
     '#submit' => array('forena_schools_year_save'),
   );
 
+  $form['cancel'] = array(
+    '#value' => 'Cancel',
+    '#type' => 'submit',
+    '#submit' => array('forena_schools_form_cancel'),
+    '#limit_validation_errors' => array(),
+  );
+
   return $form;
+}
+
+function forena_schools_year_validate($form, &$form_state) {
+ $y = ForenaSchoolsYear::instance();
+ if (!$y->validDate($form_state['values']['start_deate'])) {
+   form_set_error('start_date', 'Invalid Start Date');
+ }
+ if (!$y->validDate($form_state['values']['end_date'])) {
+   form_set_error('end_date', 'Invalid End Date');
+ }
+
 }
 
 function forena_schools_year_save($form, &$form_state) {
