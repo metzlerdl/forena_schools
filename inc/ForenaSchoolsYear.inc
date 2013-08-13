@@ -1,122 +1,137 @@
 <?php
-class ForenaSchoolsYear { 
-  static public function instance() { 
-    static $o = ''; 
-    if (!$o) { 
-      $o = new ForenaSchoolYear(); 
+class ForenaSchoolsYear {
+  public $year;
+
+  static public function instance() {
+    static $o = '';
+    if (!$o) {
+      $o = new ForenaSchoolsYear();
     }
-    return $o; 
+    return $o;
   }
-  
+
   /**
-   * Delete School year 
+   * Delete School year
    * @param $year
-   *   School year to delete. 
+   *   School year to delete.
    */
-  public function delete($year) { 
-    if ($year) { 
-      //Check for groups
-      $rs = db_query ('SELECT COUNT(1) FROM {s_groups} WHERE school_year = :school_year', 
-        array(':school_year' => $year)); 
-      $count = $rs->fetchColumn();
-      if ($count) { 
-        drupal_set_message(t('Cannot delete year while groups exist'), 'eror'); 
-        return; 
-      }
-      
-      //Check for students
-      $rs = db_query('SELECT COUNT(1) FROM {p_students} WHERE school_year = :school_year', array(':school_year' => $year)); 
-      $count = $rs->fetchColumn(); 
-      if ($count) { 
-        drupal_set_message(t('Cannot delete year while students exist'), 'error'); 
-        return; 
-      }
-      
+  public function delete() {
+    if ($this->year) {
+      $year = $this->year['school_year'];
+
+      //Groups
+      db_delete('s_groups')
+        ->condition('school_year', $year)
+        ->execute();
+
       //Check for assessments
-      $rs = db_query('SELECT COUNT(1) FROM {a_assessments} WHERE school_year = :school_year', array(':school_year' => $year)); 
-      $count = $rs->fetchColumn(); 
-      if ($count) { 
-        drupal_set_message(t('Cannot delete year while assessments exist'), 'error'); 
-        return; 
-      }
-      
-      // Perform the actual delete; 
-      db_delete('school_year')->condition('school_year', $year); 
+      db_delete('a_assessments')
+        ->condition('school_year', $year)
+        ->execute();
+
+      //Check for assessments
+      db_delete('a_score_stats')
+        ->condition('school_year', $year)
+        ->execute();
+      //Students
+      db_delete('p_students')
+        ->condition('school_year', $year)
+        ->execute();
+
+      db_delete('i_school_years')
+        ->condition('school_year', $year)
+        ->execute();
     }
   }
-  
+
   /**
-   * Load school year from database. 
-   * @param $year 
-   *   School year to load... typicaly the year that the school year ends in. 
-   *  @return 
-   *    Associative array representation of school year. 
+   * Load school year from database.
+   * @param $year
+   *   School year to load... typicaly the year that the school year ends in.
+   *  @return
+   *    Associative array representation of school year.
    */
   public function load($year) {
-    $data =  array('year' => year); 
-    if ($rs = db_query('SELECT * from i_school_year where school_year = :year', array(':year' => $year))) { 
-      $data = $rs->fetchAssoc(); 
-    } 
-    $this->year = $data; 
-    return $data; 
+    $data =  array('year' => $year);
+    if ($rs = db_query('SELECT * from i_school_years where school_year = :year', array(':year' => $year))) {
+      $data = $rs->fetchAssoc();
+    }
+    $this->year = $data;
+    return $data;
   }
-  
+
   /**
-   * Load the school year for the data
+   * Get statistics for the school year.
    */
-  public function selectList() { 
-    
+  public function stats() {
+    //Check for groups
+    $year = $this->year['school_year'];
+    $rs = db_query ('SELECT COUNT(1) FROM {s_groups} WHERE school_year = :school_year',
+      array(':school_year' => $year));
+
+    $stats['Groups'] = $rs->fetchColumn();
+
+    //Check for students
+    $rs = db_query('SELECT COUNT(1) FROM {p_students} WHERE school_year = :school_year', array(':school_year' => $year));
+    $stats['Students'] = $rs->fetchColumn();
+
+    //Check for assessments
+    $rs = db_query('SELECT COUNT(1) FROM {a_assessments} WHERE school_year = :school_year', array(':school_year' => $year));
+    $stats['Assessments'] = $rs->fetchColumn();
+
+    return $stats;
+
   }
-  
+
   /**
    * Check to make sure date is valid
    * @param $date
-   * 		Date to check 
+   * 		Date to check
    */
-  public function validDate($date) { 
-    if ($date) { 
-      $date = date_create($date); 
+  public function validDate($date) {
+    if ($date) {
+      $date = date_create($date);
       if (!$date) {
-        drupal_set_message(t('Invalid date format'), 'error'); 
+        drupal_set_message(t('Invalid date format'), 'error');
       }
+      $date =$date ->format('Y-m-d');
     }
-    return $date; 
+    return $date;
   }
-  
+
   /**
    * Save school year
-   * @param $fields 
-   *   associative array of school year fields. 
+   * @param $fields
+   *   associative array of school year fields.
    */
   public function save($fields = array()) {
     // Check to make sure dates are reasoblae
-    if (isset($fields['start_date'])) { 
-      $fields['start_date'] = $this->valdDate($fields['start_date']); 
+    if (isset($fields['start_date'])) {
+      $fields['start_date'] = $this->validDate($fields['start_date']);
     }
-    if (isset($fields['end_date'])) { 
-      $fields['end_date'] = $this->validDate($fields['end_date']); 
+    if (isset($fields['end_date'])) {
+      $fields['end_date'] = $this->validDate($fields['end_date']);
     }
-    if ($this->year) { 
+    if ($this->year) {
       db_update('i_school_years')
        ->fields(array(
-         'name' => $fields['name'],
-         'abbrev' => $fields['abbrev'], 
-         'start_date' => $fields['start_date'], 
-         'end_date' => $fields['end_date'], 
+         'label' => $fields['label'],
+         'start_date' => $fields['start_date'],
+         'end_date' => $fields['end_date'],
        ))
        ->condition('school_year', $fields['school_year'])
-       ->execute(); 
-    } 
+       ->execute();
+    }
     else {
       db_insert('i_school_years')
         ->fields(array(
-          'school_year' => $fields['school_year'], 
-          'name' => $fields['name'], 
-          'abbrev' => $firlds['abbrev'], 
-          'start_date' => $fields['start_date'], 
-          'end_date' => $fields['end_date'], 
+          'school_year' => $fields['school_year'],
+          'name' => $fields['name'],
+          'abbrev' => $firlds['abbrev'],
+          'start_date' => $fields['start_date'],
+          'end_date' => $fields['end_date'],
         ))
-        ->execute(); 
+        ->execute();
     }
   }
 }

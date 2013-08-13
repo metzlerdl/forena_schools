@@ -9,9 +9,9 @@
         "sScrollY": "500",
         "bScrollCollapse": true
       }); 
-      if (oTable) { 
-        new FixedColumns( oTable, {"iLeftColumns": 1, "iLeftWidth": 200 });
-      }
+    //  if (oTable) { 
+    //    new FixedColumns( oTable, {"iLeftColumns": 1, "iLeftWidth": 200 });
+    //  }
    }
   };
 })(jQuery);

@@ -1,67 +1,143 @@
 <?php
 require_once 'inc/ForenaSchools.inc';
 require_once 'inc/ForenaSchoolsQuery.inc';
-require_once 'inc/common.inc'; 
-function forena_schools_school_year_form($formid, &$form_state, $school_year='') { 
-  $y = ForenaSchoolsYear::instance(); 
-  if ($school_year) { 
-    $data = $y->load($school_year); 
+require_once 'inc/common.inc';
+function forena_schools_school_year_form($formid, &$form_state, $school_year='') {
+  $y = ForenaSchoolsYear::instance();
+  if ($school_year) {
+    $data = $y->load($school_year);
+    if (!$data) {
+      drupal_not_found();
+    }
   }
-  else { 
-    $data = array(); 
+  else {
+    $data = array();
   }
-  
-  if ($school_year) { 
+
+  if ($school_year) {
     $form['school_year'] = array(
-      '#type' => 'value', 
-      '#value' => $school_year, 
-    ); 
+      '#type' => 'value',
+      '#value' => $school_year,
+    );
+    $form['school_year_value'] = array(
+      '#title' => 'School Year',
+      '#markup' => $school_year,
+    );
   }
   else {
     $form['school_year'] = array(
-      '#type' => 'textfield', 
-      '#title' => 'School Year', 
-      '#description'  => 'A four digit number representing the year that the school year ends', 
-    ); 
+      '#type' => 'textfield',
+      '#title' => 'School Year',
+      '#description'  => 'A four digit number representing the year that the school year ends',
+    );
   }
-  
+
   $form['label'] = array(
-    '#type' => 'textfield', 
-    '#maxlength' => 60, 
-    '#required' => TRUE, 
-    '#title' => 'Label', 
-    '#description' => 'Enter year as it is displayed to the user (.e.g. 2012-13)', 
-  ); 
-  
-  $form['abbrev'] = array(
-    '#type' => 'textfield', 
-    '#title' => 'Abbreviation',
-    '#maxlength' => 25, 
-    '#required' => TRUE, 
-    '#description' => 'Short description of school year (e.g. 12-13)'
-  ); 
-  
+    '#type' => 'textfield',
+    '#maxlength' => 60,
+    '#required' => TRUE,
+    '#title' => 'Label',
+    '#default_value' => @$data['label'],
+    '#description' => 'Enter year as it is displayed to the user (.e.g. 2012-13)',
+  );
+
   $form['start_date'] = array(
-    '#type' => 'textfield', 
-    '#title' => 'Start date', 
-    '#description' => 'Starting poing of school year. ', 
-  ); 
-  
+    '#type' => 'textfield',
+    '#title' => 'Start date',
+    '#default_value' => @$data['start_date'],
+    '#description' => 'Starting poing of school year. ',
+  );
+
   $form['end_date'] = array(
-    '#type' => 'textfield', 
-    '#title' => 'End Date', 
+    '#type' => 'textfield',
+    '#title' => 'End Date',
+    '#default_value' => @$data['end_date'],
     '#description' => 'Ending date of the school year.  Leave time for tests to be entered. '
-  ); 
-  
+  );
+
   $form['save'] = array(
     '#type' => 'submit',
-    '#sumbit' => array('forena_schools_year_save'), 
-  ); 
-  
+    '#value' => t('Save'),
+    '#submit' => array('forena_schools_year_save'),
+  );
+
+  return $form;
 }
 
-function forena_schools_year_save($form, &$form_state) { 
-  ForenaSchoolsYear::instance()->save($form_state['values']); 
+function forena_schools_year_save($form, &$form_state) {
+  ForenaSchoolsYear::instance()->save($form_state['values']);
+  drupal_set_message('School Year '. $form_state['values']['school_year'] . ' saved.');
+}
+
+/**
+ * Delete conformation form.
+ */
+function forena_schools_year_delete_form($form, &$form_state, $year = '') {
+  $y = ForenaSchoolsYear::instance();
+  $year = $y->load($year);
+  if (!$year) {
+    drupal_not_found();
+    exit;
+  }
+
+  $form['start_date'] = array(
+    '#type' => 'item',
+    '#title' => 'Start Date',
+    '#markup' => $year['start_date'],
+  );
+
+  $form['end_date'] = array(
+    '#type' => 'item',
+    '#title' => 'End Date',
+    '#markup' => $year['end_date'],
+  );
+
+  $stats = $y->stats();
+  foreach ($stats as $key => $value) {
+    $form[strtolower($key)] = array(
+      '#type' => 'item',
+      '#title' => $key,
+      '#markup' => $value,
+    );
+  }
+
+  $form['confirm'] = array(
+    '#title' => 'Confirm Deletion of Data.',
+    '#type' => 'checkbox',
+    '#description' => 'All Data above will be deleted.  This action cannot be ondone.  Only delete if you are really sure you want to eliminate this data.
+    Be sure and double check school year dates prior to checking this box.',
+    '#required' => TRUE,
+  );
+
+  $form['delete'] = array(
+    '#value' => 'Delete',
+    '#type' => 'submit',
+    '#submit' => array('forena_schools_year_delete'),
+  );
+
+  $form['cancel'] = array(
+    '#value' => 'Cancel',
+    '#type' => 'submit',
+    '#submit' => array('forena_schools_form_cancel'),
+    '#limit_validation_errors' => array(),
+  );
+
+
+  return $form;
+}
+
+function forena_schools_year_delete($form, &$form_state) {
+  $y = ForenaSchoolsYear::instance();
+  $year = $y->year['school_year'];
+  $y->delete();
+  $sy = $y->load($year);
+  if (!$y) {
+    drupal_set_message($year . ' Deleted');
+  }
+  else {
+    drupal_set_message('Could not delete ' . $year, 'error');
+  }
+
 }
 
 /**

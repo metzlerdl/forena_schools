@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>School Years</title>
+    <frx:category>Admin</frx:category>
+    <frx:options/>
+    <frx:fields>
+  <frx:field id="school_year" link="forenaschools/schoolyear/{school_year}/edit?destination=forenaschools/schoolyear"/>
+  <frx:field id="year_label"/>
+  <frx:field id="start_date"/>
+  <frx:field id="end_date"/>
+  <frx:field id="year_selected"/>
+  <frx:field id="add_year" link="forenaschools/schoolyear/add?destination=forenaschoools/schoolyear">Add</frx:field>
+  <frx:field id="delete_year" link="forenaschools/schoolyear/{school_year}/delete?destination=forenaschools/schoolyear">delete</frx:field>  
+</frx:fields>
+    <frx:parameters>
+  
+</frx:parameters>
+  <frx:menu path="forenaschools/schoolyear" title="SchooLYears" type="callback"/>
+    <frx:docgen/>
+  </head>
+  <body>
+  <ul>
+    <li>{add_year}</li>
+  </ul>
+  <div id="school_years_block" class="FrxTable" frx:block="ims/school_years">
+    <table>
+      <thead>
+        <tr>
+          <th>School Year</th>
+          <th>Label</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Actions</th>
+        </tr></thead>
+      <tbody>
+        <tr id="school_years" frx:foreach="*">
+          <td>{school_year}</td>
+          <td>{year_label}</td>
+          <td>{start_date}</td>
+          <td>{end_date}</td>
+          <td>{delete_year}</td></tr>
+        </tbody></table></div></body>
+</html>

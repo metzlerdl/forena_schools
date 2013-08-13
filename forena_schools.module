@@ -1,4 +1,12 @@
 <?php
+
+function forena_schools_autoload($class) {
+  if (strpos($class, 'FrxSchools') !==FALSE || strpos($class, 'ForenaSchool')!==FALSE) {
+    include drupal_get_path('module', 'forena_schools') . '/inc/' . $class . '.inc';
+  }
+}
+spl_autoload_register('forena_schools_autoload');
+
 function forena_schools_menu() {
 	$items['assessments'] = array(
 	  'type' => MENU_NORMAL_ITEM,
@@ -67,12 +75,30 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools.admin.inc',
 	);
 
-	$items['forenaschools/year/edit'] = array(
+	$items['forenaschools/schoolyear/%/edit'] = array(
 	  'type' => MENU_CALLBACK,
 	  'access callback' => 'forena_schools_access',
 	  'access arguments' => array('sys_admin'),
 	  'page callback' => 'drupal_get_form',
-	  'page arguments' => arraY('fornea_schools_year_form', 3),
+	  'page arguments' => array('forena_schools_school_year_form', 2),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['forenaschools/schoolyear/%/delete'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_year_delete_form', 2),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['forenaschools/schoolyear/add'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_school_year_form', ''),
 	  'file' => 'forena_schools.admin.inc',
 	);
 
@@ -86,6 +112,8 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_building_form', 3),
 	  'file' => 'forena_schools.admin.inc',
 	);
+
+
 
 	$items['admin/config/people/forena-schools-impersonate'] = array(
 	  'type' => MENU_NORMAL_ITEM,
@@ -576,6 +604,11 @@ function forena_schools_group_add_js_submit($form, &$form_state) {
     $form_state['redirect'] = array('group/' . $group_id. '/edit');
   }
   $g->saveMembers($ids);
+}
+
+// Empty function to handle form cancels.
+function forena_schools_form_cancel($form, &$form_state) {
+
 }
 
 
