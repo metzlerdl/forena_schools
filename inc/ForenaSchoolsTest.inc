@@ -17,13 +17,38 @@ class ForenaSchoolsTest {
     return $o;
   }
 
+  /**
+   * Determine the number of assessment records for each test
+   * @return array Statistics array.
+   */
+  function stats() {
+
+    $test_id = $this->test_id;
+    $stats = array();
+
+    $years = ForenaSchools::instance()->schoolYearList();
+    foreach ($years as $year => $label) {
+      // Check for assessments
+      $rs = db_query('SELECT COUNT(1) FROM {a_assessments} WHERE test_id = :test_id and school_year = :school_year',
+         array(':test_id' => $test_id, ':school_year' => $year));
+      $stats[$label] = $rs->fetchColumn();
+
+    }
+    return $stats;
+
+  }
+
   // Load Test information
   function load($test_id) {
     $this->test_id = $test_id;
     $rs = db_query('SELECT * from {a_tests} WHERE test_id = :test_id', array(':test_id' => $test_id));
     if ($rs) {
-      $this->test = $rs->fetchAll(PDO::FETCH_ASSOC);
+      $this->test = $rs->fetchAssoc(PDO::FETCH_ASSOC);
     }
+    else {
+      $this->test = array();
+    }
+    return $this->test;
   }
 
   function listMeasures($test_id='') {
@@ -110,5 +135,45 @@ class ForenaSchoolsTest {
     else {
       return array();
     }
+  }
+
+  /**
+   * Delete a test permanently
+   */
+  function delete() {
+    $test_id = $this->test_id;
+    $measures = $this->listMeasures($test_id);
+    // Measure Data
+    if ($measures) {
+      $measure_ids = array_keys($measures);
+
+      db_delete('a_scores')
+        ->condition('measure_id', $measure_ids)
+        ->execute();
+
+      db_delete('a_score_stats')
+        ->condition('measure_id', $measure_ids)
+        ->execute();
+
+      db_delete('a_test_rules')
+        ->condition('measure_id', $measure_ids)
+        ->execute();
+    }
+
+    db_delete('a_assessments')
+      ->condition('test_id', $test_id)
+      ->execute();
+
+    db_delete('a_test_schedules')
+      ->condition('test_id', $test_id)
+      ->execute();
+
+    db_delete('a_test_measures')
+      ->condition('test_id', $test_id)
+      ->execute();
+
+    db_delete('a_tests')
+      ->condition('test_id', $test_id)
+      ->execute();
   }
 }

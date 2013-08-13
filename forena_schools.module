@@ -102,6 +102,15 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools.admin.inc',
 	);
 
+	$items['forenaschools/test/%/delete'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_test_delete_form', 2),
+	  'file' => 'forena_schools.test.inc',
+	);
+
 	// Admin Menus
 	$items['forenaschools/building/edit'] = array(
 	  'type' => MENU_CALLBACK,
