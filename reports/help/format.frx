@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Format</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="1"></frx:options>
+<frx:parameters>
+</frx:parameters>
+<frx:docgen></frx:docgen>
+<frx:fields>
+  <frx:field id="title" link="reports/{name}"></frx:field>
+</frx:fields>
+</head>
+<body>
+  <div id="forena-1" frx:block="forena_help/design_topics">
+    <h2>Form</h2>
+    <p>Forena supports the concepts of report forms, allowING you to
+      leverage a common set of css and javascript libraries to make the
+      most out of your reports. &nbsp;For example, if you specified a
+      value of "standard_letter", then forena will include
+      standard_letter.css and standard_letter.js files in your report,
+      provided that they exist. &nbsp;&nbsp;</p>
+    <h2>Document Options</h2>
+    <p>Forena supports conversion of html documents into several
+      common document formats. &nbsp;The exact list of options that you
+      will see here will be determined by the site administrator.
+      Checking any of these options will enable links for exporting
+      douments in these types. &nbsp;</p>
+    <ul>
+      <li id="forena-2" frx:foreach="*">{title}</li>
+    </ul>
+  </div>
+</body>
+</html>

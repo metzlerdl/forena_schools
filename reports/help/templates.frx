@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Implementing Custom Templates</title>
+<frx:category />
+<frx:options hidden="1" form="" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+  <p>Custom data block templates may be implemented either in
+    control objects or in data plugin objects.&#xA0;&#xA0; Formatters
+    that are implemented in plugin objects are only available within
+    datablocks that reference data block repositories that use that
+    plugin type.&#xA0;&#xA0; For example, formatters defined by the
+    FrxOracle plugin will only be available fore repositories that are
+    oracle repositories.&#xA0;&#xA0; Formatters defined in FrxControls,
+    however, will be available in all reports.&#xA0;</p>
+  <p>To implement a formatter in control or plugin class requires
+    the implementation of two methods.</p>
+  <h3>Template Methods</h3>
+  <p>Templates take as parameters a list of columns and a data block
+    name, and from them generate the xml/xhtml that would be required to
+    display this data in the report. The following code implements a
+    basic html table with this data:</p>
+  <pre>
+ //template methods
+<br />  public function table($columns, $data_block) {
+<br />    $xml .= '&lt;div frx:block="'. $data_block .'"&gt;';
+<br />    $xml .= '&lt;table&gt;';
+<br />    $xml .= '&lt;thead&gt;';    
+<br />    $xml .= '&lt;tr&gt;';
+<br />    //Create the headers
+<br />    foreach ($columns as $header) {
+<br />     $xml .= '&lt;th&gt;'. $header .'&lt;/th&gt;';
+<br />    }
+<br />    $xml .= '&lt;/tr&gt;';
+<br />    $xml .= '&lt;/thead&gt;';
+<br />    $xml .= '&lt;tbody&gt;';
+<br />    $xml .= '&lt;tr frx:foreach="*"&gt;';
+<br />    foreach ($columns as $column) {
+<br />      $xml .= '&lt;td&gt;{'
+<br />        . $column .'}&lt;/td&gt;';
+<br />    }
+<br />    $xml .= '&lt;/tr&gt;';
+<br />    $xml .= '&lt;/tbody&gt;';
+<br />    $xml .= '&lt;/table&gt;';
+<br />    $xml .= '&lt;/div&gt;';
+<br />    
+<br />    return $xml;
+<br />  }
+<br />
+</pre>
+  <h3>Template Registration Function</h3>
+  <p>Each class that implements a template function should also
+    implement a templates registration function that returns an
+    associative array that lists the function names and their
+    appropriate user label. Forena uses its own registration mechanisms
+    for advertising its controls.&#xA0; The following can be used as a
+    reference implementation for this method.</p>
+  <pre>
+  //Report templates
+<br />  public function templates() {
+<br />    $templates = array('table' =&gt; 'table',
+<br />                       'vertical_list' =&gt; 'list',
+<br />                      );
+<br />                     
+<br />    return $templates; 
+<br />  }
+</pre>
+  <div id="nav" frx:block="forena_help/development_topics">
+    <ul>
+      <li id="nav-row" frx:foreach="*"><span>{title}</span></li>
+    </ul>
+  </div>
+</body>
+</html>

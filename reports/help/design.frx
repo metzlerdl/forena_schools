@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Forena Report XML (frx) Reference</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="1" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+<frx:fields>
+	<frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+	<ul id="forena-1" frx:block="forena_help/design_topics">
+		<li id="forena-2" frx:foreach="*"><span>{title}</span></li>
+	</ul>
+	<h2 id="overview">Overview</h2>
+	<p>Forena reports are defined using the Forena Report Xml template
+		format (frx).&#xA0; The template format is largely an XHTML document
+		which is extended by some custom HTML tags and attributes.&#xA0; The
+		result should be something familiar to anyone that uses html.</p>
+	<p>
+		<strong>Where are reports stored?</strong>
+	</p>
+	<p>Reports are stored as files on your reporting server, and may be
+		edited with a text editor directly, or via a user interface provided
+		by forena.</p>
+	<p>
+		<strong>A Simple Report:</strong>
+	</p>
+	<p>The following example illustrates a very simple report:</p>
+<html frx:renderer="FrxSource">
+  <head>
+  <title>A sample report</title>
+  </head>
+  <body>
+    <div frx:block="sampledb/states">
+      <p frx:foreach="*">{code} - {name}</p>
+    </div>
+  </body>
+</html>
+<p>There are basically three custom tags that appear in the simplest
+	version of the report:</p>
+<p>
+	<strong>xmlns:frx element</strong>- This defines the document as a
+	Forena Report XML template document.&#xA0; It should appear exactly
+	this way in the document.
+</p>
+<p id="block">
+	<strong>frx:block attribute</strong> - This tells forena to load data
+	from the defined data block (in this case sample/sampleXML.&#xA0; Data
+	blocks are usually parameterized queries. If you are a developer, you
+	might want to read more about defining data blocks in the Forena Data
+	source.
+</p>
+<p id="foreach">
+	<strong>frx:foreach attribute</strong>- This will cause the containing
+	tag to be repeated for every row returned in the data block. The
+	attribute value can be any valid xpath expression, but is often simply
+	'*', which would imply creating a a repeating pattern for every row or
+	element returned by the query.
+</p>
+<h2>Report fields</h2>
+<p>Each field in the report is referenced by an xpath expression
+	enclosed by curly braces. In its simplest form the xpath xpression can
+	be thought of as the name of the field in the database, but when using
+	more complex data sources, there is a lot that can be done using this
+	syntax. 
+  </p>
+<p>
+  The following shows a typical section of a report that illustrates
+  database fields in a report template from the 
+</p>
+<p>
+  In the head section of the .frx file, you will find a series of 
+  frx namespaced elements that define special formatting rules. 
+</p>
+<h2>Other frx Attributes</h2>
+<p id="parameters_attr">
+	<strong>frx:parameters</strong> when used in conjunction with the
+	frx:block attribute overrides the parameters provided to the block that
+	is run. When used these values are merged with the values of the
+	current data context prior to calling the data block.
+</p>
+<p id="if">
+	<strong>frx:if</strong> attribute determines whether the element will
+	be rendered. The normal php rules apply to values specified here
+	frx:if="0" evaluates to false, while frx:if="1" evaluates to true.
+	Normally you would use token replacement in the attribute to map this
+	to some column in the database or xml. For example, frx:if="{mycolumn}"
+	would cause this tag and its children only to be rendered if the
+	mycolumn field in the database returned true. You may use the
+	excalmation point to indicate negation, that is, frx:if="!{my_column}"
+	would only evaluate to true if mycolumn was not present or zero.
+	Because of the way php string expressions work, listing multiple values
+	can be interpreted as an "or". So frx:if="{mycolumn}{yourcolumn}" would
+	evalate to true if either database column contained data. If you need
+	to use an "and" operator, separate the conditions by "&amp;amp;". So
+	frx:if="{mycolumn}&amp;amp;{yourcolumn}" would evaluate to true only if
+	both columns evaluated to true.
+</p>
+<p id="renderer">
+	<strong>frx:renderer</strong> uses a custom class to render this
+	object. How the tag is rendered is defined by implementation of the
+	renderer. See the <a href="#renderers">Provided Renderers</a> section
+	for additional information. Typcial syntax looks something like
+	frx:renderer="FrxXML".
+</p>
+<p>Other attributes are interpreted directly from the custom
+	renderers section below.</p>
+<h2 id="renderers">Provided Renderers</h2>
+<h3 id="FrxInclude">FrxInclude</h3>
+<p>This renderer includes a another forena report as an asset with
+	the approprate tag. The primary use of this renderer is to create
+	references to external SVG assets. When rendered in a web page, these
+	need to be wrapped in embed tags, but when being included in a PDF
+	document the raw SVG should be included. The following attributes are
+	supported:</p>
+<table>
+	<tr>
+		<th>frx:source</th>
+		<td>The site relative forena url to the report asset that needs
+			to be rendered. (e.g. reports/sample.state_graph.svg?state=WA ).</td>
+	</tr>
+</table>
+<h3 id="FrxParameterForm">FrxParameterForm</h3>
+<p>Place and customize the normal report parameters input form. Use
+	it on a div tag anywhere in your report to control exactly where the
+	parameter form renders. The renderer supports the following frx
+	attributes:</p>
+<table>
+	<tr>
+		<th>frx:submit</th>
+		<td>The label applied to the submit button</td>
+	</tr>
+	<tr>
+		<th>frx:title</th>
+		<td>The title applied to the parameters fieldset</td>
+	</tr>
+	<tr>
+		<th>frx:collapsible</th>
+		<td>Set to 0 to make the form not collapsible</td>
+	</tr>
+	<tr>
+		<th>frx:collapsed</th>
+		<td>Indicate wether the fieldset is collapsed by default.</td>
+	</tr>
+</table>
+<p>The children of the FrxParmameterForm div allow you to specify
+	the exact layout of the parameters form using forena's token
+	replacement syntax. The default context is changed to be the rendered
+	form so that the parmeter ids will allow replacement of a form control.
+</p>
+<h3 id="FrxSource">FrxSource</h3>
+<p>Display markup as a code snippet. No token replacement is done
+	for the children and all embedded code is escaped html. This is used in
+	the forena help files to display the source of reports.</p>
+<h3 id="FrxSVGGraph">FrxSVGGraph</h3>
+<p>Render the node as an SVG graph. The PHP SVGGraph library must be
+	installed in order for this renderer to function. The following
+	attributes are supported:</p>
+<table>
+	<tr>
+		<th>frx:series</th>
+		<td>The column containing the series of the graph. Multple series
+			may be specified using an attribute of frx:series_1 for the first
+			series frx:series_2 as the second and so on.</td>
+	</tr>
+	<tr>
+		<th>frx:path</th>
+		<td>The xpath to the data to be graphed.</td>
+	</tr>
+	<tr>
+		<th>frx:label</th>
+		<td>The label that should be used for the series. Usually this is
+			specified in tokens (e.g. {code})</td>
+	</tr>
+</table>
+<p>
+	In additons any attributes supported as PHP SVGGraph options may be
+	included as frx: attributes. For example, to specify graph colors, you
+	can specify frx:color_1="red" and frx:color_2="blue". See the <a
+		href="http://www.goat1000.com/svggraph.php"> PHP SVGGraph</a>
+	documentation for more info.
+</p>
+<h3 id="FrxTitle">FrxTitle</h3>
+<p>
+  Use the content of this tag as the Drupal Title.   This allows both 
+  the page title and the tab title to be replaced by token replaced values 
+  in the report.
+</p>
+<h3 id="FrxXML">FrxXML</h3>
+<p>
+Displays the XML of the current data context and is particularly useful
+for debugging purposes. If you embed this in a report, it will show you
+the XML data source that is used for token replacement, so it can give
+you a good idea as to what data is being returned and which tokens can
+be used.
+</p>
+<h2 id="parameters">Report Parameters</h2>
+<p>
+Forena is designed to pass url query parameters directly into the SQL queries that
+drive the report, however, there are many circumstances where you may want to 
+prompt users for specific data prior to generating a report. In such cases you 
+can define parameters in the head section of the .frx file as follows: 
+</p>
+<head frx:renderer="FrxSource">
+  <title>My Report Title</title>
+  <frx:parameters>
+  <frx:parm id="state" label="State" require="1"
+    desc="See the parameters tab to understand how this dropdown was created from a data block. "
+    data_source="sampledb/states" data_field="" type="select">WA</frx:parm>
+  </frx:parameters>
+</head>
+<p>
+  The id of each frx:parm element should match the parameters in the sql data block, 
+  and will further control how the user is prompted for each data element. The text contained
+  in the frx:parm element defines the "default" value for the parameter. The 
+  following attributes are supported in the frx:parm element. 
+</p>
+<table>
+  <tr>
+    <th>id</th><td>The id of the parameter, which must match what is expected in 
+    the data block.  This field is required. </td>
+  </tr>
+  <tr>
+    <th>label</th><td>The label or prompt that the user sees for this parameter</td>
+  </tr>
+  <tr>
+    <th>desc</th><td>The description provided for each label.</td>
+  </tr>
+  <tr>
+    <th>require</th><td>Set to 1 to require this before form submission</td>
+  </tr>
+  <tr>
+    <th>type</th><td><p>Type of control to use for prompting the user. Supports 
+    the following values:</p>
+    <p><strong>textfield</strong> normal text input box (default)
+    </p>
+    <p><strong>select</strong> - Normal select with a single value.</p>
+    <p><strong>multiselect</strong> - Select box with multiple values possbile. 
+      Only use this with sql parameters that can be used as arrays or 
+      "in"" clauses.
+    </p>
+    <p><strong>selectajax</strong> - Select with an ajax refresh on every
+    selection change.  This is good when you need to to have one select
+    statements values dependent on nother.  </p>
+    <p><strong>checkbox</strong> - Single checbox returning a value of 0 or 1.</p>
+    <p><strong>checkboxes</strong> - Multiple checkboxes that can be used to 
+    provide a list of options based on a dat_source. 
+    </p>
+    </td>
+  </tr>
+  <tr>
+    <th>data_source</th><td>The repository/block used to provide values for select,
+    radios or checkboxes. 
+    </td>
+  </tr>
+  <tr>
+    <th>data_field</th><td>The name of the column from the block that is used for 
+    the select value</td>
+  </tr>
+  <tr>
+    <th>label_field</th><td>The name of the columne from the block that is used for
+    the select description.</td>
+  </tr>
+</table>
+</body>
+</html>

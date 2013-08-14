@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>2. Report that filters based on state lookup</title>
+<frx:category>Sample</frx:category>
+<frx:options hidden="0" form="" />
+<frx:parameters>
+  <frx:parm id="state" label="State" require="1"
+    desc="See the parameters tab to understand how this dropdown was created from a data block. "
+    data_source="sampledb/states" data_field="" type="select">WA</frx:parm>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+<frx:fields>
+  <frx:field id="users" format="number" format-string="9,999" />
+</frx:fields>
+</head>
+<body>
+<body>
+<body>
+
+  <div frx:block="sampledb/state" id="state">
+    <h3>{row/name}</h3>
+  </div>
+  <div frx:block="sampledb/distribution" id="forena-2">
+    <p>This report lists all users in cities assigned to a state
+      code = {parm.state}. Note that the city/state combinations for
+      sample data were randomly generated, so don't be surprised if it
+      seems like a city is in the wrong state</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>city</th>
+          <th>users</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr frx:foreach="*" id="forena-3">
+          <td>{city}</td>
+          <td>{users}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</body>
+</body>
+</html>

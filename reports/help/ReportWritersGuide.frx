@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Report Writers Guide</title>
+<frx:category>Help</frx:category>
+<frx:options />
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+  <div id="forena-1" frx:block="forena_help/design_topics">
+    <p>
+      Forena provides a <strong>What You See Is What You Get </strong>(WYSIWG)
+      compatible report editor to make the creation of a basic reports
+      very easy. &nbsp;You don't have to know XHTML and CSS to create a
+      simple report, but Forena is designed to leverage your html/css
+      knowledge, so the more you now about html and css, the more you
+      will be able to do with forena.&nbsp;
+    </p>
+    <p>Novice users may want to start by creating reports using the
+      report editor built into forena. &nbsp;Users with knowledge of
+      XHTML, CSS and XML may choose to edit the report defnition files
+      directly, or edit reports without the use of the WYSIWYG editor.
+      &nbsp;Forena Report XML (frx) reference is provided for those who
+      are interested in working on the XHTML files directly. &nbsp;</p>
+    <ul>
+      <li id="forena-2" frx:foreach="*">{title}</li>
+    </ul>
+  </div>
+</body>
+</html>

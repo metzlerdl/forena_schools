@@ -1,0 +1,39 @@
+;
+;  Example info file that will use the datatables plugin if loaded in sites/all/modules or reports directory.
+;
+;  Scripts are searched for first in the reports directory, second in the site relative file system 
+;  and thirdly in the sites/all/libraries folder. 
+;  
+
+name = Interactive Graph Skin
+description = Adds styling and interactivity to graphs using javascript. 
+
+; ------------------------------------------------------
+; Javascript libraries can be added.  Forena will
+; automatically search sites/all/libraries in 
+; addition to the report directories. 
+;
+
+scripts[] = graph_skin.js
+
+; -----------------------------------------------------------
+;  Sample stylesheet inclusion the usual types are supported (e.g. screen, print)
+;  Also not that if you ar using mMPDF or Prince, you can speify stylesheets 
+;  in the form
+; 
+
+stylesheets[all][] = table_padding.css
+
+; ---------------------------
+; 
+;  Sample graphing Graph defaults uncomment to experiment. 
+; 
+FrxSVGGraph[colors][] = red
+FrxSVGGraph[colors][] = blue
+; ---------------------------------------------------------
+; Arbitrary values may be added and referenced in the report as
+; using the skin data context.  For exmaple if you uncomment the following: 
+; 
+; company_name = My Cool Company
+; 
+; Then you could reference {skin.company_name} anywhere in your report. 

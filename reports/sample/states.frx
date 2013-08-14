@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>1. Simple Table of States</title>
+<frx:category>Sample</frx:category>
+<frx:options hidden="0" form=""></frx:options>
+<frx:parameters>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+
+</head>
+<body>
+  <div frx:block="sampledb/states" id="forena-1">
+    <table>
+      <thead>
+        <tr>
+          <th>code</th>
+          <th>name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr frx:foreach="*" id="forena-2" class="test {code}">
+          <td>{code}</td>
+          <td>{name}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
