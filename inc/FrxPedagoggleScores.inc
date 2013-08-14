@@ -23,7 +23,7 @@ class FrxPedagoggleScores extends FrxRenderer {
     	  $this->parseFields($measures,$depth);
     	}
     }
-    $output = '<table class="pedagoggle-scores">';
+    $output = '<table class="pedagoggle-scores table table-bordered">';
     $output .= $this->renderHeaders();
     $output .= $this->renderStudents();
     $output .= '</table>';
