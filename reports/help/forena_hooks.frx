@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Forena Hooks</title>
+<frx:category />
+<frx:options hidden="1" form="" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+
+</head>
+<body>
+  <div id="forena-1" frx:block="forena_help/admin_topics">
+    <ul>
+      <li id="forena-2" frx:foreach="*"><span>{title}</span>
+      </li>
+    </ul>
+  </div>
+  <h2>
+    <br />Forena Hooks
+  </h2>
+  <p>Forena implements custom hooks to allow the report engine to be
+    extended in many ways.&#xA0; Forena does use OOP methodogies, but
+    also leverages the observer pattern so prevalent in Drupal.</p>
+  <p>There is then a common pattern that is used to extend
+    Forena.&#xA0;</p>
+  <p>1. Implement a custom php class that lives in your module
+    directory.&#xA0; You may extend any of the forena classes, or write
+    your own from scratch.&#xA0;</p>
+  <p>2. Implement the expected registration methods in your class.
+    (e.g. templates, formats)</p>
+  <p>3. In your module implement a hook (e.g.
+    mymodule_forena_controls)&#xA0; that tells forena the location of
+    your class definition file.</p>
+  <h3>hook_forena_controls</h3>
+  <p>This hook defines controls that are always loaded during
+    forena.&#xA0; The most common uses are for implementing custom field
+    formatters or templates. This hook should return an array of control
+    definitions.&#xA0; Each control definiition is represented as an
+    associative array of the following key/value pairs.</p>
+  <table border="0">
+    <tbody>
+      <tr>
+        <td><span style="font-family: mceinline;">class</span>
+        </td>
+        <td>The name of the control class provided by the module <br />
+        </td>
+      </tr>
+      <tr>
+        <td><span style="font-family: mceinline;">file</span>
+        </td>
+        <td>The filename to include prior to instantiating the
+          class</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Forena uses its own mechanisms for advertising its
+    controls.&#xA0; The following can be used as a reference
+    implementation for this hook.</p>
+  <pre>
+function forena_forena_controls() { 
+<br />  $controls[] = array('file' =&gt; 'plugins/FrxControls.inc', 
+<br />                      'class' =&gt; 'FrxControls',                       
+<br />                     );  
+<br />  return $controls; 
+<br />}
+</pre>
+  <h3>hook_forena_plugins</h3>
+  <p>This hook defines custom data providing plugins for
+    forena.&#xA0; The most common use is for implementing custom XML
+    data repository types, but they can also be used for defining
+    formatting functions that are specific to a data provider
+    type.&#xA0;&#xA0; Like hook_forena_controls, this hook should return
+    an array of plugin definitions.&#xA0; Each control definiition is
+    represented as an associative array of the following key/value
+    pairs.</p>
+  <table border="0">
+    <tbody>
+      <tr>
+        <td><span style="font-family: mceinline;">class</span>
+        </td>
+        <td>The name of the plugin class provided by the module <br />
+        </td>
+      </tr>
+      <tr>
+        <td><span style="font-family: mceinline;">file</span>
+        </td>
+        <td>The filename to include prior to instantiating the
+          class</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Forena uses its own mechanisms for advertising its
+    controls.&#xA0; The following can be used as a reference
+    implementation for this hook.</p>
+  <pre>
+function forena_forena_controls() { 
+<br />  $controls[] = array('file' =&gt; 'plugins/FrxControls.inc', 
+<br />                      'class' =&gt; 'FrxControls',                       
+<br />                     );  
+<br />  return $controls; 
+<br />}
+</pre>
+  <p>&#xA0;</p>
+</body>
+</html>

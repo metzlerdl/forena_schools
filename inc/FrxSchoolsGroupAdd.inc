@@ -12,7 +12,14 @@ class FrxSchoolsGroupAdd extends FrxRenderer {
     $bldg_id = @$data['bldg_id'];
     $xml = Frx::Data()->currentContext();
     $groups = array('' => 'New Group');
-    $user_groups = ForenaSchoolsGroup::instance()->userGroups('intervention', @$parms['bldg_id'], @$parms['grade_level']);
+    if (!@$data['max_grade_level']) {
+      $min_grade=$max_grade=$data['grade_level'];
+    }
+    else {
+      $min_grade = @$data['grade_level'];
+      $max_grade = @$data['max_grade_level'];
+    }
+    $user_groups = ForenaSchoolsGroup::instance()->userGroups('intervention', @$bldg_id, $min_grade, $max_grade);
     if ($user_groups) $groups = array_merge($groups, $user_groups);
     if ($xml && is_object($xml)) {
       $rows = $xml->xpath('//student_id');

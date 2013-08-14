@@ -7,5 +7,7 @@ stylesheets[all][] = site.css
 stylesheets[pdf][] = site-pdf.css
 scripts[] = dataTables/media/js/jquery.dataTables.min.js
 scripts[] = fixedColumns/media/js/fixedColumns.min.js
+scripts[] = rss/jquery.rss.min.js
+scripts[] = rss/bootstrap.min.js
 scripts[] = ForenaSchools.js
 district = Forena Schools

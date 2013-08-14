@@ -15,17 +15,20 @@ FROM
   p_students s JOIN p_people p ON s.person_id=p.person_id 
   JOIN i_buildings b on b.bldg_id = s.bldg_id
   JOIN i_grade_levels g ON g.grade_level = s.grade_level
-WHERE school_year = COALESCE(:school_year,i_school_year()) 
-AND s.bldg_id = :bldg_id
+WHERE 
+ s.bldg_id = :bldg_id
 AND s.bldg_id IN (:security.buildings)
 AND s.grade_level in (:security.grades)
 AND s.grade_level BETWEEN :grade_level and CAST(COALESCE(:max_grade_level, :grade_level) AS int)
 AND 
  EXISTS(
   SELECT 1 FROM a_assessments a 
+  
     JOIN a_scores sc ON sc.assessment_id=a.assessment_id
   WHERE a.person_id = p.person_id AND sc.measure_id=:measure_id
     AND floor(sc.norm_score) in (:norm_score)
+    AND a.school_year = s.school_year
+    AND a.school_year = :school_year
 --IF=:seq
     AND a.seq=:seq
 --END

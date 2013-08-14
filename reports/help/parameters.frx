@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Parameters</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="1" />
+<frx:fields>
+  <frx:field id="title" link="reports/{name}"></frx:field>
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+  <div id="design_topics_block" frx:block="forena_help/design_topics">
+    <h2
+      style="margin-top: 1em; margin-bottom: 2px; font-weight: inherit; font-size: 1.429em; line-height: 1.4; color: #3b3b3b; font-family: Georgia, 'Times New Roman', Times, serif;">
+      <span style="font-size: 14px; line-height: 21px;">Parmaters
+        user provided inputs to a report. &nbsp;The following describes
+        how parameter attributes are used by Forena.&nbsp;</span>
+    </h2>
+    <table border="0">
+      <tbody>
+        <tr>
+          <th scope="row" align="left">id</th>
+          <td><p>The unique id for the report paramter.
+              &nbsp;Generally these must match exactly the parameters
+              expected by the data values.&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" align="left">label</th>
+          <td><p>The label displayed to the user when prompted
+              in the parameters form.&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" align="left">default value</th>
+          <td><p>Value to be used when none is specified.&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" align="left">description</th>
+          <td><p>Tell the users about what the parameter is
+              used for as well as proper formats for entry.&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" align="left">data source</th>
+          <td><p>Used in conjuction with the control field to
+              determine which values will be made available to raidios,
+              checkboxes or select lists. &nbsp;The value should be a
+              data block that users of this report will have access to.
+              Blocks should be written to return key value pairs for use
+              in these controls.&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" align="left">data field</th>
+          <td><p>
+              <span
+                style="color: #3b3b3b; font-family: Georgia, 'Times New Roman', Times, serif; font-size: 14px; line-height: 21px;">The
+                filed that indicates which lookup values will be used to
+                populate the parameter when a data source is specified.</span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row" align="left">Control</th>
+          <td><p>
+              <span
+                style="color: #3b3b3b; font-family: Georgia, 'Times New Roman', Times, serif; font-size: 14px; line-height: 21px;">Indicates
+                the type of control or widget used prompt for user
+                input.&nbsp;</span>
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Parameters can be removed by checking the remove box and
+      saving the report.&nbsp;</p>
+    <ul>
+      <li id="forena_design_topics" frx:foreach="*">{title}</li>
+    </ul>
+  </div>
+</body>
+</html>

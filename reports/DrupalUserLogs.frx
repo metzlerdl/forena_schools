@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>User logs</title>
+<frx:category>Drupal Administration</frx:category>
+<frx:options />
+<frx:parameters>
+  <frx:parm id="name" label="User Name" require="1" desc=""
+    data_source="" data_field="" type="" />
+  <frx:parm id="search" label="Search" require="0" desc=""
+    data_source="" data_field="" type="">school</frx:parm>
+</frx:parameters>
+<frx:fields>
+  <frx:field id="details" link="admin/reports/event/{wid}">Details</frx:field>
+  <frx:field id="total" link="reports/DrupalUserLogs?name={name}"
+    format="date" format_string="" />
+  <frx:field id="name">Anonymous</frx:field>
+  <frx:field id="timestamp" format="drupal_date_format"
+    format-string="small" />
+  <frx:field id="created" format="drupal_date_format"
+    format-string="small" />
+</frx:fields>
+<frx:docgen />
+</head>
+<body>
+  <div id="forena-1" frx:block="drupal/users_in_logs">
+    <h4>Log Entries for {name}</h4>
+  </div>
+  <table id="forena-3" frx:block="drupal/user_logs">
+    <thead>
+      <tr>
+        <th width="200px">Type</th>
+        <th width="200">Location</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="forena-4" frx:foreach="*">
+        <td>{type}</td>
+        <td>{location}</td>
+        <td>{timestamp}</td>
+        <td>{details}</td>
+        <td>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

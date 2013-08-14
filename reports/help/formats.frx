@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Implementing Field Formatters</title>
+<frx:category />
+<frx:options hidden="1" form="" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+  <p>Custom formatters may be implemented either in control objects
+    or in data plugin objects.&#xA0;&#xA0; Formatters that are
+    implemented in plugin objects are only available within datablocks
+    that reference data block repositories that use that plugin
+    type.&#xA0;&#xA0; For example, formatters defined by the FrxOracle
+    plugin will only be available fore repositories that are oracle
+    repositories.&#xA0;&#xA0; Formatters defined in FrxControls,
+    however, will be available in all reports.&#xA0;</p>
+  <p>To implement a formatter in control or plugin class requires
+    the implementation of two methods.</p>
+  <p>&#xA0;</p>
+  <h3>Formatter Methods</h3>
+  <p>Formatter methods should take a value and a format string
+    parameter, and should return the formatted value. The following
+    function can be used as a reference implementation of a formatter
+    function.</p>
+  <pre>
+  public function iso_date($value, $format_str) {
+    if ($value) $date = strtotime($value);  return $this-&gt;drupal_date_format($date, $format_str);
+  }
+</pre>
+  <h3>Formats Registration Function</h3>
+  <p>Each class that implements formatters should also implement a
+    formats registration function that returns an associative array that
+    lists the function names and their appropriate user label. Forena
+    uses its own registration mechanisms for advertising its
+    controls.&#xA0; The following can be used as a reference
+    implementation for this method.</p>
+  <pre>
+  //date formats
+  public function formats() {
+    $formats = array('drupal_date_format' =&gt; 'Drupal Date',
+                     'iso_date' =&gt; 'ISO Date',
+                     );
+    return $formats;
+  }
+</pre>
+  <div id="nav" frx:block="forena_help/development_topics">
+    <ul>
+      <li id="nav-row" frx:foreach="*"><span>{title}</span></li>
+    </ul>
+  </div>
+</body>
+</html>

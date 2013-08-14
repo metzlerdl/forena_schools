@@ -21,7 +21,7 @@
     <div frx:foreach="*" id="profile">
       <h3>{name}</h3>
       <div class="pedagoggle-scores" frx:block="ims/group/group_profile_scores">
-      <table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
+      <table frx:renderer="FrxPedagoggleScores" frx:profile="profile" class="table">
         <thead>
           <tr>
             <th>Name</th>

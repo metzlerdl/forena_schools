@@ -49,7 +49,7 @@
 					demonstrates the percentage of students tested performing at each
 					level.
 				</p>
-				<table>
+				<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th>measure</th>
