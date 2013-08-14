@@ -10,7 +10,7 @@
         "bScrollCollapse": true
       }); 
       if (oTable) { 
-        new FixedColumns( oTable, {"iLeftColumns": 1, "iLeftWidth": 200 });
+        //new FixedColumns( oTable, {"iLeftColumns": 1, "iLeftWidth": 200 });
       }
    }
   };
