@@ -15,26 +15,28 @@
 
 </head>
 <body>
-	<div class="grid_3 nav">
-		<div frx:block="menus/district">
+	<div class="span2">
+		<div frx:block="menus/district" class="side-block">
 			<h2>District</h2>
-			<ul>
-				<li frx:foreach="*"><span>{@title}</span>
+			<ul class="nav">
+				<li frx:foreach="*">{@title}
 				</li>
 			</ul>
 		</div>
-		<div frx:block="menus/admin">
+
+		<div frx:block="menus/admin" class="side-block">
 			<h2>Admin</h2>
-			<ul>
-				<li frx:foreach="*"><span>{@title}</span>
+			<ul class="nav">
+				<li frx:foreach="*">{@title}
 				</li>
 			</ul>
 		</div>
 	</div>
-	<div frx:block="ims/buildings" id="forena-1" class="grid_8 nav">
+	<div class="span1"></div>
+	<div frx:block="ims/buildings" id="forena-1" class="span9 nav">
 		<h2>Schools</h2>
 		<ul>
-			<li frx:foreach="*" id="forena-2"><span>{name}</span>
+			<li frx:foreach="*" id="forena-2">{name}
 			</li>
 		</ul>
 	</div>

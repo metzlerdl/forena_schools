@@ -26,17 +26,52 @@
 <frx:docgen />
 </head>
 <body>
-	<div class="grid_12" id="bldg" frx:block="ims/building/building_grade" frx:foreach="*" >
+
+	<div class="nav span2 pull-left">
+
+		<div frx:block="ims/building/building_grade">
+			<button class="btn btn-primary text-center" type="submit" onClick="window.location='/schools/{parm.bldg_id}/search' ">
+		    	Student Search
+		  	</button>
+		</div>
+		<p />
+
+		<div frx:block="ims/profiles/by_grade" id="profiles" class="nav side-block">
+		    <h2>Profiles</h2>
+		    <ul class="nav">
+		    	<li frx:foreach="*">{profile_name}</li>
+		    </ul>
+		</div>
+
+		<div frx:block="ims/building/grade_levels" id="buildings" frx:parameters="bldg_id={parm.bldg_id}" class="side-block">
+			<div id="bldg" frx:foreach="*">
+				<h2>Grade Levels</h2>
+				<ul class="nav">
+					<li frx:foreach="grades/*" id="forena-5" class="{@selected}">{@grade_name}</li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="school_years" frx:block="ims/school_years" class="side-block">
+			<h2>Year</h2>
+			<ul class="nav">
+				<li frx:foreach="*" class="{year_selected}" id="forena-12">{year_label}</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="span9" id="bldg" frx:block="ims/building/building_grade" frx:foreach="*" >
 	  <h2>{bldg.name}, {grade_name}, {bldg.year_label}</h2>
 	</div>
-	<div class="grid_8" frx:block="ims/building/courses_by_grade" id="courses">
+
+	<div class="span9" frx:block="ims/building/courses_by_grade" id="courses">
 		<div id="test_stats" frx:block="ims/building/test_stats" frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
       <h3>Test Statistics</h3>
-      <p>The following table shows the most recent calculated statistics for all tests available for your school.  Select a test to view statistics available 
+      <p>The following table shows the most recent calculated statistics for all tests available for {bldg.name}.  Select a test to view statistics available 
         for that test. </p>
-      <table >
+      <table class="table table-bordered">
         <thead>
-          <tr><th>Test</th><th></th></tr>
+          <tr><th>Test Name</th><th>Test Schedule</th></tr>
         </thead>
         <tbody>
           <tr frx:foreach="*" id="schedule">
@@ -45,11 +80,26 @@
         </tbody>
       </table>	
 		</div>
+		<h3>Classes</h3>
+		<p>{add_course}</p>
+		<table class="table table-bordered">
+			<tbody frx:foreach="*" id="course">
+				<tr>
+					<th colspan="2"><h4><b>{grade_heading}</b></h4>
+					</th>
+				</tr>
+				<tr frx:foreach="courses/course" id="forena-8">
+					<td>{@teacher_name}</td>
+					<td>{@course_name}</td>
+				</tr>
+			</tbody>
+		</table>
+
 		<div frx:block="ims/building/groups_for_grade_level" id="collections" 
 		  frx:parameters="bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}">
 		
 		<h3>Intervention Groups</h3>
-		<table >
+		<table class="table table-bordered">
 			<tbody>
 				<tr frx:foreach="*" id="coll">
 					<td>{group_name}</td>
@@ -58,46 +108,6 @@
 			</tbody>
 		</table>
 		</div>
-		<h3>Classes</h3>
-		<p>{add_course}</p>
-		<table >
-			<tbody frx:foreach="*" id="course">
-				<tr>
-					<th colspan="2"><h4>{grade_heading}</h4>
-					</th>
-				</tr>
-				<tr frx:foreach="courses/course" id="forena-8">
-					<td>{@teacher_name} ({@sis_id})</td>
-					<td>{@course_name}</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div class="nav grid_4">
-
-		<div frx:block="ims/profiles/by_grade" id="profiles" class="nav">
-		   <h2>Profiles</h2>
-		   <ul>
-		     <li frx:foreach="*">{profile_name}</li>
-		   </ul>
-		</div>
-		<div frx:block="ims/building/grade_levels" id="buildings" frx:parameters="bldg_id={parm.bldg_id}">
-			<div id="bldg" frx:foreach="*">
-				<h2>Grade Levels</h2>
-				<ul>
-					<li frx:foreach="grades/*" id="forena-5"><span
-						class="{@selected}">{@grade_name}</span>
-					</li>
-				</ul>
-				<p />
-			</div>
-		</div>
-	</div>
-	<div id="school_years" class="grid_12" frx:block="ims/school_years">
-		<h3>Select Year</h3>
-		<ul class="nav hnav">
-			<li frx:foreach="*" class="{year_selected}" id="forena-12">{year_label}</li>
-		</ul>
 	</div>
 </body>
 </html>

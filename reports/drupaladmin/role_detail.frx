@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Roles</title>
+<frx:category>Drupal Administration</frx:category>
+<frx:options hidden="0" form="" />
+<frx:parameters>
+  <frx:parm id="role" label="" require="0" value="" desc=""
+    data_source="drupal/roles" data_field="" type="select" />
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+<frx:fields>
+  <frx:field id="name" link="user/{uid}/edit" />
+</frx:fields>
+</head>
+<body>
+  <div frx:block="drupal/roles" id="forena-1"
+    frx:clause="where rid=:role">
+    <table frx:foreach="*" id="forena-2">
+      <tbody>
+        <tr>
+          <th>rid</th>
+          <td>{rid}</td>
+        </tr>
+        <tr>
+          <th>name</th>
+          <td>{name}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="forena-3" frx:block="drupal/users_in_role">
+    <table>
+      <thead>
+        <tr>
+          <th>Members</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="forena-4" frx:foreach="*">
+          <td>{name}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="forena-5" frx:block="drupal/role_permissions">
+    <table>
+      <thead>
+        <tr>
+          <th>Permissions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="forena-6" frx:foreach="*">
+          <td>{permission}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

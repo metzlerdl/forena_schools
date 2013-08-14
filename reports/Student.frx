@@ -35,21 +35,23 @@
     <strong>State Student ID: </strong>{person.state_student_id}</p>
 	  <h1 frx:renderer="FrxTitle">{last_name}, {first_name}</h1>
 	  <h3>Contact Info</h3>
-	  <div class="address">
+	  <address class="address">
 	  {address_street}<br/>
 	  {address_city}, {address_state} {address_zip}<br/>
-	  </div>
-	  <div frx:if="{address_phone}">{address_phone}</div>
-	  <div frx:if="{email}">{email}</div>
+    <div frx:if="{address_phone}">{address_phone}</div>
+    <div frx:if="{email}">{email}</div>
+	  </address>
+	  
 	  
   </div>
   <div frx:renderer="FrxParameterForm" title="Assessment Selection" collapsible="0" submit="Select"/> 
   <div id="assessments" frx:block="ims/student/assessments" frx:foreach="*">
-    <div class="grid_12">
-    <h4 class="hrule">{grade_name} {sched_label} {test_name}</h4>
+    <div class="span12">
+    <h2 class="hrule">{grade_name} {sched_label} {test_name}</h2>
     <p>Assessment Date: {date_taken}</p>
+
     <div class="vgap" frx:foreach="scores[test/@strand_count='0']">
-    <table width="32%" class="test-scores">
+    <table class="test-scores table table-bordered">
       <tbody>
       <tr frx:foreach="test">
         <th>{@name}</th><td class="l{@level}" width="50">{@score}</td>
@@ -57,10 +59,11 @@
       </tbody>
     </table>
     </div>
-    </div>
+
+
     <div frx:foreach="scores[test/strand]" >
       <div frx:foreach="test[strand]" class="vgap grid_4">
-        <table class="test-scores" width="100%">
+        <table class="test-scores table table-bordered">
           <tbody>
           <tr>
             <th>{@name}</th><td width="50" class="l{@level}">{@score}</td>
@@ -72,7 +75,11 @@
         </table>
       </div>
     </div>
+
+    <p />
+    <hr />
   </div>
+</div>
 
 </body>
 </html>

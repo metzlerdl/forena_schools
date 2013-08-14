@@ -23,24 +23,28 @@
 </head>
 <body>
   <div id="teacher_info" frx:block="ims/teacher/info" class="grid_12">
-    <h2>{row/first_name} {row/last_name}, {row/year_label} </h2>
+    <h2>Teacher Menu: {row/first_name} {row/last_name}, {row/year_label} </h2>
   </div>
-	<div id="menu-1" class="nav grid_4">
-		<h3>Teacher Menu</h3>
-		<ul frx:block="menus/teacher">
-			<li frx:foreach="*"><span>{@title}</span></li>
-		</ul>
-		<h3>Performance by Grade</h3>
-		<div frx:block="ims/teacher/grade_levels" id="bldg" frx:foreach="*">
-		  <h4>{bldg_name}</h4>
-		  <ul>
-			<li frx:foreach="grades/*" id="forena-2"><span>{@grade_name}</span></li>
+	<div id="menu-1" class="span2">
+
+		<div frx:block="ims/teacher/grade_levels" id="bldg" frx:foreach="*" class="side-block">
+		  <h2>Grades</h2>
+		  <ul class="nav">
+			<li frx:foreach="grades/*" id="forena-2">{@grade_name}</li>
 			</ul>
 		</div>
+
+		<div id="school_years" class="side-block" frx:block="ims/school_years">
+	    <h2>Year</h2>
+	    <ul class="nav">
+	      <li frx:foreach="*" class="{year_selected}">{year_label}</li>
+	    </ul>
+	  </div>
 	</div>
-	<div class="grid_8">
+	<div class="span1"> </div>
+	<div class="span9 pull-right">
 		<h3>Classes</h3>
-		<table frx:block="ims/teacher/courses_by_teacher">
+		<table frx:block="ims/teacher/courses_by_teacher" class="table">
 			<tbody frx:foreach="*">
 				<tr>
 					<th colspan="2"><h4>{bldg_name}</h4>
@@ -60,11 +64,6 @@
 		</table>
 		</div>
 	</div>
-  <div id="school_years" class="grid_12" frx:block="ims/school_years">
-    <h4>Show courses for year</h4>
-    <ul class="nav hnav">
-      <li frx:foreach="*" class="{year_selected}">{year_label}</li>
-    </ul>
-  </div>
+
 </body>
 </html>
