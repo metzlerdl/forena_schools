@@ -24,7 +24,7 @@
   <frx:doc type="csv"/>
   <frx:doc type="xls"/>
 </frx:docgen>
-<frx:menu path="schools/:bldg_id/search/standards" type="local-task" title="Standards"/> 
+<frx:menu path="schools/:bldg_id/search/standards" type="local-task" title="Graduation Requirements"/> 
 </head>
 <body>
   <div id="building" frx:block="ims/building/building" frx:foreach="*">
