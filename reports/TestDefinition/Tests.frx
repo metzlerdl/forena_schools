@@ -4,7 +4,10 @@
 <frx:fields>
   <frx:field id="name" link="flexpopup/TestDefinition?&amp;test_id={test_id}" target="popup_test_{test_id}"/>
   <frx:field id="add" link="flexpopup/TestDefinition" target="popup_test_{test_id}">Add Test</frx:field>
+  <frx:field id="test_delete" link="forenaschools/test/{test_id}/delete?destination=forenaschools/tests">delete</frx:field>
+  
 </frx:fields>
+<frx:menu path="forenaschools/tests" title="Test Definition" type="callback"/> 
 </head>
 <body>
   <div>
@@ -14,13 +17,14 @@
     <h2>Tests</h2>
     <table>
       <thead>
-        <tr><th>Name</th><th>Min Grade</th><th>Max Grade</th></tr>
+        <tr><th>Name</th><th>Min Grade</th><th>Max Grade</th><th>Actions</th></tr>
       </thead>
       <tbody>
         <tr frx:foreach="*">
           <td>{name}</td>
           <td>{min_grade}</td>
           <td>{max_grade}</td>
+          <td>{test_delete}</td>
         </tr>
       </tbody>
     </table>
