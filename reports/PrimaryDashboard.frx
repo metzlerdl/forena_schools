@@ -10,6 +10,8 @@
 <frx:parameters>
 </frx:parameters>
 <frx:fields>
+<frx:field id="student_search" class="btn btn-primary"
+		link="schools/{bldg_id}/search">Student Search</frx:field>
   <frx:field id="profile_name" link="reports/GradeView?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;profile_id={profile_id}&amp;school_year={parm.school_year}"/> 
   <frx:field id="test_entry" link="flexpopup/TestEntry?group_id={@group_id}" target="popupTestEntry{@group_id}">Test Entry</frx:field> 
   <frx:field id="@teacher_name" link="{bldg.teacher_dashboard}?staff_id={@staff_id}"/>
@@ -29,10 +31,8 @@
 
 	<div class="nav span2 pull-left">
 
-		<div frx:block="ims/building/building_grade">
-			<button class="btn btn-primary text-center" type="submit" onClick="window.location='/schools/{parm.bldg_id}/search' ">
-		    	Student Search
-		  	</button>
+		<div id="student_search" frx:block="ims/building/building_grade" frx:foreach="*">
+			{student_search}
 		</div>
 		<p />
 
