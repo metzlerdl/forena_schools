@@ -8,6 +8,6 @@ where bldg_id=:bldg_id
   AND bldg_id IN (:security.buildings)
   AND inactive='0'
 --IF=:grade_level
-  AND :grade_level BETWEEN t.min_grade AND t.max_grade
+  AND :grade_level BETWEEN t.min_grade AND t.max_grade + 1
 --END
 ORDER BY t.name

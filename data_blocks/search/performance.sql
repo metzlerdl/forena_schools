@@ -18,6 +18,7 @@ FROM
 WHERE 
  s.bldg_id = :bldg_id
 AND s.bldg_id IN (:security.buildings)
+and s.school_year = :school_year
 AND s.grade_level in (:security.grades)
 AND s.grade_level BETWEEN :grade_level and CAST(COALESCE(:max_grade_level, :grade_level) AS int)
 AND 
@@ -27,8 +28,11 @@ AND
     JOIN a_scores sc ON sc.assessment_id=a.assessment_id
   WHERE a.person_id = p.person_id AND sc.measure_id=:measure_id
     AND floor(sc.norm_score) in (:norm_score)
-    AND a.school_year = s.school_year
+--IF=:assessment_year
+    AND a.school_year = :assessment_year
+--ELSE
     AND a.school_year = :school_year
+--END
 --IF=:seq
     AND a.seq=:seq
 --END
