@@ -38,6 +38,11 @@ class ForenaSchoolsTest {
 
   }
 
+  function recalcStats($school_year) {
+    db_query('SELECT a_calc_score_stats(:school_year, :test_id)',
+      array(':school_year' => $school_year, ':test_id' => $this->test_id));
+  }
+
   // Load Test information
   function load($test_id) {
     $this->test_id = $test_id;

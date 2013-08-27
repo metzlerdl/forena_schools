@@ -278,6 +278,7 @@ class ForenaSchoolsAssessment {
         ->condition('measure_id', $scores_to_delete)
         ->execute();
     }
+    $this->test->recalcStats($data['school_year']);
     $this->load($test_id, $seq);
     return $this->assessment;
   }
