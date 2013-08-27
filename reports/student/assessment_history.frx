@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>Assessment History</title>
+    <frx:category>IMS</frx:category>
+    <frx:options/>
+    <frx:fields>
+      <frx:field id="name" link="student/{person_id}/entry/{test_id}/{school_year}/{seq}"/>
+    </frx:fields>
+    <frx:parameters><frx:parm id="student_id"/><frx:parm id="person_id"/></frx:parameters>
+    <frx:docgen/>
+    <frx:menu path="student/:person_id/assessments" type="callback" />
+  </head>
+  <body>
+
+  <div id="test_schedules_block" class="FrxTable" frx:block="ims/student/test_schedules">
+    <table>
+      <thead>
+        <tr>
+          <th>label</th>
+          <th>grade</th>
+          <th>name</th>
+          <th>date_taken</th>
+          </tr></thead>
+      <tbody>
+        <tr id="test_schedules" frx:foreach="*">
+          <td>{year_label} - {sched_label}</td>
+          <td>{grade}</td>
+          <td>{name}</td>
+          <td>{date_taken}</td>
+          </tr></tbody></table></div></body>
+</html>

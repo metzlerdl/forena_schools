@@ -1,127 +1,74 @@
 <?php
 require_once 'inc/common.inc';
-function forena_schools_single_entry_form($form, &$form_state, $person_id) {
+
+function forena_schools_single_entry_form($form, &$form_state, $person_id, $test_id, $school_year, $seq) {
   // Initialize multi-part form data
   if (!isset($form_state['storage'])) {
-    $person = $form_state['storage']['person'] = ForenaSchoolsPerson::instance()->loadById($person_id);
-    $grades = $form_state['storage']['grades'] = ForenaSchoolsStudent::instance()->studentGradeLevels($person['person_id']);
-    $form_state['storage']['test_id'] = '';
-    $form_state['storage']['assessment'] = '';
-  } else {
-    $person = $form_state['storage']['person'];
-    $grades = $form_state['storage']['grades'];
-  }
-  $assessment = $form_state['storage']['assessment'];
+    $s = ForenaSchoolsStudent::instance();
+    $student = $form_state['storage']['student'] = $s->loadByPersonId($person_id, $school_year);
 
-  $grade_values = array_keys($grades);
-  $grade_level = isset($form_state['values']['grade_level']) ? $form_state['values']['grade_level'] : array_pop($grade_values);
-  $to = ForenaSchoolsTest::instance();
-  $tests = $to->gradeLevelTests($grade_level);
-  $test_values = array_keys($tests);
-  $schedules = array();
-  $test_id = @$form_state['values']['test_id'];
-  if ($test_id) $schedules = $to->listSchedules($test_id);
-
-  drupal_set_title($person['last_name'] . ', ' . $person['first_name']);
-  $a = @$from_state['storage']['assessment'];
-  if (!$assessment) {
-    $form['select'] = array(
-      '#prefix' => '<div id="test_select">',
-      '#suffix' => '</div>',
-      '#type' => 'fieldset', '#title' => 'Select Test'
-    );
-
-    $form['select']['grade_level'] = array(
-      '#title' => t('Grade Level'),
-      '#type' => 'select',
-      '#options' => $grades,
-      '#ajax' =>  array(
-        'callback' => 'forena_schools_test_select_ajax',
-        'event' => 'change',
-        'wrapper' => 'test_select',
-      ),
-      '#default_value' => $grade_level,
-    );
-
-    $form['select']['test_id'] = array(
-      '#type' => 'select',
-      '#title' => t('Assessment'),
-      '#options' => $tests,
-      '#default_value' => $test_id,
-      '#empty_value' => 'Select Test',
-      '#required' => TRUE,
-      '#ajax' => array(
-        'callback' => 'forena_schools_test_select_ajax',
-        'event' => 'change',
-        'wrapper' => 'test_select',
-      ),
-    );
-
-    $form['select']['seq'] = array(
-      '#type' => 'select',
-      '#title' => t('Schedule'),
-      '#empty_value' => t('Select Schedule'),
-      '#required' => TRUE,
-      '#options' => $schedules,
-    );
-
-    $form['select']['submit'] = array(
-      '#type' => 'submit',
-      '#value' => 'Select Test',
-      '#submit' => array('forena_schools_test_select_assessment')
-    );
-  }
-  else {
     $a = ForenaSchoolsAssessment::instance();
-    $test_id = $form_state['storage']['assessment']['test_id'];
-    $seq = $form_state['storage']['assessment']['seq'];
-    $a->load($test_id, $seq);
-    $measures = $a->test->measures;
-    dpm($a);
-    foreach ($measures as $measure) {
-      dpm($measure);
-    }
-
-    $form['assessment'] = array('#type' => 'fieldset', '#title' => 'entry', '#tree' => TRUE);
-    $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+    $a->setStudent($student);
+    $assessment = $form_state['storage']['assessment'] = $a->load($test_id, $seq);
+    $measures = $form_state['storage']['measures'] = $a->test->measures;
+    $validations = $form_state['storage']['validations'] = $a->test->validations;
+    $test = $form_state['storage']['test'] = $a->test->test;
+    $schedule = $form_state['storage']['schedule'] = $a->test->schedules[$seq];
+  } else {
+    $student = $form_state['storage']['student'];
+    $test = $form_state['storage']['test'];
+    $assessment = $form_state['storage']['assessment'];
+    $validations = $form_state['storage']['validations'];
+    $measures = $form_state['storage']['measures'];
+    $schedule = $form_state['storage']['schedule'];
   }
+
+  $heading =  $test['name'] . ' - ' . $schedule['label'];
+  drupal_set_title($student['last_name'] . ', ' . $student['first_name'] . ' - ' . $heading);
+
+
+  $form['scores'] = array('#type' => 'fieldset', '#title' => 'Scores',  '#tree' => TRUE);
+
+  foreach ($measures as $measure_id => $measure) {
+    $form['scores'][$measure_id] = array(
+      '#type' => 'textfield',
+      '#title' => $measure['name'],
+      '#default_value' => @$assessment['scores'][$measure_id],
+      '#disabled' => $measure['calc_rule'],
+    );
+  }
+
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
 
   return $form;
 }
 
-
-// Select the assessment
-function forena_schools_test_select_assessment($form, &$form_state) {
-  $values = $form_state['values'];
-  $form_state['rebuild'] = TRUE;
-  if ($values['test_id'] && $values['seq'] && $values['grade_level']) {
-    $form_state['storage']['assessment'] = array(
-      'test_id' => $values['test_id'],
-      'grade_level' => $values['grade_level'],
-      'seq' => $values['seq'],
-    );
+function forena_schools_single_entry_form_validate($form, &$form_state) {
+  $assessment = $form_state['storage']['assessment'];
+  extract($assessment);
+  $scores = $form_state['values']['scores'];
+  $validations = @$form_state['storage']['validations'];
+  $measures = $form_state['storage']['measures'];
+  foreach ($scores as $measure_id => $score) {
+    $measure_label = $measures[$measure_id]['name'];
+    if ($score !== '' && !is_numeric($score)) {
+      form_set_error("scores][$measure_id", $measure_label . ' must be a number');
+    }
+    else {
+      $rule = $validations[$measure_id][$grade_level][$seq];
+      if ($rule['max_score'] && (float)$score > (float)$rule['max_score'])  {
+        form_set_error("scores][$measure_id", $measure_label . ' cannot be greater than ' . $rule['max_score']);
+      }
+    }
   }
 }
 
-function forena_schools_test_entry_form_submit($form, &$form_state) {
-  $form_state['rebuild'] = TRUE;
-}
-
-function forena_schools_test_select_ajax($form, &$form_state) {
-  // Clear out sequence if test_id has changed.
-  if ($form_state['storage']['test_id'] != $form_state['values']['test_id']) {
-    $form_state['input']['seq'] = '';
-  }
-  $form_state['storage']['test_id'] = $form_state['values']['test_id'];
-  return $form['select'];
-}
-
-function forena_schools_test_entry_form($form, &$form_state, $student_id, $test_id, $seq) {
-  $s = ForenaSchoolsStudent::instance();
+function forena_schools_single_entry_form_submit ($form, &$form_state) {
   $a = ForenaSchoolsAssessment::instance();
-  // Get the student
-  $student = $s->loadByStudentId($student_id);
-  $a->setStudent($student);
-  $a->load($test_id, $seq);
-
+  $a->setStudent($form_state['storage']['student']);
+  $assessment = $form_state['storage']['assessment'];
+  $assessment['scores'] = $form_state['values']['scores'];
+  $a->saveAssessment($assessment);
+  drupal_set_message('Saved Scores');
 }
+

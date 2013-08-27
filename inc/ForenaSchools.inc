@@ -282,6 +282,29 @@ class ForenaSchools {
 	  return $tests;
 	}
 
+	public function time() {
+	  return date('Y-m-d h:i');
+
+	}
+
+	public function date() {
+	  return date('Y-m-d');
+	}
+
+	public function fieldToArray($value) {
+	  $value = trim($value, '{}');
+	  $value = explode(',', $value);
+	  return $value;
+	}
+
+	public function arrayToField($array) {
+	  $field = implode(',' , $array);
+	  $field = '{' . $field . '}';
+	  return $field;
+	}
+
+
+
 
 
 
