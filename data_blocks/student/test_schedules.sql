@@ -1,4 +1,4 @@
---ACCESS=teacher
+--ACCESS=dist_admin
 SELECT 
   y.label as year_label, 
   g.abbrev as grade,
@@ -25,4 +25,8 @@ WHERE
 --ELSE 
   s.person_id = :person_id
 --END 
+--IF=:school_year
+AND s.school_year = :school_year
+--END
+AND s.bldg_id IN (:security.buildings)
 ORDER BY s.school_year DESC, s.grade_level DESC,  sc.seq DESC

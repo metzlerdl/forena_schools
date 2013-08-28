@@ -39,6 +39,11 @@ function forena_schools_single_entry_form($form, &$form_state, $person_id, $test
   }
 
   $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  $form['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => 'Cancel',
+    '#submit' => array('forena_schools_single_entry_cancel'),
+  );
 
   return $form;
 }
@@ -70,5 +75,54 @@ function forena_schools_single_entry_form_submit ($form, &$form_state) {
   $assessment['scores'] = $form_state['values']['scores'];
   $a->saveAssessment($assessment);
   drupal_set_message('Saved Scores');
+  $form_state['redirect'] = 'student/' . $assessment['person_id'];
+}
+
+function forena_schools_single_entry_delete ($form, &$form_state, $person_id, $test_id, $school_year, $seq) {
+  $s = ForenaSchoolsStudent::instance();
+  $student = $form_state['storage']['student'] = $s->loadByPersonId($person_id, $school_year);
+
+  $a = ForenaSchoolsAssessment::instance();
+  $a->setStudent($student);
+
+  $assessment = $form_state['storage']['assessment'] = $a->load($test_id, $seq);
+
+  $test = $form_state['storage']['test'] = $a->test->test;
+  $schedule = $form_state['storage']['schedule'] = $a->test->schedules[$seq];
+  if (!$assessment['assessment_id']) {
+    drupal_not_found();
+    exit();
+  }
+
+  $heading =  $test['name'] . ' - ' . $schedule['label'];
+  drupal_set_title($student['last_name'] . ', ' . $student['first_name'] . ' - ' . $heading);
+
+  $form = array();
+  $form['confirm'] = array(
+    '#type' => 'markup',
+    '#markup' => '<p>Are you sure you want to delete this assessment?  This action cannot be undone</p>',
+  );
+
+  $form['submit'] =  array(
+    '#type' => 'submit',
+    '#value' => 'Delete',
+  );
+  $form['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => 'Cancel',
+    '#submit' => array('forena_schools_single_entry_cancel'),
+  );
+
+  return $form;
+}
+
+function forena_schools_single_entry_delete_submit($form, &$form_state) {
+  ForenaSchoolsAssessment::instance()->delete();
+  drupal_set_message('Assessment deleted');
+  $form_state['redirect'] = 'student/' . arg(1);
+}
+
+function forena_schools_single_entry_cancel($form, &$form_state) {
+  $form_state['redirect'] = 'student/' . arg(1). '/assessment';
 }
 

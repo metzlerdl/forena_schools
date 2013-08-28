@@ -213,7 +213,7 @@ class ForenaSchoolsAssessment {
     $date_taken = ForenaSchoolsYear::instance($data['school_year'])->date($schedule['target_day']);
     $user = ForenaSchools::instance()->current_login();
     $modified = ForenaSchools::instance()->time();
-    if ($this->assessment['assessment_id']) {
+    if (@$this->assessment['assessment_id']) {
       // If we have an asssessment id we're updating
       $assessment_id = $this->assessment['assessment_id'];
       db_update('a_assessments')
@@ -281,6 +281,20 @@ class ForenaSchoolsAssessment {
     $this->test->recalcStats($data['school_year']);
     $this->load($test_id, $seq);
     return $this->assessment;
+  }
+
+  /**
+   * Delete a single assessmnet and recaclulate stats.
+   */
+  public function delete() {
+    extract($this->assessment);
+    db_delete('a_scores')
+     ->condition('assessment_id', $assessment_id)
+     ->execute();
+    db_delete('a_assessments')
+     ->condition('assessment_id', $assessment_id)
+     ->execute();
+    $this->test->recalcStats($school_year);
   }
 
 

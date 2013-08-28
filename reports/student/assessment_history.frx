@@ -9,10 +9,14 @@
     <frx:options/>
     <frx:fields>
       <frx:field id="name" link="student/{person_id}/entry/{test_id}/{school_year}/{seq}"/>
+      <frx:field id="delete_test" link="student/{person_id}/delete/{test_id}/{school_year}/{seq}">delete</frx:field>
     </frx:fields>
-    <frx:parameters><frx:parm id="student_id"/><frx:parm id="person_id"/></frx:parameters>
+    <frx:parameters>
+      <frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
+     </frx:parameters>
     <frx:docgen/>
-    <frx:menu path="student/:person_id/assessments" type="callback" />
+    <frx:menu path="student/:person_id/assessments" type="local-task" title="Assessment History" />
+  
   </head>
   <body>
 
@@ -24,6 +28,7 @@
           <th>grade</th>
           <th>name</th>
           <th>date_taken</th>
+          <th>action</th>
           </tr></thead>
       <tbody>
         <tr id="test_schedules" frx:foreach="*">
@@ -31,5 +36,6 @@
           <td>{grade}</td>
           <td>{name}</td>
           <td>{date_taken}</td>
+          <td><span frx:if="{date_taken}">{delete_test}</span></td>
           </tr></tbody></table></div></body>
 </html>
