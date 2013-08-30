@@ -35,6 +35,7 @@ function forena_schools_single_entry_form($form, &$form_state, $person_id, $test
     $form['scores'][$measure_id] = array(
       '#type' => 'textfield',
       '#title' => $measure['name'],
+      '#size' => 8,
       '#default_value' => @$assessment['scores'][$measure_id],
       '#disabled' => $measure['calc_rule'],
       '#description' => $description,
