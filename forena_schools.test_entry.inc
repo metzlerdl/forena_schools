@@ -30,11 +30,14 @@ function forena_schools_single_entry_form($form, &$form_state, $person_id, $test
   $form['scores'] = array('#type' => 'fieldset', '#title' => 'Scores',  '#tree' => TRUE);
 
   foreach ($measures as $measure_id => $measure) {
+    $rule = $validations[$measure_id][$assessment['grade_level']][$seq];
+    $description = ForenaSchoolsTest::scoreHelp($rule);
     $form['scores'][$measure_id] = array(
       '#type' => 'textfield',
       '#title' => $measure['name'],
       '#default_value' => @$assessment['scores'][$measure_id],
       '#disabled' => $measure['calc_rule'],
+      '#description' => $description,
     );
   }
 

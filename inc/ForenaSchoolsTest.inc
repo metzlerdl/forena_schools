@@ -179,4 +179,33 @@ class ForenaSchoolsTest {
       ->condition('test_id', $test_id)
       ->execute();
   }
+
+  /**
+   * Generate a help message from the validation
+   * @param $measure array containing measure data
+   * @param $validation array containing validation data.
+   * @return string
+   */
+  static function scoreHelp($validation) {
+    extract($validation);
+    $help = '';
+    $messages = array();
+    if ($level_1) {
+      $messages[] = "$level_1 struggling";
+    }
+    if ($level_2) {
+      $messages[] = "$level_2 below ";
+    }
+    if ($level_3) {
+      $messages[] = "$level_3 meets";
+    }
+    if ($level_4) {
+      $messages[] = "$level_4 exceeds";
+    }
+    if ($max_score) {
+      $message[] = "$max_score maximum";
+    }
+    $help = implode(', ', $messages);
+    return $help;
+  }
 }
