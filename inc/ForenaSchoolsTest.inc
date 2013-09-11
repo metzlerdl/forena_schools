@@ -38,6 +38,11 @@ class ForenaSchoolsTest {
 
   }
 
+  function recalcStats($school_year) {
+    db_query('SELECT a_calc_score_stats(:school_year, :test_id)',
+      array(':school_year' => $school_year, ':test_id' => $this->test_id));
+  }
+
   // Load Test information
   function load($test_id) {
     $this->test_id = $test_id;
@@ -73,20 +78,18 @@ class ForenaSchoolsTest {
     );
 
     if ($rs) {
-      $rs->fetchAllAssoc('measure_id', PDO::FETCH_ASSOC);
+      $this->measures = $rs->fetchAllAssoc('measure_id', PDO::FETCH_ASSOC);
     }
     else {
       $this->measures = array();
     }
+    return $this->measures;
   }
 
   // Load Schedules
   function loadSchedules() {
     $rs = db_query('SELECT * FROM {a_test_schedules} WHERE test_id = :test_id', array(':test_id' => $this->test_id));
-    if ($rs) {
-      $this->schedules = $rs->fetchAllAssoc('seq', PDO::FETCH_ASSOC);
-    }
-    else {
+    if (!$this->schedules = $rs->fetchAllAssoc('seq', PDO::FETCH_ASSOC)) {
       $this->schedules = array();
     }
     return $this->schedules;
@@ -98,12 +101,12 @@ class ForenaSchoolsTest {
     $rs = db_query('SELECT * FROM {a_test_rules} r JOIN {a_test_measures} m ON m.measure_id=r.measure_id WHERE m.test_id = :test_id
       ORDER BY r.measure_id, r.grade_level', array(':test_id' => $this->test_id));
     if ($rs) {
-      $validations = $rs->fetchAll(PDO::FETCH_ASSOC);
+      $rows = $rs->fetchAll(PDO::FETCH_ASSOC);
     }
     else {
       $this->validations = array();
     }
-    foreach ($validations as $valid) {
+    foreach ($rows as $valid) {
       $validations[$valid['measure_id']][$valid['grade_level']][$valid['seq']] = $valid;
     }
     $this->validations = $validations;
@@ -175,5 +178,34 @@ class ForenaSchoolsTest {
     db_delete('a_tests')
       ->condition('test_id', $test_id)
       ->execute();
+  }
+
+  /**
+   * Generate a help message from the validation
+   * @param $measure array containing measure data
+   * @param $validation array containing validation data.
+   * @return string
+   */
+  static function scoreHelp($validation) {
+    extract($validation);
+    $help = '';
+    $messages = array();
+    if ($level_1) {
+      $messages[] = "$level_1 struggling";
+    }
+    if ($level_2) {
+      $messages[] = "$level_2 below ";
+    }
+    if ($level_3) {
+      $messages[] = "$level_3 meets";
+    }
+    if ($level_4) {
+      $messages[] = "$level_4 exceeds";
+    }
+    if ($max_score) {
+      $message[] = "$max_score maximum";
+    }
+    $help = implode(', ', $messages);
+    return $help;
   }
 }

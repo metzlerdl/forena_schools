@@ -167,6 +167,7 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     '#type' => 'select',
     '#title' => 'Test',
     '#options' => $tests,
+    '#empty_value' => '',
     '#ajax' => array(
         'wrapper' => 'add-measures-fieldset',
         'callback' => 'forena_schools_add_measure_callback',
@@ -285,16 +286,16 @@ function forena_schools_profile_add_measures($form, &$form_state) {
   $form_state['storage']['profile']['measures'] = $measures;
 }
 
-function forena_schools_profile_add_all_measures($form, &$fom_state) {
+function forena_schools_profile_add_all_measures($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
-  $measures = $form_state['strorage']['profile']['measures'];
+  $measures = $form_state['storage']['profile']['measures'];
   $test_id = $form_state['values']['add_measures']['test_id'];
   $valid_measures = ForenaSchoolsTest::instance()->listMeasures($test_id);
   $seq = $form_state['values']['add_measures']['seq'];
   $valid_schedules = ForenaSchoolsTest::instance()->listSchedules($test_id);
   $seq = isset($valid_schedules[$seq]) ? $seq : '';
   $label = isset($valid_schedules[$seq]) ? $valid_schedules[$seq] : 'Any';
-  if ($new_measures) foreach ($valid_measures as $measure_id => $name) {
+  if ($valid_measures) foreach ($valid_measures as $measure_id => $name) {
     $measure = array(
       'measure_id' => $measure_id,
       'name' => $valid_measures[$measure_id],

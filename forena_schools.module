@@ -194,13 +194,23 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools.groups.inc',
 	);
 
-	$items['student/%/testentry'] = array(
+	$items['student/%/entry/%/%/%'] = array(
 	  'title' => 'Test',
 	  'type' => MENU_CALLBACK,
 	  'access callback' => 'forena_schools_access',
 	  'access arguments' => array('dist_admin'),
 	  'page callback' => 'drupal_get_form',
-	  'page arguments' => array('forena_schools_single_entry_form',1),
+	  'page arguments' => array('forena_schools_single_entry_form',1, 3, 4, 5),
+	  'file' => 'forena_schools.test_entry.inc',
+	);
+
+	$items['student/%/delete/%/%/%'] = array(
+	  'title' => 'Test',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_single_entry_delete',1, 3, 4, 5),
 	  'file' => 'forena_schools.test_entry.inc',
 	);
 	return $items;

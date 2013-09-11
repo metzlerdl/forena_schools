@@ -9,6 +9,8 @@ class ForenaSchoolsAssessment {
   public $assessment;
   public $scores;
   public $student;
+  public $schedules;
+  public $validations;
 
   public function __construct() {
     $this->test = new ForenaSchoolsTest();
@@ -68,17 +70,23 @@ class ForenaSchoolsAssessment {
    * Load the scores for the assessment id
    */
   private function loadScores() {
-    $rs = db_query('SELECT s.* FROM {a_assessments} a
-      JOIN {a_test_measures} m  ON m.test_id = a.test_id
-      LEFT JOIN {a_scores} s ON a.assessment_id = s.assessment_id AND m.measure_id = s.measure_id
-      WHERE s.assessment_id = :assessment_id ORDER BY m.sort_order',
-      array(':assessment_id' => $this->assessment['assessment_id'])
-    );
-    if ($rs) {
-      $this->scores = $rs->fetchAllKeyed('measure_id', 'score');
-    } else {
-      dpm($this->scores);
+    $this->fillScores();
+    if (@$this->assessment['assessment_id']) {
+      $rs = db_query('SELECT measure_id,score FROM a_scores
+        WHERE assessment_id = :assessment_id',
+        array(':assessment_id' => $this->assessment['assessment_id'])
+      );
+      if ($rs) {
+        $scores = $rs->fetchAllKeyed();
+        foreach ($scores as $measure_id=>$score) {
+          $this->scores[$measure_id] = $score;
+        }
+        //$this->scores = array_merge($this->scores, $scores);
+
+      }
     }
+    $this->assessment['scores'] = $this->scores;
+    return $this->scores;
   }
 
   // Load the scores.
@@ -99,13 +107,11 @@ class ForenaSchoolsAssessment {
         ':person_id' => $student['person_id'],
         ':school_year' => $student['school_year'],
         ':test_id' => $test_id,
-        ':seq' => $seq)
-    );
-    if ($rs) {
-      $this->assessment = $rs->fetchAssoc();
-      $this->loadScores();
-    }
-    else {
+        ':seq' => $seq));
+    if ($rs) $this->assessment = $rs->fetchAssoc();
+
+
+    if (!$this->assessment) {
       $this->assessment = array(
         'person_id' => $student['person_id'],
         'bldg_id' => $student['bldg_id'],
@@ -114,8 +120,9 @@ class ForenaSchoolsAssessment {
         'test_id' => $test_id,
         'seq' => $seq,
       );
-      $this->fillScores();
     }
+    $this->assessment['scores'] = $this->loadScores();
+    return ($this->assessment);
   }
 
 
@@ -145,40 +152,149 @@ class ForenaSchoolsAssessment {
       return;
     }
 
+
     $grade_level = $data['grade_level'];
     $seq = $data['seq'];
 
     // Load assessments.
     $this->loadTest($test_id);
-    $test = $this->test->load($test_id);
+    $assessment = $this->load($test_id, $seq);
     $measures = $this->measures;
     $schedules = $this->schedules;
     $validations = $this->validations;
     $scores = $data['scores'];
+    $schedule = $schedules[$seq];
+
+    if (!$schedule) {
+      drupal_set_message('Invalid Schedule', 'error');
+      watchdog('forena', 'Invalid Schedule data: <pre> %data </pre>', array('%data' => print_r($data,1)));
+      return;
+    }
+
 
     // Precaclulate calculated scores and put them in the data array.
-    foreach ($measures as $measure) {
-      if ($measure['calc_rule']) {
-        dpm($measure['calc_measure']);
+    if ($measures) foreach ($measures as $measure_id => $measure) {
+      if ($measure['calc_rule'] && $measure['calc_measures']) {
+        $score = 0.0;
+        $count = 0;
+        $calc_measures = ForenaSchools::instance()->fieldToArray($measure['calc_measures']);
+        foreach ($calc_measures as $calc_id) {
+          if ($scores[$calc_id]!=='') {
+            $count++;
+            $score += (float)$scores[$calc_id];
+          }
+        }
+        if ($measure['calc_rule'] == 'avg' && $count) {
+            $score = $score/$count;
+        }
+        $scores[$measure_id] = $score;
       }
     }
 
+    $norm_scores = array();
     // Validate all measures
     if ($data['scores']) foreach($data['scores'] as $key=>$score) {
-      if (array_key_exists($key, $measures) && $value) {
-        $norm_score ='';
+      if (array_key_exists($key, $measures) &&  $score !=='') {
+        $norm_score = NULL;
         //The measure exists.
         $measure = $measures[$key];
-        $validation = $this->validations[$grade_level][$seq];
+        $validation = $this->validations[$key][$grade_level][$seq];
         if ($validation) {
           $norm_score = $this->normalize($score, $validation);
         }
-
+        $norm_scores[$key] = $norm_score;
       }
     }
 
+
+
     // Actually Save the data.
 
+    $date_taken = ForenaSchoolsYear::instance($data['school_year'])->date($schedule['target_day']);
+    $user = ForenaSchools::instance()->current_login();
+    $modified = ForenaSchools::instance()->time();
+    if (@$this->assessment['assessment_id']) {
+      // If we have an asssessment id we're updating
+      $assessment_id = $this->assessment['assessment_id'];
+      db_update('a_assessments')
+        ->fields(array(
+          'modified' => $modified,
+          'modified_by' => $user,
+          'date_taken' => $date_taken
+          ))
+        ->condition('assessment_id', $assessment_id)
+        ->execute();
+
+    }
+    else {
+      // We're inserting
+
+      $assessment_id = db_insert('a_assessments')
+        ->fields(array(
+          'person_id' => $data['person_id'],
+          'bldg_id' => $data['bldg_id'],
+          'school_year' => $data['school_year'],
+          'grade_level' => $data['grade_level'],
+          'test_id' => $data['test_id'],
+          'seq' => $data['seq'],
+          'modified' => $modified,
+          'modified_by' => $user,
+          'date_taken' => $date_taken,
+        ))
+        ->execute();
+    }
+
+    // Save Scores
+    $existing_scores = $this->loadScores();
+    $scores_to_delete = array();
+    foreach ($scores as $measure_id => $score) {
+      if (@$existing_scores[$measure_id] && ($score !== '') ) {
+        db_update('a_scores')
+          ->fields(array(
+            'score' => $score,
+            'norm_score' => $norm_scores[$measure_id],
+            ))
+          ->condition('assessment_id', $assessment_id)
+          ->condition('measure_id', $measure_id)
+          ->execute();
+      }
+      elseif ($score !== '') {
+        db_insert('a_scores')
+          ->fields(array(
+            'assessment_id' => $assessment_id,
+            'measure_id' => $measure_id,
+            'score' => $score,
+            'norm_score' => $norm_scores[$measure_id]
+            ))
+          ->execute();
+      } else {
+        $scores_to_delete[] = $measure_id;
+      }
+
+    }
+    if ($scores_to_delete) {
+      db_delete('a_scores')
+        ->condition('assessment_id', $assessment_id)
+        ->condition('measure_id', $scores_to_delete)
+        ->execute();
+    }
+    $this->test->recalcStats($data['school_year']);
+    $this->load($test_id, $seq);
+    return $this->assessment;
+  }
+
+  /**
+   * Delete a single assessmnet and recaclulate stats.
+   */
+  public function delete() {
+    extract($this->assessment);
+    db_delete('a_scores')
+     ->condition('assessment_id', $assessment_id)
+     ->execute();
+    db_delete('a_assessments')
+     ->condition('assessment_id', $assessment_id)
+     ->execute();
+    $this->test->recalcStats($school_year);
   }
 
 

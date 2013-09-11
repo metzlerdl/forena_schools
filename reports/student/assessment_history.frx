@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+  <head>
+    <title>Assessment History</title>
+    <frx:category>IMS</frx:category>
+    <frx:options/>
+    <frx:fields>
+      <frx:field id="name" link="student/{person_id}/entry/{test_id}/{school_year}/{seq}"/>
+      <frx:field id="delete_test" link="student/{person_id}/delete/{test_id}/{school_year}/{seq}">delete</frx:field>
+    </frx:fields>
+    <frx:parameters>
+      <frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
+     </frx:parameters>
+    <frx:docgen/>
+    <frx:menu path="student/:person_id/assessments" type="local-task" title="Assessment History" />
+  
+  </head>
+  <body>
+
+  <div id="test_schedules_block" class="FrxTable" frx:block="ims/student/test_schedules">
+    <table>
+      <thead>
+        <tr>
+          <th>label</th>
+          <th>grade</th>
+          <th>name</th>
+          <th>date_taken</th>
+          <th>action</th>
+          </tr></thead>
+      <tbody>
+        <tr id="test_schedules" frx:foreach="*">
+          <td>{year_label} - {sched_label}</td>
+          <td>{grade}</td>
+          <td>{name}</td>
+          <td>{date_taken}</td>
+          <td><span frx:if="{date_taken}">{delete_test}</span></td>
+          </tr></tbody></table></div></body>
+</html>

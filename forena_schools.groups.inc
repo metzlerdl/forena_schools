@@ -222,6 +222,7 @@ function forena_schools_group_form($formid, &$form_state, $group_id) {
   $form['owner_id'] = array(
     '#title' => 'Owner',
     '#type' => 'select',
+    '#empty_value' => -1,
     '#default_value' => $group['owner_id'],
     '#options' => $staff,
   );

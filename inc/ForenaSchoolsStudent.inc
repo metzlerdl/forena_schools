@@ -57,8 +57,8 @@ class ForenaSchoolsStudent {
       'SELECT s.*, last_name, first_name
       FROM {p_people} p
       	JOIN {p_students} s ON s.person_id=p.person_id
-      WHERE p.sis_id = :sis_id AND s.school_year = :school_year',
-      array(':person_id' => $person_id, ':school_year' => $schooL_year)
+      WHERE p.person_id = :person_id AND s.school_year = :school_year',
+      array(':person_id' => $person_id, ':school_year' => $school_year)
     );
     if ($rs) {
       $student = $rs->fetchAssoc();

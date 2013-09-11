@@ -2,10 +2,13 @@
 class ForenaSchoolsYear {
   public $year;
 
-  static public function instance() {
+  static public function instance($year='') {
     static $o = '';
     if (!$o) {
       $o = new ForenaSchoolsYear();
+    }
+    if ($year && $year != $o->year['school_year']) {
+      $o->load($year);
     }
     return $o;
   }
@@ -133,5 +136,16 @@ class ForenaSchoolsYear {
         ))
         ->execute();
     }
+  }
+
+  /**
+   * Return an offset date from the school year.
+   * @param  $offset integer Number of days.
+   * @return string Formatted date string.
+   */
+  public function date($offset) {
+    $date = new DateTime($this->year['start_date']);
+    $date->add(new DateInterval('P' . $offset . 'D'));
+    return $date->format('Y-m-d');
   }
 }
