@@ -9,5 +9,4 @@ scripts[] = dataTables/media/js/jquery.dataTables.min.js
 scripts[] = fixedColumns/media/js/fixedColumns.min.js
 scripts[] = rss/jquery.rss.min.js
 scripts[] = ForenaSchools.js
-scripts[] = bootstrap.min.js
 district = Forena Schools

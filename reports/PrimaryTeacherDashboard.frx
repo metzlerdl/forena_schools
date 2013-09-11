@@ -22,9 +22,11 @@
 <frx:docgen />
 </head>
 <body>
-  <div id="teacher_info" frx:block="ims/teacher/info" class="grid_12">
-    <h2>Teacher Menu: {row/first_name} {row/last_name}, {row/year_label} </h2>
-  </div>
+
+	<div id="teacher_info" frx:block="ims/teacher/info" class="span12 page-info">
+		<h1><big>{row/first_name} {row/last_name}</big></h1>
+	</div>
+
 	<div id="menu-1" class="span2">
 
 		<div frx:block="ims/teacher/grade_levels" id="bldg" frx:foreach="*" class="side-block">
@@ -43,15 +45,15 @@
 	</div>
 	<div class="span1"> </div>
 	<div class="span9 pull-right">
-		<h3>Classes</h3>
+		<h2>Classes</h2>
 		<table frx:block="ims/teacher/courses_by_teacher" class="table">
 			<tbody frx:foreach="*">
 				<tr>
-					<th colspan="2"><h4>{bldg_name}</h4>
+					<th colspan="5" class="indent1"><h3>{bldg_name}</h3>
 					</th>
 				</tr>
 				<tr frx:foreach="courses/course">
-					<td>{@name}</td>
+					<td class="indent2">{@name}</td>
 				</tr>
 			</tbody>
 		</table>
