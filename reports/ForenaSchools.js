@@ -1,6 +1,6 @@
 (function ($) {
 
-  Drupal.behaviors.forenaSchools = {
+Drupal.behaviors.forenaSchools = {
     attach: function (context, settings) {
       var oTable = jQuery('table.pedagoggle-scores'); 
       if (otable.length) otable.dataTable({
@@ -12,12 +12,15 @@
       }); 
       if (oTable) { 
         //new FixedColumns( oTable, {"iLeftColumns": 1, "iLeftWidth": 200 });
+        //      }
       }
-   }
-  };
+};
 
 
-  Drupal.behaviors.peninsulaFeeds = {
+
+
+
+ Drupal.behaviors.peninsulaFeeds = {
     attach: function(context, settings) {
       console.log("well here we are!");
       $("#websiteRSS-container").rss(
