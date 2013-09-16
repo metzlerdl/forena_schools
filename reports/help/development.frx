@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Extending Forena Reports</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="0" form="" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen>
+</frx:docgen>
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+  <p>Forena implements custom hooks to allow the report engine to be
+    extended in many ways.&#xA0; Forena does use OOP methodogies, but
+    also leverages the observer pattern so prevalent in Drupal.</p>
+  <p>There is then a common pattern that is used to extend
+    Forena.&#xA0;</p>
+  <p>1. Implement a custom php class that lives in your module
+    directory.&#xA0; You may extend any of the forena classes, or write
+    your own from scratch.&#xA0;</p>
+  <p>2. Implement the expected registration methods in your class.
+    (e.g. templates, formats)</p>
+  <p>3. In your module implement a hook (e.g.
+    mymodule_forena_controls)&#xA0; that tells forena the location of
+    your class definition file.</p>
+  <p>See Also:</p>
+  <p>&#xA0;</p>
+  <div id="nav" frx:block="forena_help/development_topics">
+    <ul>
+      <li id="nav-row" frx:foreach="*"><span>{title}</span></li>
+    </ul>
+  </div>
+</body>
+</html>

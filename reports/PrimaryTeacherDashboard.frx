@@ -27,24 +27,26 @@
 		<h1><big>{row/first_name} {row/last_name}</big></h1>
 	</div>
 
-	<div id="menu-1" class="span2">
 
+	<div class="span2">
 		<div frx:block="ims/teacher/grade_levels" id="bldg" frx:foreach="*" class="side-block">
-		  <h2>Grades</h2>
-		  <ul class="nav">
-			<li frx:foreach="grades/*" id="forena-2">{@grade_name}</li>
+			<h2>Grades</h2>
+			<ul class="nav">
+				<li frx:foreach="grades/*" id="forena-2">{@grade_name}</li>
 			</ul>
 		</div>
 
 		<div id="school_years" class="side-block" frx:block="ims/school_years">
-	    <h2>Year</h2>
-	    <ul class="nav">
-	      <li frx:foreach="*" class="{year_selected}">{year_label}</li>
-	    </ul>
-	  </div>
+		    <h2>Year</h2>
+		    <ul class="nav">
+		    	<li frx:foreach="*" class="{year_selected}">{year_label}</li>
+		    </ul>
+		</div>
 	</div>
+
 	<div class="span1"> </div>
-	<div class="span9 pull-right">
+
+	<div class="span9 nav">
 		<h2>Classes</h2>
 		<table frx:block="ims/teacher/courses_by_teacher" class="table">
 			<tbody frx:foreach="*">

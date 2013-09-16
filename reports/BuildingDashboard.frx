@@ -11,7 +11,7 @@
 </frx:parameters>
 <frx:fields>
 	<frx:field id="student_search" class="btn btn-primary"
-		link="schools/{bldg.bldg_id}/search">Student Search</frx:field>
+		link="schools/{bldg_id}/search">Student Search</frx:field>
 	<frx:field id="@grade_name"
 		link="{bldg.building_dashboard}?bldg_id={bldg.bldg_id}&amp;grade_level={@grade_level}&amp;school_year={parm.school_year}" />
 	<frx:field id="teacher_name" link="{bldg.teacher_dashboard}?staff_id={staff_id}&amp;school_year={parm.school_year}"></frx:field>
@@ -22,22 +22,27 @@
 <frx:menu path="schools/:bldg_id" type="callback"/>  
 </head>
 <body>
+	{student_search}
+	<p />
 
 
 	<div frx:block="ims/building/grade_levels" id="bldg"  frx:foreach="*" class="clearfix">
-	  <p>{student_search}</p>
 
 		<h1 frx:renderer="FrxTitle">{bldg_name}</h1>
 
-		<div id="bldg" class="span2 side-block" >
-			<h3>Grades</h3>
-			<ul class="nav">
-				<li frx:foreach="grades/*" id="grade" class="{@selected}">{@grade_name}</li>
-			</ul>
+		<div class="span2">
+			<div id="bldg" class="side-block" >
+				<h2>Grades</h2>
+				<ul class="nav">
+					<li frx:foreach="grades/*" id="grade" class="{@selected}">{@grade_name}</li>
+				</ul>
+			</div>
 		</div>
-		<div class="span1"> </div>
-		<div frx:block="ims/building/teachers" id="teachers" class="nav span9" >
-			<h3>Teachers</h3>
+
+		<div class="span1"></div>
+
+		<div frx:block="ims/building/teachers" id="teachers" class="span9 nav" >
+			<h2>Teachers</h2>
 			<ul>
 				  <li frx:foreach="*">{teacher_name} </li>
 			</ul>

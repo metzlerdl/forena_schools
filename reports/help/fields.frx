@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Fields</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="1"></frx:options>
+<frx:parameters>
+</frx:parameters>
+<frx:docgen></frx:docgen>
+<frx:fields>
+  <frx:field id="title" link="reports/{name}"></frx:field>
+</frx:fields>
+</head>
+<body>
+  <div id="forena-1" frx:block="forena_help/design_topics">
+    <p>In the fields tab, specify fomatting options for how you want
+      each field to display when it is used in the report. &nbsp;Fields
+      in the report are the tokens which are used to substitute data
+      into the report and are found between the curly braces.</p>
+    <h2>Formatting Field Output</h2>
+    <p>Fields can be formatted a number of different ways depending
+      on the format and format-string specified for each field. &nbsp;
+      The following table illustrates the output formats supported by
+      forena.&nbsp;</p>
+    <table border="0">
+      <tbody>
+        <tr>
+          <th scope="col">Format</th>
+          <th scope="col">Description</th>
+          <th scope="col">Format String</th>
+        </tr>
+        <tr>
+          <td>drupal_date_format</td>
+          <td>Formats a drupal date. &nbsp;Drupaldates are natively
+            large numbers that are expressed as the number of seconds
+            since the dnix epoc date.&nbsp;</td>
+          <td>Use small, medium or large to specify any of the site
+            defined dates, or alternativley specify a custom date
+            format.See <a
+            href="http://php.net/manual/en/function.date.php">http://php.net/manual/en/function.date.php</a>
+            for possibilities for custom formatting.</td>
+        </tr>
+        <tr>
+          <td>drupal_node_content</td>
+          <td>Loads content from the given nid and display it using
+            teaser or full display.&nbsp;</td>
+          <td>Specify "teaser" to get teaser view.&nbsp;</td>
+        </tr>
+        <tr>
+          <td>drupal_translation</td>
+          <td>Use drupal's translation api to tranlate the value
+            prior to display.&nbsp;</td>
+          <td>Specify a field (if any) that contains the serialized
+            data used for translations (e.g. watchdog table).
+            &nbsp;Normally you can leave this blank. &nbsp;</td>
+        </tr>
+        <tr>
+          <td>iso_date</td>
+          <td>ISO standard dates are of the form, YYYY-MM-DD
+            followed by a 24 hour timestamp (e.g. 2012-12-01 20:30:30).
+            &nbsp;Dates in this format may be reformatted&nbsp;</td>
+          <td>Use small, medium or large to specify any fo the site
+            defined date formats, or alternatively sepecify a custom
+            date format.&nbsp;<span class="Apple-tab-span"
+            style="white-space: pre;"> </span>See <a
+            href="http://php.net/manual/en/function.date.php">http://php.net/manual/en/function.date.php</a>
+            for possibilities fore custom formatting.&nbsp;</td>
+        </tr>
+        <tr>
+          <td>number</td>
+          <td>Use the PHP number formattter function.&nbsp;</td>
+          <td>Indicate a sample numeric format for decimal places
+            and thousands separateor. (eg. 9.999.00). &nbsp;</td>
+        </tr>
+        <tr>
+          <td>sprintf</td>
+          <td>Use PHP's sprintf function for adding labels and
+            such.&nbsp;</td>
+          <td>See&nbsp;<a
+            href="http://us.php.net/manual/en/function.sprintf.php">http://us.php.net/manual/en/function.sprintf.php</a>
+            for possibilities.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Linking Fields</h2>
+    <p>
+      <strong>Link</strong> - Specify a site relatie URL.&nbsp; When
+      specified, all references to this field in the report will be
+      displayed as a links to the URL specified.
+    </p>
+    <p>
+      <strong>Target</strong> - Specify a target of the page you want
+      the window to open in. &nbsp;_BLANK can be used to always open a
+      page in a new window. &nbsp;If you specify a target beginning with
+      the word "popup", forena will atuomatically open up the window in
+      a popup.
+    </p>
+    <h2>Defaults</h2>
+    <p>
+      <strong>Default Value</strong> - The value to display when no
+      value is present in the data.
+    </p>
+    <ul>
+      <li id="forena-2" frx:foreach="*">{title}</li>
+    </ul>
+  </div>
+</body>
+</html>

@@ -40,15 +40,15 @@
 					</tbody>
 				</table>
 			</div>
+			<p>
+					<strong>Performance Distribution:</strong> The below graph
+					demonstrates the percentage of students tested performing at each
+					level.
+				</p>
 			<div
 				frx:src="reports/building.TestStatsGraph.svg?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={profile.school_year}&amp;seq={profile.seq}"
 				frx:renderer="FrxInclude" frx:height="600" frx:width="800" />
 			<div id="schedule-stats" frx:block="ims/building/test_statistics">
-				<p>
-					<strong>Performance Distribution:</strong> The above graph
-					demonstrates the percentage of students tested performing at each
-					level.
-				</p>
 				<table>
 					<thead>
 						<tr>

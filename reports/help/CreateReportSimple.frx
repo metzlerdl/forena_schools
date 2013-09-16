@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Creating A Simple Report</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="1" />
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+  <div id="forena-1" frx:block="forena_help/design_topics">
+    <h2>Add Report</h2>
+    <p>To create a report, select the Add Report from your
+      Navigation menu. Site administrators can relocate this menu so
+      contact your site administrator if you have trouble finding it.</p>
+    <p>
+      The <b>Report Name</b> is a unique name that is used as the base
+      file name for your report. In this example will use a title
+      test/simple. This will mean that the filename of the report will
+      be test/simple.frx.
+    </p>
+    <p>
+      The <b>Title</b>field indicates the title of the report as it will
+      appear for the user. In this example we'll call our report "Test
+      Simple Report".
+    </p>
+    <p>For a simple report, you can leave the remaining fields
+      blank, and hit save. The report body will be generated when we add
+      data to our report.</p>
+    <h2>Data</h2>
+    <p>
+      After saving your report, you will be taken directly to the data
+      tab. In the <strong>Data Block</strong> field, specify a data
+      source to be used on the report. You may search for the name of
+      any provided data blocks. These data blocks are created or
+      installed by your site administrator or developer. For this
+      report, we'll reference one of the sample queries provided with
+      forena. Enter sampledb/users_by_state and press <strong>Preview</strong>.
+      Forena will show you a sample table layout of the data returned by
+      that data block. You may need to specify required parameters in a
+      report in order to gernate sample data before forena will be able
+      to store your report preview. You will be able to cusotmize the
+      columns and layout later. Press <strong>Add </strong>to add this
+      data to the report.
+    </p>
+    <p>The preview shows the format of the data that will be added
+      to the report. If parameters were required in order for the data
+      block to return any data, you'll be prompted to enter the
+      parameters. You cannot use the editor to add data to the report
+      unless you can provide parameters that cause the query to actually
+      return data.</p>
+    <p />
+    <ul>
+      <li id="forena-2" frx:foreach="*">{title}</li>
+    </ul>
+  </div>
+</body>
+</html>

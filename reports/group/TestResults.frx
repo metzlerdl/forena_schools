@@ -14,15 +14,17 @@
 	<frx:field id="export"
 		link="reports/group.TestResults.csv?test_id={parm.test_id}&amp;group_id={parm.group_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
 </frx:fields>
+
 <title>Test Results</title>
+
 </head>
 <body>
-	<div id="schedule" frx:block="ims/tests/schedule" frx:foreach="*" >
- </div> 
-  <div frx:block="ims/group/details" id="group" frx:foreach="*">
-   <h1 frx:renderer="frxTitle">{group.name}, {year_label} {test_name} - {sched_label}</h1>
-   <h3>{first_name} {last_name}</h3>
- </div>
+<div id="schedule" frx:block="ims/tests/schedule" frx:foreach="*" ></div> 
+
+<div frx:block="ims/group/details" id="group" frx:foreach="*">
+	<h1 frx:renderer="frxTitle">{group.name}, {year_label} {test_name} - {sched_label}</h1>
+ 	<h3>{first_name} {last_name}</h3>
+</div>
 <h3>Scores</h3>
 <div class="pedagoggle-scores"
 				frx:block="ims/group/group_test_scores">
@@ -40,26 +42,27 @@
 				</table>
 			</div>
  <h3>Statistics</h3>
+ <p>
+					<strong>Performance Distribution:</strong> The below graph
+					demonstrates the percentage of students tested performing at each
+					level.
+				</p>
  <div
 				frx:src="reports/group.TestStatsGraph.svg?group_id={parm.group_id}&amp;grade_level={parm.grade_level}&amp;test_id={parm.test_id}&amp;school_year={parm.school_year}&amp;seq={parm.seq}"
 				frx:renderer="FrxInclude" frx:height="600" frx:width="800" />
  <div id="schedule-stats" frx:block="ims/group/group_test_statistics">
-				<p>
-					<strong>Performance Distribution:</strong> The above graph
-					demonstrates the percentage of students tested performing at each
-					level.
-				</p>
+				
 				<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th>measure</th>
 							<th>building average</th>
 							<th>district average</th>
-							<th>struggling</th>
-							<th>below</th>
-							<th>met</th>
-							<th>exceeded</th>
-							<th>percent met standard</th>
+							<th>% struggling</th>
+							<th>% below</th>
+							<th>% met</th>
+							<th>% exceeded</th>
+							<th>% met standard</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -67,11 +70,11 @@
 							<td>{name}</td>
 							<td>{avg_score}</td>
 							<td>{b_score}</td>
-							<td>{l1_percent}</td>
-							<td>{l2_percent}</td>
-							<td>{l3_percent}</td>
-							<td>{l4_percent}</td>
-							<td>{percent_met}</td>
+							<td>{l1_percent}%</td>
+							<td>{l2_percent}%</td>
+							<td>{l3_percent}%</td>
+							<td>{l4_percent}%</td>
+							<td>{percent_met}%</td>
 						</tr>
 					</tbody>
 				</table>

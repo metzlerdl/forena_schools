@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>5. Report with Custom Control</title>
+<frx:category>Sample</frx:category>
+<frx:options />
+<frx:fields />
+<frx:parameters />
+<frx:docgen />
+</head>
+<body>
+  <div>
+    <p>This sample report demonstrates the use of a custom control.
+      In this case, the FrxSource control overrides the rendering of the
+      the div tag to make sure that it gets rendered as poperly escaped
+      html. Custom renderers like these can be used to extend forena
+      reports with custom rendering controls taylored to a specific
+      domain. This mechanism is how we plan to add graphing support to
+      Forena Reports.</p>
+  </div>
+  <div frx:renderer="FrxSource"></div>
+</body>
+</html>

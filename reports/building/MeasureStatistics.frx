@@ -39,10 +39,11 @@
 				frx:renderer="FrxInclude" frx:height="430" frx:width="640"></div>
 			<p><strong>Building Average Score Trend:</strong>  The above graph shows the average building scores over the last six issuances of this test for this grade level.</p>
 			<hr/>
+			<p><strong>Performance Distribution:</strong>  The below graph demonstrates the percentage of students tested performing at each level.</p>
+
 			<div
 				frx:src="reports/building.MeasureLevelsGraph.svg?height=400&amp;width=600&amp;measure_id={parm.measure_id}&amp;school_year={parm.school_year}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
 				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
-      <p><strong>Performance Distribution:</strong>  The above graph demonstrates the percentage of students tested performing at each level.</p>
       <hr/>
 			<table>
 				<thead>

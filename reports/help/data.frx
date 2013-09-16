@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Data</title>
+<frx:category>Help</frx:category>
+<frx:options hidden="1" />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen />
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+  <div id="forena-1" frx:block="forena_help/design_topics">
+    <p>Specify the data you want to include in your report. Data
+      blocks are typically provided by developers or site
+      administrators. Each data block corresponds to a specific query to
+      a database or application. To add data to an existing report,
+      specify the Data Block and a Template and choose Preview. If the
+      Data Block requires parameters you'll be prompted for them in the
+      Parameters field set.</p>
+    <p>Keep pressing Preview until you see the data that you're
+      expecting in the report below. Don't worry if the preview shows
+      too many fields, or isn't quite in the right format. You'll be
+      able to control that in the Layout tab later.</p>
+    <p>At this point in time you may select a template to decide the
+      basic look and field of the data that you are adding to the
+      report. Feel free to experiment with these options to get a report
+      that looks as close as possible to the design you are looking for.
+      Again you will be able to customize these layouts by editing the
+      .frx files or using the layout tab of the report editor.</p>
+    <p>If you need to remove a data section from the report, you can
+      check the checkboxes next to the Data Block that is currently
+      being displayed and press save.</p>
+    <ul>
+      <li id="forena-2" frx:foreach="*">{title}</li>
+    </ul>
+  </div>
+</body>
+</html>

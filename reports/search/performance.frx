@@ -16,7 +16,6 @@
 	<frx:parm id="grade_level" type="selectajax" data_source="ims/grade_levels" require="1"/>
 	<frx:parm id="max_grade_level" type="select" data_source="ims/grade_levels" label=""/>
 	<frx:parm id="test_id" type="selectajax" data_source="ims/building/tests" label="test"/> 
-  <frx:parm id="assessment_year" type="select" data_source="ims/school_years" />
 	<frx:parm id="seq" type="select" data_source="ims/tests/schedules" label="schedule"/> 
 	<frx:parm id="measure_id" type="select" data_source="ims/tests/measures"/> 
 	<frx:parm id="norm_score" type="multiselect" data_source="ims/tests/norm_scores">2</frx:parm> 
@@ -34,8 +33,7 @@
   </div>
   <div frx:renderer="FrxParameterForm" title="Search Criteria" submit="Search">
    <p>Search for students in grades {grade_level} through {max_grade_level}
-     enrolled in the {school_year} school_year
-     who were issued {test_id} assessments during the {assessment_year} school year
+     who were issued {test_id} assessments during the {school_year} school year
      that meet the following criteria.
    </p>
     <div><label for="parm-edit-seq">Schedule</label> {seq}</div>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<title>Forena Site Administrators Guide</title>
+<frx:category>Help</frx:category>
+<frx:options />
+<frx:parameters>
+</frx:parameters>
+<frx:docgen />
+<frx:fields>
+  <frx:field id="title" link="reports/{name}" />
+</frx:fields>
+</head>
+<body>
+  <h2>Overview</h2>
+  <p>Forena is a report writing tool that is designed to help
+    developers who are knowledgeable in writing SQL.</p>
+  <p>Report definitions are stored as files on the file system in
+    .frx files. These files are basically extended XHTML template files.
+    Report authors need only to learn a few special attributes and tags
+    (e.g. frx:block frx:foreach) to create reports in virtually any
+    layout. Frx report files are typically stored in a location writable
+    by the web user, so that they can be authored using a WYSIWYG report
+    editor. Report definitions can typically be modified by a group of
+    power users. These users do not need to know SQL, but should be
+    comfortable in html/css.</p>
+  <p>Data are typically accessed through "data blocks" which are
+    basically references to parameterized sql files. The .sql data
+    blocks are stored on the file system, typically in a location that
+    is not writable by the web user.&nbsp;</p>
+  <p>This guide documents how to install, configure and maintain
+    forena as well as how to leverage the power of other drupal modules
+    to enhance Forena's capabilities.</p>
+  <ul id="forena-1" frx:block="forena_help/admin_topics">
+    <li id="forena-2" frx:foreach="*"><span>{title}</span></li>
+  </ul>
+  <p>&nbsp;</p>
+</body>
+</html>
