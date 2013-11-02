@@ -127,6 +127,7 @@ function forena_schools_single_entry_delete_submit($form, &$form_state) {
 }
 
 function forena_schools_single_entry_cancel($form, &$form_state) {
-  $form_state['redirect'] = 'student/' . arg(1). '/assessment';
+  $form_state['redirect'] = array('student/' . arg(1). '/assessments', array('query' =>
+      array('school_year' => $form_state['storage']['student']['school_year'])));
 }
 
