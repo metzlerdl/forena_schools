@@ -11,7 +11,7 @@
       <frx:field id="name" link="student/{person_id}/entry/{test_id}/{school_year}/{seq}"/>
       <frx:field id="delete_test" link="student/{person_id}/delete/{test_id}/{school_year}/{seq}">delete</frx:field>
         <frx:field id="edit_enrollment" class="btn btn-primary"
-    link="student/{person_id}/{school_year}?destination=student/{person_id}/assessments">Edit Enrollment</frx:field>
+    link="student/{person_id}/{school_year}?destination=student/{person_id}/assessments%3Fschool_year%3D{school_year}">Edit Enrollment</frx:field>
     </frx:fields>
     <frx:parameters>
       <frx:parm id="school_year" type="select" data_source="ims/school_years" require="1"/>
