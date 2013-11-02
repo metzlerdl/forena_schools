@@ -70,6 +70,17 @@ class ForenaSchoolsStudent {
       $this->student = ForenaSchoolsPerson::instance()->loadById($person_id);
       $this->student['school_year'] = $school_year;
       $this->student['student_id'] = '';
+      // Determine default grade level
+      $rs = db_query('SELECT max(grade_level) as max_grade_level, max(school_year) as max_school_year FROM p_students WHERE person_id = :person_id',
+        array(':person_id' => $person_id));
+      if ($rs->rowCount()) {
+        extract($rs->fetchAssoc());
+        $diff = (int)$max_school_year - (int)$school_year;
+        $grade_level = $max_grade_level - $diff;
+        $grade_level = $grade_level < 0 ? -1 : $grade_level;
+        $grade_level = $grade_level > 12 ? 12 : $grade_level;
+        $this->student['grade_level'] = $grade_level;
+      }
     }
     return $this->student;
   }

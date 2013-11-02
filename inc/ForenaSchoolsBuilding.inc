@@ -75,7 +75,7 @@ class ForenaSchoolsBuilding {
     $rs = db_query('select * from i_buildings where code=:code',
       array(':code' => $code)
     );
-    if ($rs) {
+    if ($rs->rowCount()) {
       $bldg = $rs->fetchAssoc();
     }
     else {
@@ -102,5 +102,13 @@ class ForenaSchoolsBuilding {
     }
     return $staff;
 
+  }
+
+  public function buildingsByGradeLevel($grade_level) {
+
+    $rs = db_query('SELECT bldg_id, name FROM i_buildings where :grade_level BETWEEN min_grade and max_grade ORDER BY name',
+        array(':grade_level' => $grade_level));
+    $buildings = $rs->fetchAllKeyed(0, 1);
+    return $buildings;
   }
 }
