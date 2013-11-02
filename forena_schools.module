@@ -213,6 +213,17 @@ function forena_schools_menu() {
 	  'page arguments' => array('forena_schools_single_entry_delete',1, 3, 4, 5),
 	  'file' => 'forena_schools.test_entry.inc',
 	);
+
+	$items['student/%/%'] = array(
+	  'title' => 'Student Enrollment',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('dist_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_student_enrollment_form', 1,2),
+	  'file' => 'forena_schools.student.inc',
+	);
+
 	return $items;
 }
 

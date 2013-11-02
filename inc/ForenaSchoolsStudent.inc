@@ -1,5 +1,7 @@
 <?php
 class ForenaSchoolsStudent {
+  public $student;
+
   /**
    * Factory for student model
    */
@@ -45,7 +47,7 @@ class ForenaSchoolsStudent {
       WHERE s.student_id = :student_id',
       array(':student_id' => $student_id)
     );
-    if ($rs) {
+    if ($rs->rowCount()) {
       $student = $rs->fetchAssoc();
       $this->student = $student;
     }
@@ -60,9 +62,14 @@ class ForenaSchoolsStudent {
       WHERE p.person_id = :person_id AND s.school_year = :school_year',
       array(':person_id' => $person_id, ':school_year' => $school_year)
     );
-    if ($rs) {
+    if ($rs->rowCount()) {
       $student = $rs->fetchAssoc();
       $this->student = $student;
+    }
+    else {
+      $this->student = ForenaSchoolsPerson::instance()->loadById($person_id);
+      $this->student['school_year'] = $school_year;
+      $this->student['student_id'] = '';
     }
     return $this->student;
   }
@@ -75,7 +82,7 @@ class ForenaSchoolsStudent {
       ORDER BY school_year desc',
       array(':person_id' => $person_id, ':school_year' => $school_year)
     );
-    if ($rs) {
+    if ($rs->rowCount()) {
       $student = $rs->fetchAssoc();
       $this->student = $student;
     }
@@ -116,4 +123,27 @@ class ForenaSchoolsStudent {
     if (!$grades) $grades = array();
     return $grades;
   }
+
+  public function save($bldg_id, $grade_level) {
+    $this->student['bldg_id'] = $bldg_id;
+    $this->student['grade_level'] = $grade_level;
+    extract($this->student);
+    if ($student_id) {
+      db_update('p_students')
+        ->fields(array('bldg_id' => $bldg_id, 'grade_level' => $grade_level))
+        ->condition('student_id', $student_id)
+        ->execute();
+    }
+    else {
+      $student_id = db_insert('p_students')
+        ->fields(array(
+          'person_id' => $person_id,
+          'school_year' => $school_year,
+          'bldg_id' => $bldg_id,
+          'grade_level' => $grade_level,
+          ))
+        ->execute();
+    }
+  }
+
 }
