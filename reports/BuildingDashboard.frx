@@ -22,12 +22,12 @@
 <frx:menu path="schools/:bldg_id" type="callback"/>  
 </head>
 <body>
-	{student_search}
-	<p />
 
 
 	<div frx:block="ims/building/grade_levels" id="bldg"  frx:foreach="*" class="clearfix">
 
+		{student_search}
+		<p />
 		<h1 frx:renderer="FrxTitle">{bldg_name}</h1>
 
 		<div class="span2">
