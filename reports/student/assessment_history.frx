@@ -21,7 +21,11 @@
   
   </head>
   <body>
-  <div frx:renderer="FrxParameterForm" collapsible="0"/> 
+  <div frx:renderer="FrxParameterForm" frx:collapsible="0"/> 
+  <h2>Test Schedules</h2>
+  <div >
+    <p>{edit_enrollment}</p>
+  </div>
   <div id="test_schedules_block" class="FrxTable" frx:block="ims/student/test_schedules">
     <table>
       <thead>
@@ -40,9 +44,6 @@
           <td>{date_taken}</td>
           <td><span frx:if="{date_taken}">{delete_test}</span></td>
           </tr></tbody></table>
-  </div>
-  <div >
-    <p>{edit_enrollment}</p>
   </div>
   </body>
 </html>
