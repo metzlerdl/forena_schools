@@ -210,7 +210,7 @@ function forena_schools_building_form($formid, &$form_state, $bldg_id='') {
 	  '#default_value' => @$data['sis_code'],
 	);
 
-	$grade_levels = db_query('select grade_level,abbrev from {i_grade_levels}')
+	$grade_levels = db_query('select grade_level,abbrev from {i_grade_levels} ORDER by grade_level')
 	  ->fetchAllKeyed();
 
 	$form['building']['min_grade'] = array(
