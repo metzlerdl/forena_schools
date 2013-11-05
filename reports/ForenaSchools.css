@@ -1,7 +1,6 @@
 
 
-	
-td { padding: 5px; }
+
 
 .pdf-only {
  display:none; 
@@ -24,8 +23,17 @@ td.l4{
 	background-color: #B5C0E3; 
 	}
 	
+	
+th.name, td.name {  
+	width: 180px; 
+}
+	
+th.m-abbrev { 
+	width: 4em; 
+}
 td.score { 
 	text-align: right; 
+	width: 4em; 
 }
 
 table.pedagoggle-scores {

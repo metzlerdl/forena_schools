@@ -30,12 +30,13 @@
 					<thead>
 						<tr>
 							<th>Name</th>
-
+							<th style="display: none;">SIS ID</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<td>{last_name}, {first_name}</td>
+							<td style="display:none;">{sis_id}</td>
 						</tr>
 					</tbody>
 				</table>

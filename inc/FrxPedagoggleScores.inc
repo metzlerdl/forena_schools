@@ -4,6 +4,7 @@ class FrxPedagoggleScores extends FrxRenderer {
 	private $headers = array();
 	private $columns = array();
 	private $def_columns = array();
+	private $def_column_styles = array();
 	private $td_text = '<td class="score l{@norm_group}">{@score}</td>';
 
   public function render() {
@@ -56,6 +57,7 @@ class FrxPedagoggleScores extends FrxRenderer {
   			  $col = $prefix . (string)$value['measure_id'] . '" and @seq="' . (string)$value['seq'] . '"]';
   			}
   			$hcol['depth'] = $depth;
+  			$hcol['class'] = 'm-abbrev';
   			$this->columns[] = $col;
   			$this->headers[$depth][] = $hcol;
   		}
@@ -71,13 +73,17 @@ class FrxPedagoggleScores extends FrxRenderer {
   			$hcol['label'] = (string)$th;
   			$hcol['depth'] = 1;
   			$hcol['colspan'] = 1;
+  			$hcol['class'] = @(string)$th['class'];
+  			$hcol['style'] = @(string)$th['style'];
         $this->headers[1][] = $hcol;
 
   		}
   	}
   	if ($node->tbody && $node->tbody->tr) {
   		foreach ($node->tbody->tr->children() as $td) {
-  			$col = (string)$td;
+  			$col['data'] = (string)$td;
+  			$col['class'] = (string)$td['class'];
+  			$col['style'] = (string)$td['style'];
   			$this->def_columns[] = $col;
   		}
   	}
@@ -94,7 +100,9 @@ class FrxPedagoggleScores extends FrxRenderer {
      	 	 $label = $hcol['label'];
      	 	 $colspan = $hcol['colspan'];
      	 	 $rowspan = $depth - $hcol['depth'] + 1;
-     	   $o .= "<th colspan='$colspan' rowspan='$rowspan'>$label</th>\n";
+     	 	 $style = @$hcol['style'] ? 'style="' . $hcol['style'] . '"': '';
+     	 	 $class = @$hcol['class'] ? 'class="' . $hcol['class'] . '"': '';
+     	   $o .= "<th $style $class colspan='$colspan' rowspan='$rowspan'>$label</th>\n";
      	 }
      	 $o .= '</tr>';
      }
@@ -126,8 +134,11 @@ class FrxPedagoggleScores extends FrxRenderer {
   		$d->push($row,'student');
   		$o .= "<tr>\n";
   		foreach($this->def_columns as $col) {
-  			$o .= $this->replaceTokens('<td>'. $col . '</td>');
+  		  $style = $col['style'] ? "style='" . $col['style'] . "'" : '';
+  		  $class = $col['class'] ? "class='" . $col['class'] . "'" : '';
+  			$o .= $this->replaceTokens("<td $style $class >". $col['data'] . '</td>');
   		}
+
   		$o .= $this->renderScores($row);
   		$o .= '</tr>';
   		$d->pop();
