@@ -154,13 +154,33 @@ function forena_schools_menu() {
 	);
 
 	$items['profile/%/edit'] = array(
-	  'title' => 'Edit Profile',
-	  'type' => MENU_CALLBACK,
+	    'title' => 'Edit Profile',
+	    'type' => MENU_CALLBACK,
+	    'access callback' => 'forena_schools_access',
+	    'access arguments' => array('dist_admin'),
+	    'page callback' => 'drupal_get_form',
+	    'page arguments' => array('forena_schools_profile_form', 1),
+	    'file' => 'forena_schools.profiles.inc',
+	);
+
+	$items['profile/%/edit/general'] = array(
+	  'title' => 'General',
+	  'type' => MENU_DEFAULT_LOCAL_TASK,
 	  'access callback' => 'forena_schools_access',
 	  'access arguments' => array('dist_admin'),
 	  'page callback' => 'drupal_get_form',
 	  'page arguments' => array('forena_schools_profile_form', 1),
 	  'file' => 'forena_schools.profiles.inc',
+	);
+
+	$items['profile/%/edit/meausures'] = array(
+		'title' => 'Measures',
+	  'type' => MENU_LOCAL_TASK,
+    'access callback' => 'forena_schools_access',
+    'access arguments' => array('dist_admin'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('forena_schools_profile_measures', 1),
+    'file' => 'forena_schools.profiles.inc',
 	);
 
 	$items['profile/%/delete'] = array(

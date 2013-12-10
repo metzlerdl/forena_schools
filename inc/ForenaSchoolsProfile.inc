@@ -30,6 +30,7 @@ class ForenaSchoolsProfile {
    */
   public function save($profile) {
     // First insert or update the base profile record.
+    $profile = array_merge($this->profile, $profile);
     if ($this->profile_id) {
       db_update('a_profiles')
         ->fields(array(
@@ -66,6 +67,7 @@ class ForenaSchoolsProfile {
           ->fields(array(
             'measure_id' => $measure['measure_id'],
             'seq' => $measure['seq'],
+            'label' => $measure['label'],
           ))
           ->condition('profile_id', $this->profile_id)
           ->condition('sort_order', $i)
@@ -83,6 +85,7 @@ class ForenaSchoolsProfile {
       }
       $i++;
     }
+
     if ($profile['measures']) {
       $m1 = array_keys($this->measures);
       $m2 = array_keys($profile['measures']);

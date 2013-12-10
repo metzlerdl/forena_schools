@@ -105,111 +105,7 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     '#description' => t('Check any displays that this profile should show up in. ')
   );
 
-  $form['measures'] = array(
-    '#type' => 'vertical_tabs',
-    '#title' => 'Measures',
-    '#tree' => TRUE,
-  );
 
-  $i = 0;
-  // Measures section of display.
-  if ($data['measures']) foreach($data['measures'] as $key=>$measure) {
-    $i++;
-    $ctl = array(
-      '#type' => 'fieldset',
-      '#title' => $measure['name'],
-      '#tree' => TRUE,
-    );
-    $ctl['measure_id'] = array(
-      '#type' => 'value',
-      '#value' => $measure['measure_id'],
-    );
-
-    $ctl['seq'] = array(
-      '#type' => 'value',
-      '#value' => $measure['seq'],
-    );
-
-    $ctl['name'] = array(
-      '#type' => 'item',
-      '#markup' => $measure['name'],
-    );
-
-    $ctl['label'] = array(
-      '#type' => 'textfield',
-      '#title' => 'Label',
-      '#maxlength' => 30,
-      '#default_value' => $measure['label'],
-    );
-
-    $ctl['remove'] = array(
-      '#type' => 'submit',
-      '#value' => 'Remove',
-      '#submit' => array('forena_schools_profile_remove_measure'),
-      '#name' => $i,
-    );
-    $form['measures'][] = $ctl;
-
-  }
-
-  // Add measures control
-  $form['add_measures'] = array(
-    '#type' => 'fieldset',
-    '#collapsible' => TRUE,
-    '#collapsed' => !isset($form_state['values']['add_measures']['test_id']),
-    '#prefix' => '<div id="add-measures-fieldset">',
-    '#suffix' => '</div>',
-    '#tree' => TRUE,
-    '#title' => 'Add Measures',
-  );
-
-  $form['add_measures']['test_id'] = array(
-    '#type' => 'select',
-    '#title' => 'Test',
-    '#options' => $tests,
-    '#empty_value' => '',
-    '#ajax' => array(
-        'wrapper' => 'add-measures-fieldset',
-        'callback' => 'forena_schools_add_measure_callback',
-    )
-  );
-
-  $test_id = @$form_state['values']['add_measures']['test_id'];
-
-  $measures = array();
-  $schedules = array('0' => 'Any');
-
-  $t = ForenaSchoolsTest::instance();
-  if ($test_id) $measures = $t->listMeasures($test_id);
-  if ($test_id) $schedules = array_merge($schedules,  $t->listSchedules($test_id));
-  $form['add_measures']['seq'] = array(
-    '#title' => 'Schedule',
-    '#type' => 'select',
-    '#options' => $schedules,
-    '#defalut_value' => '',
-  );
-
-  $form['add_measures']['measures'] = array(
-    '#title' => 'Measure',
-    '#type' => 'select',
-    '#multiple' => TRUE,
-    '#options' => $measures,
-    '#validated' => TRUE,
-    '#disabled' => !$test_id,
-   );
-
-
-  $form['add_measures']['add'] = array(
-    '#type' => 'submit',
-    '#value' => 'Add',
-    '#submit' => array('forena_schools_profile_add_measures'),
-  );
-
-  $form['add_measures']['add_all'] = array(
-    '#type' => 'submit',
-    '#value' => 'Add All',
-    '#submit' => array('forena_schools_profile_add_all_measures'),
-  );
 
   $form['save'] = array(
     '#type' => 'submit',
@@ -227,6 +123,159 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
 
 function forena_schools_profile_save($form, &$form_state) {
 
+  $p = ForenaSchoolsProfile::instance();
+  $profile_id = $form_state['values']['profile_id'];
+  if ($form_state['values']['profile_id']) $p->load($form_state['values']['profile_id']);
+  unset($form_state['values']['measures']['measures__active_tab']);
+  $p->save($form_state['values']);
+  if (strpos($_POST['op'], 'Close')!==FALSE) {
+
+    $form_state['redirect'] = 'reports/district.Profiles';
+  }
+  else {
+    if ($profile_id != $p->profile_id) {
+      $form_state['redirect'] = 'profile/' . $p->profile_id . '/edit';
+    }
+  }
+}
+
+function forena_schools_profile_measures($formid, &$form_state, $profile_id = '') {
+  $data = array();
+  // Load form
+  $p = ForenaSchoolsProfile::instance();
+  // Load form data if necessary.
+  if (@!$form_state['storage']['profile']) {
+    $form_state['storage']['profile'] = $p->load($profile_id);
+  }
+  $data = $form_state['storage']['profile'];
+
+  // Tests
+  $tests = ForenaSchools::instance()->userTests($data['min_grade'], $data['max_grade']);
+
+  $form = array();
+
+  $form['profile_id'] = array(
+      '#type' => 'value',
+      '#value' => $data['profile_id'],
+  );
+
+  $form['measures'] = array(
+      '#type' => 'vertical_tabs',
+      '#title' => 'Measures',
+      '#tree' => TRUE,
+  );
+
+  $i = 0;
+  // Measures section of display.
+  if ($data['measures']) foreach($data['measures'] as $key=>$measure) {
+    $i++;
+    $label = @$measure['label'] ? $measure['label'] . '*' : $measure['name'];
+    $ctl = array(
+        '#type' => 'fieldset',
+        '#title' => $label,
+        '#tree' => TRUE,
+    );
+    $ctl['measure_id'] = array(
+        '#type' => 'value',
+        '#value' => $measure['measure_id'],
+    );
+
+    $ctl['seq'] = array(
+        '#type' => 'value',
+        '#value' => $measure['seq'],
+    );
+
+    $ctl['name'] = array(
+        '#type' => 'item',
+        '#markup' => $measure['name'],
+    );
+
+    $ctl['label'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Label',
+        '#maxlength' => 30,
+        '#default_value' => $measure['label'],
+    );
+
+    $ctl['remove'] = array(
+        '#type' => 'submit',
+        '#value' => 'Remove',
+        '#submit' => array('forena_schools_profile_remove_measure'),
+        '#name' => $i,
+    );
+    $form['measures'][] = $ctl;
+
+  }
+
+  // Add measures control
+  $form['add_measures'] = array(
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => !isset($form_state['values']['add_measures']['test_id']),
+      '#prefix' => '<div id="add-measures-fieldset">',
+      '#suffix' => '</div>',
+      '#tree' => TRUE,
+      '#title' => 'Add Measures',
+  );
+
+  $form['add_measures']['test_id'] = array(
+      '#type' => 'select',
+      '#title' => 'Test',
+      '#options' => $tests,
+      '#empty_value' => '',
+      '#ajax' => array(
+          'wrapper' => 'add-measures-fieldset',
+          'callback' => 'forena_schools_add_measure_callback',
+      )
+  );
+
+  $test_id = @$form_state['values']['add_measures']['test_id'];
+
+  $measures = array();
+  $schedules = array('0' => 'Any');
+
+  $t = ForenaSchoolsTest::instance();
+  if ($test_id) $measures = $t->listMeasures($test_id);
+  if ($test_id) $schedules = array_merge($schedules,  $t->listSchedules($test_id));
+  $form['add_measures']['seq'] = array(
+      '#title' => 'Schedule',
+      '#type' => 'select',
+      '#options' => $schedules,
+      '#defalut_value' => '',
+  );
+
+  $form['add_measures']['measures'] = array(
+      '#title' => 'Measure',
+      '#type' => 'select',
+      '#multiple' => TRUE,
+      '#options' => $measures,
+      '#validated' => TRUE,
+      '#disabled' => !$test_id,
+  );
+
+
+  $form['add_measures']['add'] = array(
+      '#type' => 'submit',
+      '#value' => 'Add',
+      '#submit' => array('forena_schools_profile_add_measures'),
+  );
+
+  $form['add_measures']['add_all'] = array(
+      '#type' => 'submit',
+      '#value' => 'Add All',
+      '#submit' => array('forena_schools_profile_add_all_measures'),
+  );
+
+  $form['save'] = array(
+  	'#type' => 'submit',
+    '#value' => t('Save'),
+    '#submit' => array('forena_schools_profile_save_measures'),
+  );
+
+  return $form;
+}
+
+function forena_schools_profile_save_measures($form, &$form_state) {
   $p = ForenaSchoolsProfile::instance();
   $profile_id = $form_state['values']['profile_id'];
   if ($form_state['values']['profile_id']) $p->load($form_state['values']['profile_id']);
