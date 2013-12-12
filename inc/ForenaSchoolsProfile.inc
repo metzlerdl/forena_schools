@@ -151,6 +151,7 @@ class ForenaSchoolsProfile {
     $measures = array();
     foreach ($rs as $row) {
       $measures[(int)$row->sort_order] = array(
+        'sort_order' => (int)$row->sort_order,
         'measure_id' => $row->measure_id,
         'seq' => $row->seq,
         'label' => $row->label,
