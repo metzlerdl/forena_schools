@@ -203,6 +203,7 @@ function forena_schools_profile_measures($formid, &$form_state, $profile_id = ''
         '#type' => 'weight',
         '#title' => 'Weight',
         '#title_display' => 'invisible',
+        '#delta' => 100,
         '#default_value' => $measure['sort_order'],
     );
 
@@ -300,6 +301,7 @@ function forena_schools_profile_save_measures($form, &$form_state) {
     }
     $form_state['values']['measures'] = $measures;
   }
+
   $p->save($form_state['values']);
   if (strpos($_POST['op'], 'Close')!==FALSE) {
 

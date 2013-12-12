@@ -62,7 +62,8 @@ class ForenaSchoolsProfile {
     $i=0;
     // Update
     if ($profile['measures']) foreach ($profile['measures'] as $k=>$measure) {
-      if(isset($existing_measures[$k])) {
+      $i++;
+      if(isset($existing_measures[$i])) {
         db_update('a_profile_measures')
           ->fields(array(
             'measure_id' => $measure['measure_id'],
@@ -83,7 +84,6 @@ class ForenaSchoolsProfile {
           ))
           ->execute();
       }
-      $i++;
     }
 
     if ($profile['measures']) {
