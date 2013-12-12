@@ -248,9 +248,15 @@ function forena_schools_menu() {
 }
 
 function forena_schools_theme() {
-  return array( 'forena_schools_flex_popup' => array(
+  return array(
+    'forena_schools_flex_popup' => array(
       'variables' => array('item' => NULL, 'feed' => 0),
-    ),
+      ),
+    'forena_schools_profile_measures' => array(
+        'render element' => 'form',
+        'file' => 'forena_schools.profiles.inc',
+      ),
+    // Theme function for the 'simple' example.
   );
 }
 

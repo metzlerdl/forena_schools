@@ -105,8 +105,6 @@ function forena_schools_profile_form($formid, &$form_state, $profile_id='') {
     '#description' => t('Check any displays that this profile should show up in. ')
   );
 
-
-
   $form['save'] = array(
     '#type' => 'submit',
     "#submit" => array('forena_schools_profile_save'),
@@ -160,8 +158,6 @@ function forena_schools_profile_measures($formid, &$form_state, $profile_id = ''
   );
 
   $form['measures'] = array(
-      '#type' => 'vertical_tabs',
-      '#title' => 'Measures',
       '#tree' => TRUE,
   );
 
@@ -171,8 +167,6 @@ function forena_schools_profile_measures($formid, &$form_state, $profile_id = ''
     $i++;
     $label = @$measure['label'] ? $measure['label'] . '*' : $measure['name'];
     $ctl = array(
-        '#type' => 'fieldset',
-        '#title' => $label,
         '#tree' => TRUE,
     );
     $ctl['measure_id'] = array(
@@ -187,12 +181,13 @@ function forena_schools_profile_measures($formid, &$form_state, $profile_id = ''
 
     $ctl['name'] = array(
         '#type' => 'item',
-        '#markup' => $measure['name'],
+        '#markup' => $measure['name'] . ' (' . $measure['seq'] . ')',
     );
 
     $ctl['label'] = array(
         '#type' => 'textfield',
         '#title' => 'Label',
+        '#title_display' => 'invisible',
         '#maxlength' => 30,
         '#default_value' => $measure['label'],
     );
@@ -203,6 +198,14 @@ function forena_schools_profile_measures($formid, &$form_state, $profile_id = ''
         '#submit' => array('forena_schools_profile_remove_measure'),
         '#name' => $i,
     );
+
+    $ctl['weight'] = array(
+        '#type' => 'weight',
+        '#title' => 'Weight',
+        '#title_display' => 'invisible',
+        '#default_value' => $measure['sort_order'],
+    );
+
     $form['measures'][] = $ctl;
 
   }
@@ -271,6 +274,11 @@ function forena_schools_profile_measures($formid, &$form_state, $profile_id = ''
     '#value' => t('Save'),
     '#submit' => array('forena_schools_profile_save_measures'),
   );
+  $form['save_close'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save and Close'),
+      '#submit' => array('forena_schools_profile_save_measures'),
+  );
 
   return $form;
 }
@@ -279,16 +287,23 @@ function forena_schools_profile_save_measures($form, &$form_state) {
   $p = ForenaSchoolsProfile::instance();
   $profile_id = $form_state['values']['profile_id'];
   if ($form_state['values']['profile_id']) $p->load($form_state['values']['profile_id']);
-  unset($form_state['values']['measures']['measures__active_tab']);
+  //unset($form_state['values']['measures']['measures__active_tab']);
+  //Caclulate sort orders from weights:
+  if ($form_state['values']['measures']) {
+    foreach ($form_state['values']['measures'] as $id => $measure) {
+      $weight[$id] = $measure['weight'];
+    }
+    asort($weight);
+    $measures = array();
+    foreach ($weight as $id => $value) {
+      $measures[] = $form_state['values']['measures'][$id];
+    }
+    $form_state['values']['measures'] = $measures;
+  }
   $p->save($form_state['values']);
   if (strpos($_POST['op'], 'Close')!==FALSE) {
 
     $form_state['redirect'] = 'reports/district.Profiles';
-  }
-  else {
-    if ($profile_id != $p->profile_id) {
-      $form_state['redirect'] = 'profile/' . $p->profile_id . '/edit';
-    }
   }
 }
 
@@ -381,4 +396,87 @@ function forena_schools_profile_delete_submit($form, &$form_state) {
     $p->delete();
     $form_state['redirect'] = 'reports/district.Profiles';
   }
+}
+
+/**
+ * Theme callback for the derived from tabledrag_example_simple_form form.
+ *
+ *
+ * @return
+ *   The rendered tabledrag form
+ *
+ * @ingroup tabledrag_example
+ */
+function theme_forena_schools_profile_measures($variables) {
+  $form = $variables['form'];
+
+  // Initialize the variable which will store our table rows.
+  $rows = array();
+
+  // Iterate over each element in our $form['example_items'] array.
+  foreach (element_children($form['measures']) as $id) {
+
+    // Before we add our 'weight' column to the row, we need to give the
+    // element a custom class so that it can be identified in the
+    // drupal_add_tabledrag call.
+    //
+    // This could also have been done during the form declaration by adding
+    // '#attributes' => array('class' => 'example-item-weight'),
+    // directy to the 'weight' element in tabledrag_example_simple_form().
+    $form['measures'][$id]['weight']['#attributes']['class'] = array('profile-measures-item-weight');
+
+    // We are now ready to add each element of our $form data to the $rows
+    // array, so that they end up as individual table cells when rendered
+    // in the final table.  We run each element through the drupal_render()
+    // function to generate the final html markup for that element.
+    $rows[] = array(
+        'data' => array(
+            // Add our 'name' column.
+            drupal_render($form['measures'][$id]['name']),
+            // Add our 'description' column.
+            drupal_render($form['measures'][$id]['label']),
+            // Add our 'weight' column.
+            drupal_render($form['measures'][$id]['remove']),
+
+            drupal_render($form['measures'][$id]['weight']),
+        ),
+        // To support the tabledrag behaviour, we need to assign each row of the
+        // table a class attribute of 'draggable'. This will add the 'draggable'
+        // class to the <tr> element for that row when the final table is
+        // rendered.
+        'class' => array('draggable'),
+    );
+  }
+
+  // We now define the table header values.  Ensure that the 'header' count
+  // matches the final column count for your table.
+  $header = array(t('Name'), t('Label'), t('Action'), t('Weight'));
+
+  // We also need to pass the drupal_add_tabledrag() function an id which will
+  // be used to identify the <table> element containing our tabledrag form.
+  // Because an element's 'id' should be unique on a page, make sure the value
+  // you select is NOT the same as the form ID used in your form declaration.
+  $table_id = 'profile-measures-items-table';
+
+  // We can render our tabledrag table for output.
+  $output = theme('table', array(
+      'header' => $header,
+      'rows' => $rows,
+      'attributes' => array('id' => $table_id),
+  ));
+
+  // And then render any remaining form elements (such as our submit button).
+  $output .= drupal_render_children($form);
+
+  // We now call the drupal_add_tabledrag() function in order to add the
+  // tabledrag.js goodness onto our page.
+  //
+  // For a basic sortable table, we need to pass it:
+  // - the $table_id of our <table> element,
+  // - the $action to be performed on our form items ('order'),
+  // - a string describing where $action should be applied ('siblings'),
+  // - and the class of the element containing our 'weight' element.
+  drupal_add_tabledrag($table_id, 'order', 'sibling', 'profile-measures-item-weight');
+
+  return $output;
 }
