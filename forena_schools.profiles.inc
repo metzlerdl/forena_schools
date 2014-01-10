@@ -321,6 +321,7 @@ function forena_schools_profile_remove_measure($form, &$form_state) {
   array_shift($parents);
   $idx = array_shift($parents);
   unset($data['measures'][$idx]);
+  unset($form_state['input']['measures'][$idx]);
   $form_state['storage']['profile']['measures'] = array_values($data['measures']);
   $form_state['rebuild'] = TRUE;
 }

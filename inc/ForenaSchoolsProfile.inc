@@ -58,12 +58,20 @@ class ForenaSchoolsProfile {
     }
 
     //Now insert update the measures
+    if ($this->measures) {
+      $max_sort = count($this->measures);
+    }
+    else {
+      $max_sort = 0;
+    }
     $existing_measures = $this->measures;
     $i=0;
+    $saved_measures = array();
     // Update
     if ($profile['measures']) foreach ($profile['measures'] as $k=>$measure) {
       $i++;
-      if(isset($existing_measures[$i])) {
+      $saved_measures[] = $i;
+      if($i <= $max_sort) {
         db_update('a_profile_measures')
           ->fields(array(
             'measure_id' => $measure['measure_id'],
@@ -93,7 +101,7 @@ class ForenaSchoolsProfile {
       if ($measures_to_delete) {
         db_delete('a_profile_measures')
           ->condition('profile_id', $this->profile_id)
-          ->condition('sort_order', $measures_to_delete)
+          ->condition('sort_order', $saved_measures, 'NOT IN')
           ->execute();
       }
     }
@@ -146,11 +154,12 @@ class ForenaSchoolsProfile {
         ON pm.measure_id = m.measure_id
       LEFT JOIN  {a_test_schedules} s
         ON s.seq = pm.seq
+          AND m.test_id = s.test_id
       WHERE profile_id = :profile_id
       ORDER BY sort_order", array(':profile_id' => $this->profile_id));
     $measures = array();
     foreach ($rs as $row) {
-      $measures[(int)$row->sort_order] = array(
+      $measures[] = array(
         'sort_order' => (int)$row->sort_order,
         'measure_id' => $row->measure_id,
         'seq' => $row->seq,
