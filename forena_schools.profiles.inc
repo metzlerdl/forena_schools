@@ -362,7 +362,7 @@ function forena_schools_profile_add_all_measures($form, &$form_state) {
   $valid_measures = ForenaSchoolsTest::instance()->listMeasures($test_id);
   $seq = $form_state['values']['add_measures']['seq'];
   $valid_schedules = ForenaSchoolsTest::instance()->listSchedules($test_id);
-  $seq = isset($valid_schedules[$seq]) ? $seq : '';
+  $seq = isset($valid_schedules[$seq]) ? $seq : 0;
   $label = isset($valid_schedules[$seq]) ? $valid_schedules[$seq] : 'Any';
   if ($valid_measures) foreach ($valid_measures as $measure_id => $name) {
     $measure = array(
