@@ -322,6 +322,8 @@ function forena_schools_profile_remove_measure($form, &$form_state) {
   $idx = array_shift($parents);
   unset($data['measures'][$idx]);
   unset($form_state['input']['measures'][$idx]);
+  // Reset input to make sure that labels still stay alligned.
+  $form_state['input']['measures'] = array_values($form_state['input']['measures']);
   $form_state['storage']['profile']['measures'] = array_values($data['measures']);
   $form_state['rebuild'] = TRUE;
 }
