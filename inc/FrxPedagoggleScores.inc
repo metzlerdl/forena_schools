@@ -1,11 +1,11 @@
 <?php
 class FrxPedagoggleScores extends FrxRenderer {
 
-	private $headers = array();
-	private $columns = array();
-	private $def_columns = array();
-	private $def_column_styles = array();
-	private $td_text = '<td class="score l{@norm_group}">{@score}</td>';
+	public $headers = array();
+	public $columns = array();
+	public $def_columns = array();
+	public $def_column_styles = array();
+	public $td_text = '<td class="score l{@norm_group}">{@score}</td>';
 
   public function render() {
     $frx = $this->frxAttributes;
@@ -104,6 +104,7 @@ class FrxPedagoggleScores extends FrxRenderer {
      	 	 $class = @$hcol['class'] ? 'class="' . $hcol['class'] . '"': '';
      	   $o .= "<th $style $class colspan='$colspan' rowspan='$rowspan'>$label</th>\n";
      	 }
+     	 $o .= "<th>&nbsp;</th>";
      	 $o .= '</tr>';
      }
      $o .= '</thead>';
@@ -140,6 +141,7 @@ class FrxPedagoggleScores extends FrxRenderer {
   		}
 
   		$o .= $this->renderScores($row);
+  		$o .= "<td>&nbsp;</td>";
   		$o .= '</tr>';
   		$d->pop();
 

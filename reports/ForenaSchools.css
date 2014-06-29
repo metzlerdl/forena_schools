@@ -1,7 +1,14 @@
 
 
 
+table.pedagoggle-scores { 
+	width: auto; 
+}
 
+tbody th
+{ 
+	text-align: left; 
+}
 .pdf-only {
  display:none; 
 }

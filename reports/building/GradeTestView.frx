@@ -29,13 +29,13 @@
 				<table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
 					<thead>
 						<tr>
-							<th>Name</th>
+							<th style="width: 30em;">Name</th>
 							<th style="display: none;">SIS ID</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>{last_name}, {first_name}</td>
+							<td style="width: 30em;">{last_name}, {first_name}</td>
 							<td style="display:none;">{sis_id}</td>
 						</tr>
 					</tbody>
