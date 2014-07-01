@@ -104,7 +104,8 @@ class FrxPedagoggleScores extends FrxRenderer {
      	 	 $class = @$hcol['class'] ? 'class="' . $hcol['class'] . '"': '';
      	   $o .= "<th $style $class colspan='$colspan' rowspan='$rowspan'>$label</th>\n";
      	 }
-     	 $o .= "<th>&nbsp;</th>";
+     	 if ($i == 1) $o .= "<th rowspan='$rowspan' colspan='1'>
+     	 </th>";
      	 $o .= '</tr>';
      }
      $o .= '</thead>';
@@ -141,7 +142,7 @@ class FrxPedagoggleScores extends FrxRenderer {
   		}
 
   		$o .= $this->renderScores($row);
-  		$o .= "<td>&nbsp;</td>";
+  		//$o .= "<td></td>";
   		$o .= '</tr>';
   		$d->pop();
 

@@ -29,7 +29,7 @@
 				<table frx:renderer="FrxPedagoggleScores" frx:profile="profile">
 					<thead>
 						<tr>
-							<th style="width: 30em;">Name</th>
+							<th>Name</th>
 							<th style="display: none;">SIS ID</th>
 						</tr>
 					</thead>
