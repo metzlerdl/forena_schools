@@ -92,20 +92,28 @@ class FrxPedagoggleScores extends FrxRenderer {
   private function renderHeaders() {
      $o = '<thead>';
      $depth = count($this->headers);
+     $max_rowspan = 1;
      for ($i=1; $i<= $depth; $i++) {
      	 $hrow = $this->headers[$i];
      	 $o .= '<tr>';
 
      	 foreach ($hrow as $hcol) {
      	 	 $label = $hcol['label'];
+     	 	 $colspanstr = '';
+     	 	 $rowspanstr = '';
      	 	 $colspan = $hcol['colspan'];
      	 	 $rowspan = $depth - $hcol['depth'] + 1;
-     	 	 $style = @$hcol['style'] ? 'style="' . $hcol['style'] . '"': '';
-     	 	 $class = @$hcol['class'] ? 'class="' . $hcol['class'] . '"': '';
-     	   $o .= "<th $style $class colspan='$colspan' rowspan='$rowspan'>$label</th>\n";
+     	 	 if ($rowspan > $max_rowspan) $max_rowspan = $rowspan;
+
+     	 	 $style = @trim($hcol['style']) ? 'style="' . $hcol['style'] . '"': '';
+     	 	 $class = @trim($hcol['class']) ? 'class="' . $hcol['class'] . '"': '';
+     	 	 $attr_str = trim($style . ' ' . $class);
+   	 	   if ($colspan > 1) $colspanstr = "colspan=$colspan";
+   	 	   if ($rowspan > 1) $rowspanstr = "rowspan=$rowspan";
+   	 	   $attr_str = trim($attr_str . ' ' . $colspanstr . ' ' . $rowspanstr);
+     	   $o .= "<th $attr_str>$label</th>\n";
      	 }
-     	 if ($i == 1) $o .= "<th rowspan='$rowspan' colspan='1'>
-     	 </th>";
+     	 if ($i == 1) $o .= "<th rowspan='$max_rowspan'></th>";
      	 $o .= '</tr>';
      }
      $o .= '</thead>';
@@ -142,7 +150,7 @@ class FrxPedagoggleScores extends FrxRenderer {
   		}
 
   		$o .= $this->renderScores($row);
-  		//$o .= "<td></td>";
+  		$o .= "<td></td>";
   		$o .= '</tr>';
   		$d->pop();
 

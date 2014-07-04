@@ -1,11 +1,14 @@
 
 
-
-table.pedagoggle-scores { 
-	width: auto; 
+.name { 
+	width: 150px; 
 }
 
-tbody th
+th.m-abbrev, td.score { width: 50px; }
+
+
+
+.pedagoggle-scores tbody tr th
 { 
 	text-align: left; 
 }
@@ -30,18 +33,6 @@ td.l4{
 	background-color: #B5C0E3; 
 	}
 	
-	
-th.name, td.name {  
-	width: 180px; 
-}
-	
-th.m-abbrev { 
-	width: 4em; 
-}
-td.score { 
-	text-align: right; 
-	width: 4em; 
-}
 
 table.pedagoggle-scores {
 	margin: 0; 

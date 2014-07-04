@@ -28,12 +28,16 @@
           <tr>
             <th class="name">Name</th>
             <th style="display: none; ">SIS ID </th>
+            <th style="display: none; ">Building</th>
+            <th style="display: none;">Grade</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td class="name">{last_name}, {first_name}</td>
             <td style="display: none;">{sis_id}</td>
+            <td style="display: none;">{sis_code}</td>
+            <td style="display: none;">{grade}</td>
           </tr>
         </tbody>
       </table>

@@ -2,7 +2,6 @@
 
   Drupal.behaviors.peninsulaFeeds = {
     attach: function(context, settings) {
-      console.log("well here we are!");
       $("#websiteRSS-container").rss(
           "http://www.psd401.net/index.php?format=feed&amp;type=rss",
           {
@@ -49,7 +48,7 @@
       var oTable = jQuery('table.pedagoggle-scores').dataTable({
         "bPaginate": false, 
         "bSort": true,
-        "sScrollX": "100%",
+        "sScrollX": "80%",
         "sScrollY": "500",
         "bScrollCollapse": true
       }); 
