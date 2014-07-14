@@ -1,17 +1,12 @@
 
 
 .name { 
-	width: 150px; 
+	width: 30em; 
 }
 
-th.m-abbrev, td.score { width: 50px; }
+th.m-abbrev, td.score { width: 120px; }
 
 
-
-.pedagoggle-scores tbody tr th
-{ 
-	text-align: left; 
-}
 .pdf-only {
  display:none; 
 }
