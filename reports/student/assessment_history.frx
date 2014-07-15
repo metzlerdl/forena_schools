@@ -27,14 +27,14 @@
     <p>{edit_enrollment}</p>
   </div>
   <div id="test_schedules_block" class="FrxTable" frx:block="ims/student/test_schedules">
-    <table>
+    <table class="table table-bordered">
       <thead>
         <tr>
-          <th>label</th>
-          <th>grade</th>
-          <th>name</th>
-          <th>date_taken</th>
-          <th>action</th>
+          <th>Label</th>
+          <th>Grade</th>
+          <th>Name</th>
+          <th>Date Taken</th>
+          <th>Action</th>
           </tr></thead>
       <tbody>
         <tr id="test_schedules" frx:foreach="*">

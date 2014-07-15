@@ -1,17 +1,20 @@
 
 
 .name { 
-	width: 30em; 
+	width: 150px; 
 }
 
-th.m-abbrev, td.score { width: 120px; }
+th.m-abbrev, td.score { width: 90px; }
 
+.test-scores { 
+	min-width : 25em;
+	}
 
 .pdf-only {
  display:none; 
 }
 
-td.l1{
+td.l1 {
 	background-color: #E3B5B5; 
 	
 }
@@ -46,6 +49,8 @@ table.pedagoggle-scores {
   background-color: white; 
 }
 
+/* Reset auto width for tables */
+table.table-bordered, table.table { width: auto;}
 
 .test-scores td.test { 
   font-weight: bold; 
