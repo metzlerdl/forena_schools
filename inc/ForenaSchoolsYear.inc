@@ -129,8 +129,7 @@ class ForenaSchoolsYear {
       db_insert('i_school_years')
         ->fields(array(
           'school_year' => $fields['school_year'],
-          'name' => $fields['name'],
-          'abbrev' => $firlds['abbrev'],
+          'label' => $fields['label'],
           'start_date' => $fields['start_date'],
           'end_date' => $fields['end_date'],
         ))

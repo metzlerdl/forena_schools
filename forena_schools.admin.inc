@@ -42,14 +42,16 @@ function forena_schools_school_year_form($formid, &$form_state, $school_year='')
   );
 
   $form['start_date'] = array(
-    '#type' => 'textfield',
+    '#type' => 'date_popup',
+    '#date_format' => 'Y-m-d',
     '#title' => 'Start date',
     '#default_value' => @$data['start_date'],
     '#description' => 'Starting poing of school year. ',
   );
 
   $form['end_date'] = array(
-    '#type' => 'textfield',
+    '#type' => 'date_popup',
+    '#date_format' => 'Y-m-d',
     '#title' => 'End Date',
     '#default_value' => @$data['end_date'],
     '#description' => 'Ending date of the school year.  Leave time for tests to be entered. '
@@ -74,7 +76,7 @@ function forena_schools_school_year_form($formid, &$form_state, $school_year='')
 
 function forena_schools_year_validate($form, &$form_state) {
  $y = ForenaSchoolsYear::instance();
- if (!$y->validDate($form_state['values']['start_deate'])) {
+ if (!$y->validDate($form_state['values']['start_date'])) {
    form_set_error('start_date', 'Invalid Start Date');
  }
  if (!$y->validDate($form_state['values']['end_date'])) {

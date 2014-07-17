@@ -13,7 +13,7 @@
   <frx:field id="start_date"/>
   <frx:field id="end_date"/>
   <frx:field id="year_selected"/>
-  <frx:field id="add_year" link="forenaschools/schoolyear/add?destination=forenaschoools/schoolyear">Add</frx:field>
+  <frx:field id="add_year" link="forenaschools/schoolyear/add?destination=forenaschools/schoolyear">Add</frx:field>
   <frx:field id="delete_year" link="forenaschools/schoolyear/{school_year}/delete?destination=forenaschools/schoolyear">delete</frx:field>  
 </frx:fields>
     <frx:parameters>
