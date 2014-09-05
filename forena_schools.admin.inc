@@ -450,3 +450,491 @@ function forena_schools_impersonate_form_submit($formid, &$form_state) {
 	}
 	$form_state['redirect'] = 'assessments';
 }
+
+/**
+ * Test Definition General form,
+ * @param unknown $form
+ * @param unknown $form_state
+ * @param unknown $test_id
+ */
+function forena_schools_test_edit_general_form($form, &$form_state, $test_id='') {
+  $t = ForenaSchoolsTest::instance();
+  if ($test_id) {
+    $test = $t->load($test_id);
+  }
+  else {
+    $test = $t->create();
+  }
+
+  $form['test_id'] = array(
+    '#type' => 'value',
+    '#value' => $test_id,
+  );
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#description' => t('Display nam of test'),
+    '#max_length' => 75,
+    '#required' => TRUE,
+    '#default_value' => $test['name'],
+  );
+
+  $form['abbrev'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Abbreviation'),
+    '#description' => t('Short name to use in places where there is not much screen real estate for tests'),
+    '#max_length' => 25,
+    '#size' => 10,
+    '#required' => TRUE,
+    '#default_value' => $test['abbrev'],
+  );
+
+  $form['code'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Interface Code'),
+    '#description' => t('A machine interpretable name that is used when importing teset values from internal systems.'),
+    '#default_value' => $test['code']
+  );
+
+  $form['inactive'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Inacive'),
+    '#description' => t('Inacativate the test implies that the test is no longer used, but that you do not yet want to remove historical data for this test.'),
+  	'#default_value' => $test['inactive'],
+  );
+
+  $grade_levels = ForenaSchools::instance()->userGradeLevels();
+  $form['min_grade'] = array(
+    '#type' => 'select',
+    '#title' => t('Minimum grade'),
+    '#options' => $grade_levels,
+    '#description' => t('Minimum grade level that this assessment can be measured.'),
+    '#default_value' => $test['min_grade'],
+   );
+
+  $form['max_grade'] = array(
+  	'#type' => 'select',
+    '#title' => t('Maximum grade'),
+    '#description' => t('Maximimum grade level that this assessment can be measured'),
+    '#options' => $grade_levels,
+    '#default_value' => $test['max_grade'],
+  );
+
+  $form['weight'] = array(
+   '#type' => 'weight',
+   '#title' => t('Weight'),
+   '#default_value' => $test['weight'],
+
+  );
+
+  $form['actions']['save'] = array(
+  	'#type' => 'submit',
+    '#value' => t('Save'),
+    '#validate' => array('forena_schools_validate_test'),
+    '#submit' => array('forena_schools_save_test_submit'),
+  );
+
+  $form['actions']['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+    '#submit' => array('forena_schools_test_edit_cancel'),
+  );
+
+  return $form;
+}
+
+function forena_schools_validate_test($form, $form_state) {
+  if($form_state['values']['min_grade'] > $form_state['values']['max_grade']) {
+    form_set_error('max_grade', t('Maximum grade level cannot be less than minimum grade level'));
+  }
+}
+
+function forena_schools_save_test_submit($form, &$form_state) {
+  $t = ForenaSchoolsTest::instance();
+  $test_id = $form_state['values']['test_id'];
+  $t->saveGeneral($form_state['values']);
+  if (!$test_id) {
+    $test_id = $form_state['values']['test_id'];
+    $form_state['redirect'] = array("test/$test_id/edit");
+  }
+}
+
+function forena_schools_test_edit_cancel($form, &$form_state) {
+  $form_state['redirect'] = 'forenaschools/tests';
+}
+
+function forena_schools_test_edit_measures_form($form, &$form_state, $test_id) {
+  if (!$test_id) {
+    drupal_not_found();
+    exit;
+  }
+  $t = ForenaSchoolsTest::instance();
+  $t->load($test_id);
+  $measures = $t->loadMeasures();
+  $delta = count($measures);
+
+  $form['test_id'] = array(
+  	'#type' => 'value',
+    '#value' => $test_id,
+  );
+
+
+  $form['measures'] = array(
+   '#tree' => TRUE,
+   '#theme' => 'forena_schools_draggable_table',
+   '#tabledrag_table_id' => 'table-id',
+   '#tabledrag_weight' => 'weight',
+   '#tabledrag_id' => 'measure_id',
+   '#tabledrag_parent' => 'parent_measure',
+   '#tabledrag_hide' => TRUE,
+   '#tabledrag_max_depth' => 1,
+  );
+  $root_measures = array();
+
+  $w = 0;
+  if ($measures) foreach ($measures as $measure_id => $measure) {
+    $w++;
+    $ctl = array();
+
+    // If it is a root measure add it to the possible measures to add to.
+    if ($measure['parent_measure'] == $measure['measure_id']) {
+      $root_measures[$measure['measure_id']] = $measure['name'];
+    }
+
+    $ctl['measure_id'] = array(
+    	'#type' => 'hidden',
+      '#default_value' => $measure['measure_id'],
+      '#disabled' => TRUE,
+      '#size' => 4,
+    );
+
+    $ctl['name'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Name'),
+      '#maxlength' => 75,
+      '#default_value' => $measure['name'],
+    );
+
+    $ctl['abbrev'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Abbreviation'),
+      '#maxlength' => 25,
+      '#size' => 7,
+      '#default_value' => $measure['abbrev'],
+    );
+
+    $ctl['code'] = array(
+    	'#type' => 'textfield',
+      '#title' => t('Code'),
+      '#maxlength' => 128,
+      '#size' => 20,
+      '#default_value' => $measure['code'],
+    );
+
+    $ctl['inactive'] = array(
+    	'#type' => 'checkbox',
+      '#title' => t('Inactive'),
+      '#default_value' => $measure['inactive'],
+    );
+
+    $ctl['parent_measure'] = array(
+    	'#type' => 'hidden',
+     // '#title' => t('Parent'),
+      '#size' => 4,
+      '#default_value' => ($measure['parent_measure'] == $measure['measure_id']) ? '0' : $measure['parent_measure'],
+    );
+
+    $ctl['weight'] = array(
+    	'#type' => 'weight',
+      '#title' => t('Sort Order'),
+      '#delta' => $delta,
+      '#default_value' => $w,
+    );
+
+
+    $form['measures'][$measure_id] = $ctl;
+  }
+
+  $form['new_measure'] = array(
+    '#type' => 'fieldset',
+    '#tree' => TRUE,
+    '#title' => t('Add Measure'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE
+  );
+
+  $form['new_measure']['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#description' => t('Name of measure to add'),
+  );
+
+  $form['new_measure']['abbrev'] = array(
+  	'#type' => 'textfield',
+    '#title' => t('Abbreviation'),
+    '#description' => t('Short name for use when screen real estate is at a premium'),
+  );
+
+  $form['new_measure']['parent_measure'] = array(
+  	'#type' => 'select',
+    '#title' => t('Parent measure'),
+    '#options' => $root_measures,
+    '#empty_option' => '-None-',
+    '#default_value' => '',
+    '#disabled' => !count($root_measures),
+  );
+
+  $form['actions']['save'] = array(
+  	'#type' => 'submit',
+    '#value' => t('Save'),
+    '#submit' => array('forena_schools_save_measures_submit'),
+  );
+
+  $form['new_measure']['actions'] = array(
+    '#type' => 'submit',
+    '#value' => 'add',
+    '#validate' => array('forena_schools_add_measure_validate'),
+    '#submit' => array('forena_schools_add_measure_submit', 'forena_schools_save_measures_submit'),
+  );
+
+  return $form;
+}
+
+function forena_schools_add_measure_validate($form, &$form_state) {
+  $new_measure = $form_state['values']['new_measure'];
+  if (!$new_measure['name']) {
+    form_set_error('new_measure][name', t('You must specifiy a name for the measure.'));
+  }
+  if (!$new_measure['abbrev']) {
+    form_set_error('new_measure][abbrev', t('You must specifiy an abbreviation for the measure.'));
+  }
+}
+
+/**
+ * Submit function for
+ * @param unknown $form
+ * @param unknown $form_state
+ */
+function forena_schools_add_measure_submit($form, &$form_state) {
+  $measure = $form_state['values']['new_measure'];
+  unset($measure['actions']);
+  ForenaSchoolsTest::instance()->addMeasure($measure);
+  $measure['weight'] = count($form_state['values']['measures']) + 1;
+  $form_state['values']['measures'][$measure['measure_id']] = $measure;
+}
+
+function forena_schools_save_measures_submit($form, &$form_state) {
+  ForenaSchoolsTest::instance()->saveMeasures($form_state['values']['measures']);
+  drupal_set_message('Test Measures Saved');
+}
+
+/**
+ * Schedule editing form for test definitions.
+ * @return multitype:string
+ */
+function forena_schools_test_edit_schedules_form($form, &$form_state, $test_id) {
+  if (!$test_id) {
+    drupal_not_found();
+    exit;
+  }
+  if (!$form_state['storage']) {
+    $t = ForenaSchoolsTest::instance();
+    $t->load($test_id);
+    $schedules = $t->loadSchedules();
+    $form_state['storage']['test_id'] = $test_id;
+    $form_state['storage']['schedules'] = array_values($schedules);
+  }
+  else {
+    extract($form_state['storage']);
+  }
+  $form['test_id'] = array(
+    '#type' => 'value',
+    '#value' => $test_id,
+  );
+
+  $form['schedules'] = array(
+    '#tree' => TRUE,
+    '#theme' => 'forena_schools_control_table',
+  );
+
+  foreach ($schedules as $schedule) {
+    $ctl = array();
+    $ctl['seq'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Sequence'),
+      '#required' => TRUE,
+      '#size' => 3,
+      '#max_length' => 3,
+      '#default_value' => $schedule['seq'],
+    );
+
+    $ctl['label'] = array(
+    	'#type' => 'textfield',
+      '#title' => t('Label'),
+      '#required' => TRUE,
+      '#size' => 10,
+      '#default_value' => $schedule['label'],
+      '#max_length' => 25,
+    );
+
+    $ctl['start_date'] = array(
+      '#type' => 'date_popup',
+      '#title' => t('Start Date'),
+      '#required' => TRUE,
+      '#date_format' => 'Y-m-d',
+      '#default_value' => $schedule['start_date'],
+    );
+
+    $ctl['end_date'] = array(
+    	'#type' => 'date_popup',
+      '#required' => TRUE,
+      '#title' => t('End Date'),
+      '#date_format' => 'Y-m-d',
+      '#default_value' => $schedule['end_date'],
+    );
+
+    $ctl['remove'] = array(
+    	'#type' => 'submit',
+      '#title' => 'Action',
+      '#value' => '-',
+      '#limit_validation_errors' => array(),
+      '#submit' => array('forena_schools_test_remove_schedule'),
+      '#name' => "schedule-remove-${schedule['seq']}",
+    );
+
+    $form['schedules'][] = $ctl;
+  }
+
+  $form['add-schedule'] = array(
+    '#type' => 'submit',
+    '#value' => '+',
+    '#limit_validation_errors' => array(),
+    '#submit' => array('forena_schools_test_add_schedule'),
+  );
+
+  $form['instructions'] = array(
+    '#markup' => '<p><strong>Start Date</strong> and <strong>End Date</strong> fields should be specified relative to the current
+      school year.   Actual dates used will be based on the same dates relative to the beginning of the next school year each year after
+      </p>',
+  );
+
+  $form['actions']['save'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#validate' => array('forena_schools_save_schedules_validate'),
+    '#submit' => array('forena_schools_save_schedules_submit'),
+  );
+
+  return $form;
+}
+
+function forena_schools_test_remove_schedule($form, &$form_state) {
+  $k = $form_state['triggering_element']['#parents'][1];
+  unset($form_state['values']['schedules'][$k]);
+  unset($form_state['input']['schedules'][$k]);
+  unset($form_state['storage']['schedules'][$k]);
+  $form_state['rebuild'] = TRUE;
+}
+
+function forena_schools_test_add_schedule($form, &$form_state) {
+  $form_state['storage']['schedules'][] = array_fill_keys(array('seq', 'label', 'start_date', 'end_date'), '');
+  $form_state['rebuild'] = TRUE;
+}
+
+function forena_schools_save_schedules_validate($form, &$form_state) {
+  $schedules = $form_state['values']['schedules'];
+  $year = ForenaSchoolsYear::instance()->year;
+
+  foreach ($schedules as $k => $schedule) {
+    if ($schedule['start_date'] < $year['start_date'] || $schedule['start_date'] > $year['end_date']) {
+      form_set_error("schedulus][$k][start_date", 'Start date must be within the school year');
+    }
+    if ($schedule['end_date'] < $year['start_date'] || $schedule['end_date'] > $year['end_date']) {
+      form_set_error("schedulus][$k][end_date", 'End date must be within the school year');
+    }
+    foreach ($schedules as $e => $sch) {
+      if ($k!=$e) {
+        if ($schedule['start_date'] >= $sch['start_date'] && $schedule['start_date'] <= $sch['end_date']) {
+          form_set_error("schedules][$k][start_date", 'Schedules cannot overlap.');
+        }
+        if ($schedule['end_date'] >= $sch['start_date'] && $schedule['end_date'] <= $sch['end_date']) {
+          form_set_error("schedules][$k][start_date", 'Schedules cannot overlap.');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Saving schedules submit handler.
+ */
+function forena_schools_save_schedules_submit($form, &$form_state) {
+  extract($form_state['storage']);
+  $t = ForenaSchoolsTest::instance();
+  $t->load($test_id);
+  $t->loadSchedules();
+
+  ForenaSchoolsTest::instance()->saveSchedules($form_state['values']['schedules']);
+  drupal_set_message('Test Schedules Saved');
+}
+
+/**
+ * Rules form.
+ * @param unknown $form
+ * @param unknown $form_state
+ */
+function forena_schools_test_edit_rules_form($form, &$form_state, $test_id) {
+  if ($form_state['storage']) {
+    extract($form_state['storage']);
+  }
+  else {
+    $t = ForenaSchoolsTest::instance();
+    $t->load($test_id);
+    $measure_list = $t->listMeasures();
+    $measures = $t->loadMeasures();
+    $form_state['storage']['measure_list'] = $measure_list;
+    $form_state['storage']['measures'] = $measures;
+    $form_state['storage']['test_id'] = $test_id;
+  }
+  $measure_id = isset($form_sate['values']['measure_id']) ? $form_state['values']['measure_id'] : reset(array_keys($measures));
+
+  $form['measure_id'] = array(
+    '#type' => 'select',
+    '#title' => t('Measure'),
+    '#options' => $measures,
+    '#default_value' => $measure_id,
+  );
+
+  $form['measure'] = array(
+    '#prefix' => "<div id='measure-info'>",
+    '#suffix' => "</div>",
+    '#tree' => TRUE,
+  );
+
+  $calc_choices = array(
+  	'avg' => t('Average'),
+    'sum' => t('Sum'),
+  );
+
+  $form['measure']['calc_rule'] = array(
+  	'#type' => 'select',
+    '#empty_option' => t('-none-'),
+    '#title' => t('Caculation rule method'),
+  );
+
+  $calc_list = $measure_list;
+  unset($cacl_list[$measure_id]);
+  $form['measure']['calc_measures'] = array(
+    '#type' => 'select',
+    '#options' => $calc_list,
+    '#title' => t('Measured included in calculation'),
+    '#disabled' => !$measure['calc_rule'],
+  );
+
+  return $form;
+}
+
+function forena_schools_rules_ajax_callback($form, &$form_state) {
+
+}

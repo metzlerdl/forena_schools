@@ -43,6 +43,12 @@ class ForenaSchoolsTest {
       array(':school_year' => $school_year, ':test_id' => $this->test_id));
   }
 
+  // Create empty shell of a test.
+  function create() {
+    $test = array_fill_keys(array('test_id', 'name', 'code', 'abbrev', 'sbuject_area', 'inactive', 'min_grade', 'max_grade'), NULL);
+    return $test;
+  }
+
   // Load Test information
   function load($test_id) {
     $this->test_id = $test_id;
@@ -88,9 +94,14 @@ class ForenaSchoolsTest {
 
   // Load Schedules
   function loadSchedules() {
-    $rs = db_query('SELECT * FROM {a_test_schedules} WHERE test_id = :test_id', array(':test_id' => $this->test_id));
+    $rs = db_query('SELECT * FROM {a_test_schedules} WHERE test_id = :test_id ORDER BY seq', array(':test_id' => $this->test_id));
     if (!$this->schedules = $rs->fetchAllAssoc('seq', PDO::FETCH_ASSOC)) {
       $this->schedules = array();
+    }
+    $y = ForenaSchoolsYear::instance();
+    foreach($this->schedules as $k=>$schedule) {
+      $this->schedules[$k]['start_date'] = $y->date($schedule['start_day']);
+      $this->schedules[$k]['end_date'] = $y->date($schedule['end_day']);
     }
     return $this->schedules;
   }
@@ -207,5 +218,160 @@ class ForenaSchoolsTest {
     }
     $help = implode(', ', $messages);
     return $help;
+  }
+
+
+  /**
+   * Saves general information about a test.
+   * @param unknown $data
+   */
+  function saveGeneral(&$data) {
+    $fields = $this->create();
+    // Make sure we only save the appropriate keys.
+    $data = array_intersect_key($data, $fields);
+
+    if ($data['test_id']) {
+      db_update('a_tests')
+        ->fields($data)
+        ->condition('test_id', $data['test_id'])
+        ->execute();
+    }
+    else {
+      unset($data['test_id']);
+      $test_id = db_insert('a_tests')
+        ->fields($data)
+        ->execute();
+      $this->test_id = $data['test_id'] = $test_id;
+    }
+    $this->load($data['test_id']);
+  }
+
+  /**
+   * A comparison fuction that will sort measures by grouping and weight.
+   * @param unknown $a
+   * @param unknown $b
+   * @return number
+   */
+  public function msortCompare($a, $b) {
+    $a_is_child = !empty($a['parent_measure']);
+    $b_is_child = !empty($b['parent_measure']);
+
+    // We can simply compare based on weights if we're of the same level and the same parent or not parents at all.
+    if (($a_is_child && $b_is_child && $a['parent_measure'] == $b['parent_measure']) || (!$a_is_child && !$b_is_child) ) {
+      $a_weight = $this->weights[$a['measure_id']];
+      $b_weight = $this->weights[$b['measure_id']];
+      if ($a_weight == $b_weight) return $a['measure_id'] < $b_measure_id ? -1 : 1;
+      return ($a_weight < $b_weight) ? -1 : 1;
+    }
+
+    // Compare parents
+    $a_id = $a['parent_measure'] ? $a['parent_measure'] : $a['measure_id'];
+    $b_id = $b['parent_measure'] ? $b['parent_measure'] : $b['measure_id'];
+    $a_weight = $this->weights[$a_id];
+    $b_weight = $this->weights[$b_id];
+    if ($a_id != $b_id) {
+      if ($a_weight == $b_weight) return $a_id < $b_id ? -1 : 1;
+      return $a_weight < $b_weight ? -1 : 1;
+    }
+
+    // If its the same parent then the child is always greater than the non child
+    return $b_is_child ? -1 : 1;
+
+
+  }
+
+  /**
+   * Save all measures retaining their sort order.
+   * @param unknown $measures
+   */
+  function saveMeasures(&$measures) {
+    // Sort by weight.
+    $this->weights = array();
+    foreach ($measures as $mid => $measure) {
+      if (!$measure['measure_id']) $measures[$mid]['measure_id'] = $mid;
+      $this->weights[$mid] = $measure['weight'];
+    }
+    usort($measures, array($this, 'msortCompare'));
+
+    //Rebuild sort and parent criteria:
+    $parent_no = 0;
+    $child_no = 0;
+
+    foreach ($measures as $mid=>$measure) {
+      if (!$measure['parent_measure']) {
+        $measures[$mid]['parent_measure'] = $measure['parent_measure'] = $measure['measure_id'];
+      }
+      if (!$measure['parent_measure'] || $measure['parent_measure'] == $measure['measure_id']) {
+        $parent_no++;
+      }
+      else {
+        $child_no++;
+      }
+      $measures[$mid]['sort_order'] = $measure['sort_order'] = sprintf('%d.%02d', $parent_no, $child_no);
+      // Remove the weight column
+      unset($measure['weight']);
+      $measure_id = $measure['measure_id'];
+      unset($measure['measure_id']);
+      db_update('a_test_measures')
+        ->fields($measure)
+        ->condition('measure_id', $measure_id)
+        ->execute();
+
+    }
+
+  }
+
+  /**
+   * Save the test schedules.
+   * @param unknown $schedules
+   */
+  function saveSchedules(&$schedules) {
+    $y=ForenaSchoolsYear::instance();
+    $seqs = array();
+    if ($schedules) foreach($schedules as $k => $schedule) {
+
+      $schedule['start_day'] = $y->day($schedule['start_date']);
+      $schedule['end_day'] = $y->day($schedule['end_date']);
+      $fields = array_fill_keys(array('seq', 'label', 'start_day', 'end_day'), '');
+      $schedule = array_intersect_key($schedule, $fields);
+      $seqs[] = $schedule['seq'];
+      if (isset($this->schedules[$schedule['seq']])) {
+        $seq = $schedule['seq'];
+        unset($schedule['seq']);
+        db_update('a_test_schedules')
+          ->fields($schedule)
+          ->condition('test_id', $this->test_id)
+          ->condition('seq', $seq)
+          ->execute();
+      }
+      else {
+        $schedule['test_id'] = $this->test_id;
+        db_insert('a_test_schedules')
+          ->fields($schedule)
+          ->execute();
+      }
+    }
+    db_delete('a_test_schedules')
+      ->condition('test_id', $this->test_id)
+      ->condition('seq', $seqs , 'NOT IN')
+      ->execute();
+  }
+
+  /**
+   * Insert a new measure based on exising data.
+   * @param $data the assocaitive array containing new measure to create.
+   * Fields include:
+   *   name - The name of hte measure
+   *   abbrev - The short name of the field
+   *   parent_measure - The id of the parent measure to set this to.
+   * The array is altered to cotain the new measure_id of
+   */
+  function addMeasure(&$measure) {
+    // Determine default sort
+    $measure['test_id'] = $this->test_id;
+    $measure_id = db_insert('a_test_measures')
+      ->fields($measure)
+      ->execute();
+    $measure['measure_id'] = $measure_id;
   }
 }

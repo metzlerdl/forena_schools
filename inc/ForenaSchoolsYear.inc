@@ -7,7 +7,7 @@ class ForenaSchoolsYear {
     if (!$o) {
       $o = new ForenaSchoolsYear();
     }
-    if ($year && $year != $o->year['school_year']) {
+    if (!$o->year || ($year && $year != $o->year['school_year'])) {
       $o->load($year);
     }
     return $o;
@@ -54,10 +54,17 @@ class ForenaSchoolsYear {
    *  @return
    *    Associative array representation of school year.
    */
-  public function load($year) {
-    $data =  array('year' => $year);
-    if ($rs = db_query('SELECT * from i_school_years where school_year = :year', array(':year' => $year))) {
-      $data = $rs->fetchAssoc();
+  public function load($year='') {
+    if ($year) {
+      $data =  array('year' => $year);
+      if ($rs = db_query('SELECT * from i_school_years where school_year = :year', array(':year' => $year))) {
+        $data = $rs->fetchAssoc();
+      }
+    }
+    else {
+      if ($rs = db_query('SELECT * FROM i_school_years ORDER BY school_year desc limit 1')) {
+        $data = $rs->fetchAssoc();
+      }
     }
     $this->year = $data;
     return $data;
@@ -115,7 +122,12 @@ class ForenaSchoolsYear {
     if (isset($fields['end_date'])) {
       $fields['end_date'] = $this->validDate($fields['end_date']);
     }
-    if ($this->year) {
+    $exists = '';
+    if ($rs = db_query('SELECT school_year FROM {i_school_years} WHERE school_year = :school_year',
+                array(':school_year' => $fields['school_year']))) {
+      $exists = $rs->fetchCol();
+    }
+    if ($exists) {
       db_update('i_school_years')
        ->fields(array(
          'label' => $fields['label'],
@@ -146,5 +158,20 @@ class ForenaSchoolsYear {
     $date = new DateTime($this->year['start_date']);
     $date->add(new DateInterval('P' . $offset . 'D'));
     return $date->format('Y-m-d');
+  }
+
+  /**
+   * Calculate the number of days since the beginning of the school year
+   * @param unknown $date
+   * @return number
+   */
+  public function day($date) {
+    $date = new DateTime($date);
+    $start = new DateTime($this->year['start_date']);
+
+    $i = $start->diff($date);
+    $interval = (int)$i->format('%r%a');
+    if ($interval < 0) $interval += 365;
+    return $interval + 1;
   }
 }

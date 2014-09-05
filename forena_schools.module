@@ -5,6 +5,7 @@ function forena_schools_autoload($class) {
     include drupal_get_path('module', 'forena_schools') . '/inc/' . $class . '.inc';
   }
 }
+
 spl_autoload_register('forena_schools_autoload');
 
 function forena_schools_menu() {
@@ -100,15 +101,6 @@ function forena_schools_menu() {
 	  'page callback' => 'drupal_get_form',
 	  'page arguments' => array('forena_schools_school_year_form', ''),
 	  'file' => 'forena_schools.admin.inc',
-	);
-
-	$items['forenaschools/test/%/delete'] = array(
-	  'type' => MENU_CALLBACK,
-	  'access callback' => 'forena_schools_access',
-	  'access arguments' => array('sys_admin'),
-	  'page callback' => 'drupal_get_form',
-	  'page arguments' => array('forena_schools_test_delete_form', 2),
-	  'file' => 'forena_schools.test.inc',
 	);
 
 	// Admin Menus
@@ -244,9 +236,73 @@ function forena_schools_menu() {
 	  'file' => 'forena_schools.student.inc',
 	);
 
+	$items['test/%/delete'] = array(
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_test_delete_form', 1),
+	  'file' => 'forena_schools.test.inc',
+	);
+
+	$items['test/%/edit'] = array(
+		'title' => 'Test Definition',
+	  'type' => MENU_CALLBACK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_test_edit_general_form', 1),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['test/%/edit/general'] = array(
+	  'title' => 'General',
+	  'type' => MENU_DEFAULT_LOCAL_TASK,
+	  'access callback' => 'forena_schools_access',
+	  'access arguments' => array('sys_admin'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('forena_schools_test_edit_general_form', 1),
+	  'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['test/%/edit/measures'] = array(
+	    'title' => 'Measures',
+	    'type' => MENU_LOCAL_TASK,
+	    'access callback' => 'forena_schools_access',
+	    'access arguments' => array('sys_admin'),
+	    'page callback' => 'drupal_get_form',
+	    'page arguments' => array('forena_schools_test_edit_measures_form', 1),
+	    'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['test/%/edit/schedules'] = array(
+	    'title' => 'Schedules',
+	    'type' => MENU_LOCAL_TASK,
+	    'access callback' => 'forena_schools_access',
+	    'access arguments' => array('sys_admin'),
+	    'page callback' => 'drupal_get_form',
+	    'page arguments' => array('forena_schools_test_edit_schedules_form', 1),
+	    'file' => 'forena_schools.admin.inc',
+	);
+
+	$items['test/%/edit/rules'] = array(
+	    'title' => 'Rules',
+	    'type' => MENU_LOCAL_TASK,
+	    'access callback' => 'forena_schools_access',
+	    'access arguments' => array('sys_admin'),
+	    'page callback' => 'drupal_get_form',
+	    'page arguments' => array('forena_schools_test_edit_rules_form', 1),
+	    'file' => 'forena_schools.admin.inc',
+	);
+
+
+
 	return $items;
 }
 
+/**
+ * Implemetation of hook_theme
+ */
 function forena_schools_theme() {
   return array(
     'forena_schools_flex_popup' => array(
@@ -256,10 +312,21 @@ function forena_schools_theme() {
         'render element' => 'form',
         'file' => 'forena_schools.profiles.inc',
       ),
+      'forena_schools_control_table' => array(
+        'render element' => 'element',
+      ),
+      'forena_schools_draggable_table' => array(
+          'render element' => 'element',
+      ),
     // Theme function for the 'simple' example.
   );
 }
 
+/**
+ * Test security for forena schools
+ * @param unknown $security
+ * @return boolean
+ */
 function forena_schools_access($security) {
 	require_once 'inc/common.inc';
 	return ForenaSchools::instance()->access($security);
@@ -665,6 +732,151 @@ function forena_schools_group_add_js_submit($form, &$form_state) {
 // Empty function to handle form cancels.
 function forena_schools_form_cancel($form, &$form_state) {
 
+}
+
+/**
+ * Theme function for createing form tables.
+ * @param array $variables
+ * @return string
+ *
+ */
+function theme_forena_schools_control_table($variables) {
+  $output = '';
+  $element = $variables['element'];
+  $rows = array();
+  $attributes = array();
+  if (isset($element['#style'])) $attributes['style'] = $element['#style'];
+  if (isset($element['#class'])) $attributes['class'] = $element['#class'];
+  foreach (element_children($element) as $e_key) {
+    $row = array();
+    foreach (element_children($element[$e_key]) as $ctl) {
+      if (isset($element[$e_key][$ctl]['#title'])) {
+        $headers[$ctl] = array();
+        $headers[$ctl]['data'] = $element[$e_key][$ctl]['#title'];
+        if (isset($element[$e_key][$ctl]['#style']) )$headers[$ctl]['style'] = $element[$e_key][$ctl]['#style'];
+        if (isset($element[$e_key][$ctl]['#class']) ) {
+          $headers[$ctl]['class'] = $element[$e_key][$ctl]['#class'] . " $ctl";
+        }
+        else {
+          $headers[$ctl]['class'] = "$ctl";
+        }
+        $element[$e_key][$ctl]['#title_display'] = 'invisible';
+        $e = drupal_render($element[$e_key][$ctl]);
+        $td = array();
+        $td['data'] = $e;
+        if (isset($element[$e_key][$ctl]['#style']) )$td['style'] = $element[$e_key][$ctl]['#style'];
+        if (isset($element[$e_key][$ctl]['#class']) )$td['class'] = $element[$e_key][$ctl]['#class'];
+        $row[] = $td;
+      }
+    }
+    $rows[] = array('data' => $row, 'class' => array('forena-schools-table-row'));
+  }
+  $output = theme('table', array( 'sticky' => FALSE, 'header' => $headers, 'rows' => $rows, 'attributes' => $attributes));
+  return $output;
+}
+
+function theme_forena_schools_draggable_table($variables) {   $output = '';
+  $element = $variables['element'];
+  $rows = array();
+  $attributes = array();
+  if (isset($element['#style'])) $attributes['style'] = $element['#style'];
+  if (isset($element['#class'])) $attributes['class'] = $element['#class'];
+
+  // Get control settings
+  $table_id = isset($element['#tabledrag_table_id']) ? $element['#tabledrag_table_id'] : 'forena-schools-draggable-table';
+  $weight_col = @$element['#tabledrag_weight'];
+  $tree_id = @$element['#tabledrag_id'];
+  $parent_id = @$element['#tabledrag_parent'];
+  $max_depth = @$element['#tabledrag_max_depth'];
+  $hide = @$element['#tabledrag_hide'];
+  $attributes['id'] = $table_id;
+
+  // Initialize the cell data.
+  $cell_data = '';
+
+  //@TODO: Determine depth based on returned array.
+  $depth = array();
+
+  foreach (element_children($element) as $e_key) {
+    $row = array();
+    $col_count = 0;
+    // Determine the depth of the tree control
+    if ($tree_id && $parent_id) {
+      // Get the value of the parent
+      $parent_id_val = $element[$e_key][$parent_id]['#default_value'];
+      $tree_id_val = isset($element[$e_key][$tree_id]['#value']) ? $element[$e_key][$tree_id]['#value'] : $element[$e_key][$tree_id]['#default_value'];
+      // Set depth based on value.
+      if (isset($depth[$parent_id_val])) {
+        $depth[$tree_id_val] = $depth[$parent_id_val] + 1;
+      }
+      else {
+        $depth[$tree_id_val] = 0;
+      }
+
+      // Indent the first column by the depth of the tree
+      $cell_data .= theme('indentation', array('size' => $depth[$tree_id_val]));
+    }
+    foreach (element_children($element[$e_key]) as $ctl) {
+      if (isset($element[$e_key][$ctl]['#title'])) {
+        $cur_cell = $ctl;
+        // Determine indentation
+        $col_count++;
+        $indent = '';
+
+
+        $headers[$ctl] = array();
+        $headers[$ctl]['data'] = $element[$e_key][$ctl]['#title'];
+        if (isset($element[$e_key][$ctl]['#style']) )$headers[$ctl]['style'] = $element[$e_key][$ctl]['#style'];
+
+        // Add class atrributes for the cell
+        if (isset($element[$e_key][$ctl]['#class']) ) {
+          $headers[$ctl]['class'] = $element[$e_key][$ctl]['#class'] . " $ctl";
+        }
+        else {
+          $headers[$ctl]['class'] = "$ctl";
+        }
+
+        //Hide the title display
+        $element[$e_key][$ctl]['#title_display'] = 'invisible';
+        $weight_col = $ctl;
+        $element[$e_key][$ctl]['#attributes']['class'][] = $ctl;
+        if ($ctl == $parent_id || $ctl == $tree_id || $ctl == $weight_col) {
+          $element[$e_key][$ctl]['#attributes']['class'][] = $ctl . '-item';
+        }
+
+        $cell_data .= $indent . drupal_render($element[$e_key][$ctl]);
+        $td = array();
+        $td['data'] = $cell_data;
+        $cell_data = '';
+        if (isset($element[$e_key][$ctl]['#style']) )$td['style'] = $element[$e_key][$ctl]['#style'];
+        if (isset($element[$e_key][$ctl]['#class']) )$td['class'] = $element[$e_key][$ctl]['#class'];
+        $row[] = $td;
+        $col_idx = count($row) - 1;
+      }
+      else {
+        // Save away untitled rows for tacking on later
+        if ($ctl == $parent_id || $ctl == $tree_id) {
+          $element[$e_key][$ctl]['#attributes']['class'][] = $ctl . '-item';
+        }
+        $cell_data .= drupal_render($element[$e_key][$ctl]);
+      }
+    }
+    //Tack on any untitled
+    if ($cell_data) $row[$col_idx]['data'] .= $cell_data;
+
+    $rows[] = array('data' => $row, 'class' => array('forena-schools-table-row', 'draggable'));
+  }
+  // this function is what brings in the javascript to make our table drag-and-droppable
+  if ($weight_col) drupal_add_tabledrag($table_id, 'order', 'sibling', $weight_col . '-item', NULL, NULL, $hide);
+
+  // These are really classes not ids
+  if ($tree_id && $parent_id) {
+    drupal_add_tabledrag($table_id, 'match', 'parent', $parent_id . '-item', $parent_id . '-item', $tree_id . '-item', $hide, $max_depth);
+  }
+
+  // If it is defined, add our draggable row.
+  $output = theme('table', array( 'sticky' => FALSE, 'header' => $headers, 'rows' => $rows, 'attributes' => $attributes));
+  return $output;
 }
 
 
