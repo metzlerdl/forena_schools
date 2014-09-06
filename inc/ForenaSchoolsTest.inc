@@ -89,6 +89,20 @@ class ForenaSchoolsTest {
     else {
       $this->measures = array();
     }
+
+    /**
+     * Post process the measures
+     */
+    foreach ($this->measures as $mid => $measure) {
+      $calc_measures = trim($measure['calc_measures'], "{}");
+      if ($calc_measures) {
+        $calc_measures = explode(',', $calc_measures);
+      }
+      else {
+        $calc_measures = array();
+      }
+      $this->measures[$mid]['calc_measures'] = $calc_measures;
+    }
     return $this->measures;
   }
 
@@ -280,6 +294,7 @@ class ForenaSchoolsTest {
 
   }
 
+
   /**
    * Save all measures retaining their sort order.
    * @param unknown $measures
@@ -289,7 +304,7 @@ class ForenaSchoolsTest {
     $this->weights = array();
     foreach ($measures as $mid => $measure) {
       if (!$measure['measure_id']) $measures[$mid]['measure_id'] = $mid;
-      $this->weights[$mid] = $measure['weight'];
+      if (isset($measure['weight'])) $this->weights[$mid] = $measure['weight'];
     }
     usort($measures, array($this, 'msortCompare'));
 
@@ -298,27 +313,53 @@ class ForenaSchoolsTest {
     $child_no = 0;
 
     foreach ($measures as $mid=>$measure) {
-      if (!$measure['parent_measure']) {
-        $measures[$mid]['parent_measure'] = $measure['parent_measure'] = $measure['measure_id'];
+      if (isset($measure['parent_measure'])) {
+        if (!$measure['parent_measure']) {
+          $measures[$mid]['parent_measure'] = $measure['parent_measure'] = $measure['measure_id'];
+        }
+        if (!$measure['parent_measure'] || $measure['parent_measure'] == $measure['measure_id']) {
+          $parent_no++;
+        }
+        else {
+          $child_no++;
+        }
+        $measures[$mid]['sort_order'] = $measure['sort_order'] = sprintf('%d.%02d', $parent_no, $child_no);
+        // Remove the weight column
+        unset($measure['weight']);
       }
-      if (!$measure['parent_measure'] || $measure['parent_measure'] == $measure['measure_id']) {
-        $parent_no++;
-      }
-      else {
-        $child_no++;
-      }
-      $measures[$mid]['sort_order'] = $measure['sort_order'] = sprintf('%d.%02d', $parent_no, $child_no);
-      // Remove the weight column
-      unset($measure['weight']);
+
       $measure_id = $measure['measure_id'];
       unset($measure['measure_id']);
+
+      // Preprocess the calculated measures if they are in the field set.
+      if (isset($measure['calc_measures'])) {
+        $calc_measures = $measure['calc_measures'];
+        if (is_array($calc_measures)) {
+          $calc_measures = '{' . implode(',', array_filter($calc_measures)) . '}';
+        }
+        elseif (!$calc_measures) {
+          $calc_measures = '{}';
+        }
+        $measure['calc_measures'] = $calc_measures;
+      }
+
       db_update('a_test_measures')
         ->fields($measure)
         ->condition('measure_id', $measure_id)
         ->execute();
-
     }
 
+  }
+
+  /**
+   * Helper method to save a single measure.
+   * @param unknown $measure
+   */
+  function saveMeasure($measure) {
+    if (isset($measure['measure_id'])) {
+      $measures = array($measure['measure_id'] => $measure);
+      $this->saveMeasures($measures);
+    }
   }
 
   /**

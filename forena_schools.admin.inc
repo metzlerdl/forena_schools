@@ -884,57 +884,128 @@ function forena_schools_save_schedules_submit($form, &$form_state) {
  * @param unknown $form
  * @param unknown $form_state
  */
-function forena_schools_test_edit_rules_form($form, &$form_state, $test_id) {
+function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $measure_id = '') {
+  $t = ForenaSchoolsTest::instance();
   if ($form_state['storage']) {
     extract($form_state['storage']);
   }
   else {
-    $t = ForenaSchoolsTest::instance();
     $t->load($test_id);
     $measure_list = $t->listMeasures();
     $measures = $t->loadMeasures();
+    if ($measure_id) $measure = $form_state['storage']['measure'] = $measures[$measure_id];
+    $form_state['storage']['measure_id'] = $measure_id;
     $form_state['storage']['measure_list'] = $measure_list;
-    $form_state['storage']['measures'] = $measures;
     $form_state['storage']['test_id'] = $test_id;
   }
-  $measure_id = isset($form_sate['values']['measure_id']) ? $form_state['values']['measure_id'] : reset(array_keys($measures));
 
-  $form['measure_id'] = array(
-    '#type' => 'select',
-    '#title' => t('Measure'),
-    '#options' => $measures,
-    '#default_value' => $measure_id,
-  );
 
-  $form['measure'] = array(
-    '#prefix' => "<div id='measure-info'>",
-    '#suffix' => "</div>",
+  $form['select'] = array(
+  	'#type' => 'fieldset',
+    '#title' => 'Select Measure',
     '#tree' => TRUE,
   );
 
-  $calc_choices = array(
-  	'avg' => t('Average'),
-    'sum' => t('Sum'),
-  );
-
-  $form['measure']['calc_rule'] = array(
-  	'#type' => 'select',
-    '#empty_option' => t('-none-'),
-    '#title' => t('Caculation rule method'),
-  );
-
-  $calc_list = $measure_list;
-  unset($cacl_list[$measure_id]);
-  $form['measure']['calc_measures'] = array(
+  $form['select']['measure_id'] = array(
     '#type' => 'select',
-    '#options' => $calc_list,
-    '#title' => t('Measured included in calculation'),
-    '#disabled' => !$measure['calc_rule'],
+    '#title' => t('Measure'),
+    '#options' => $measure_list,
+    '#default_value' => $measure_id,
+    '#description' => 'Be careful to save changes before selecting another meausure.',
+    '#ajax' => array(
+  	  'callback' => 'forena_schools_rules_ajax_callback',
+      'wrapper' => 'measure-info',
+    ),
   );
+
+  $form['select']['choose'] = array(
+  	'#type' => 'submit',
+    '#value' => t('Load'),
+    '#submit' => array('forena_schools_test_rules_select_measure_submit'),
+  );
+
+  if ($measure_id) {
+
+
+    if (isset($form_state['values']['measure']['calc'])) {
+      $measure = array_merge($measure, $form_state['values']['measure']['calc']);
+    }
+
+    $t->load($test_id);
+
+    $calc_choices = array(
+    	'avg' => t('Average'),
+      'sum' => t('Sum'),
+    );
+
+    $form['measure'] = array(
+      '#type' => 'fieldset',
+      '#title' => $measure['name'],
+      '#prefix' => "<div id='measure-info'>",
+      '#suffix' => "</div>",
+      '#tree' => TRUE,
+    );
+
+    $form['measure']['calc']['calc_rule'] = array(
+    	'#type' => 'select',
+      '#empty_option' => t('-none-'),
+      '#options' => $calc_choices,
+      '#title' => t('Caculation rule method'),
+      '#default_value' => $measure['calc_rule'],
+      '#ajax' => array(
+          'callback' => 'forena_schools_rules_ajax_callback',
+          'wrapper' => 'measure-info',
+      ),
+    );
+
+    $calc_list = $measure_list;
+    unset($calc_list[$measure_id]);
+    $form['measure']['calc']['calc_measures'] = array(
+      '#type' => 'checkboxes',
+      '#options' => $calc_list,
+      '#title' => t('Measured included in calculation'),
+      '#access' => !empty($measure['calc_rule']),
+      '#default_value' => $measure['calc_measures'],
+    );
+
+    $form['actions']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+  }
 
   return $form;
 }
 
-function forena_schools_rules_ajax_callback($form, &$form_state) {
+/**
+ * Redirect to php.
+ * @param unknown $form
+ * @param unknown $form_state
+ */
+function forena_schools_test_rules_select_measure_submit($form, &$form_state) {
+  extract($form_state['storage']);
+  $measure_id = $form_state['values']['select']['measure_id'];
+  $form_state['redirect'] = "test/$test_id/edit/rules/$measure_id";
+}
 
+function forena_schools_rules_ajax_callback($form, &$form_state) {
+  // @TODO: Persist form state values
+  return $form['measure'];
+}
+
+/**
+ * Save changes to rules form.
+ * @param unknown $form
+ * @param unknown $form_id
+ */
+function forena_schools_test_edit_rules_form_submit($form, &$form_state) {
+  extract($form_state['storage']);
+  $t = ForenaSchoolsTest::instance();
+
+  // Update the measure calculations.
+  $measure_calc = $form_state['values']['measure']['calc'];
+  $measure_calc['measure_id'] = $measure_id;
+  $t->saveMeasure($measure_calc);
+
+  // Update Rules.
 }
