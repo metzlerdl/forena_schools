@@ -135,7 +135,7 @@ public function fileStats() {
 
 public function removeFile() {
 	$file_path = $this->import_directory() . '/' . $_POST['file_name'];
-	unlink($filename);
+	unlink($file_path);
 	return $this->listFiles();
 }
 
