@@ -886,19 +886,28 @@ function forena_schools_save_schedules_submit($form, &$form_state) {
  */
 function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $measure_id = '') {
   $t = ForenaSchoolsTest::instance();
+
+  // Toss validation input if we've changed normalization strategies.
+  if ($form_state['rebuild']  && $form['measure']['normalization'] != $form_state['values']['measure']['normalization']) {
+    unset($form_state['input']['validations']);
+    unset($form_state['values']['validations']);
+  }
+
   if ($form_state['storage']) {
     extract($form_state['storage']);
   }
   else {
-    $t->load($test_id);
-    $measure_list = $t->listMeasures();
-    $measures = $t->loadMeasures();
-    if ($measure_id) $measure = $form_state['storage']['measure'] = $measures[$measure_id];
     $form_state['storage']['measure_id'] = $measure_id;
-    $form_state['storage']['measure_list'] = $measure_list;
     $form_state['storage']['test_id'] = $test_id;
   }
-
+  // Load test.
+  $t->load($test_id);
+  $t->loadSchedules();
+  $measures = $t->loadMeasures();
+  $measure_list = $t->listMeasures();
+  if ($measure_id) {
+    $measure = $measures[$measure_id];
+  }
 
   $form['select'] = array(
   	'#type' => 'fieldset',
@@ -910,12 +919,9 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
     '#type' => 'select',
     '#title' => t('Measure'),
     '#options' => $measure_list,
+    '#empty_option' => t('--select--'),
     '#default_value' => $measure_id,
     '#description' => 'Be careful to save changes before selecting another meausure.',
-    '#ajax' => array(
-  	  'callback' => 'forena_schools_rules_ajax_callback',
-      'wrapper' => 'measure-info',
-    ),
   );
 
   $form['select']['choose'] = array(
@@ -927,8 +933,8 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
   if ($measure_id) {
 
 
-    if (isset($form_state['values']['measure']['calc'])) {
-      $measure = array_merge($measure, $form_state['values']['measure']['calc']);
+    if (isset($form_state['values']['measure'])) {
+      $measure = array_merge($measure, $form_state['values']['measure']);
     }
 
     $t->load($test_id);
@@ -946,7 +952,7 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
       '#tree' => TRUE,
     );
 
-    $form['measure']['calc']['calc_rule'] = array(
+    $form['measure']['calc_rule'] = array(
     	'#type' => 'select',
       '#empty_option' => t('-none-'),
       '#options' => $calc_choices,
@@ -960,7 +966,7 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
 
     $calc_list = $measure_list;
     unset($calc_list[$measure_id]);
-    $form['measure']['calc']['calc_measures'] = array(
+    $form['measure']['calc_measures'] = array(
       '#type' => 'checkboxes',
       '#options' => $calc_list,
       '#title' => t('Measured included in calculation'),
@@ -968,11 +974,145 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
       '#default_value' => $measure['calc_measures'],
     );
 
+    // New validation type
+    $norm_types = array(
+      'normalized' => t('The same criteria are used for all grade levels and schedules. '),
+      'grade' => t('The same criteria are used for all schedules within a particular grade level.'),
+      'custom' => t('Different criteria are used per grade level and per schedule'),
+    );
+
+    $norm = @$measure['normalization'] ? $measure['normalization'] : 'custom';
+    $form['measure']['normalization'] = array(
+    	'#type' => 'radios',
+      '#options' => $norm_types,
+      '#title' => t('Scoring Strategy'),
+      '#default_value' => $norm,
+      '#ajax' => array(
+    	  'callback' => 'forena_schools_validation_ajax_callback',
+        'wrapper' => 'validation-info',
+      ),
+    );
+
+    // Build validations
+    $validations  = $t->loadValidations();
+    $validations = $validations[$measure_id];
+    $form['validations'] = array(
+      '#prefix' => '<div id="validation-info">',
+      '#suffix' => '</div>',
+    	'#tree' => TRUE,
+      '#theme' => 'forena_schools_control_table',
+    );
+
+    $schedules = $t->loadSchedules();
+    $grades = ForenaSchools::instance()->userGradeLevels();
+    // Display validations based on normalization type
+    $val_table = array();
+    $i=0;
+
+    foreach ($validations as $grade_level => $s)
+      foreach ($s as $seq => $val) {
+        $i++;
+        switch($norm) {
+        	case 'normalized':
+        	  $key = $measure_id;
+        	  break;
+        	case 'grade':
+        	  $key = $grade_level;
+        	  break;
+        	case 'custom':
+        	  $key = $i;
+        	  break;
+        }
+        if (isset($val_table[$key])) {
+          foreach($val as $k => $v) {
+            if ($v !== '') {
+              $val_table[$key][$k] = $v;
+            }
+          }
+        }
+        else {
+          $val_table[$key] = $val;
+
+        }
+    }
+
+    foreach ($val_table as $val) {
+      $ctl = array();
+      $seq = $val['seq'];
+      $grade_level = $val['grade_level'];
+      if ($norm != 'normalized') {
+        $ctl['grade_label'] = array(
+          '#type' => 'item',
+          '#title' => t('Grade'),
+          '#markup' => $grades[$grade_level],
+        );
+        $ctl['grade_level'] = array(
+        	'#type' => 'value',
+          '#value' => $grade_level,
+        );
+      }
+
+      if ($norm == 'custom') {
+        $ctl['sched_label'] = array(
+          '#type' => 'item',
+          '#title' => t('Schedule'),
+          '#markup' => $schedules[$seq]['label'],
+        );
+        $ctl['sched'] = array(
+        	'#type' => 'value',
+          '#value' => $seq,
+        );
+      }
+
+      $ctl['level_1'] = array(
+      	'#type' => 'textfield',
+        '#title' => 'Struggling',
+        '#default_value' => $val['level_1'],
+        '#size' => 3,
+        '#max_length' => 6,
+      );
+
+      $ctl['level_2'] = array(
+      	'#type' => 'textfield',
+        '#title' => 'Below Expectations',
+        '#size' => 3,
+        '#default_value' => $val['level_2'],
+        '#max_length' => 6,
+      );
+
+      $ctl['level_3'] = array(
+      	'#type' => 'textfield',
+        '#title' => 'Meets Expectation',
+        '#size' => 3,
+        '#max_length' => 6,
+        '#default_value' => $val['level_3'],
+      );
+
+      $ctl['level_4'] = array(
+          '#type' => 'textfield',
+          '#title' => 'Exceeds Expectation',
+          '#size' => 3,
+          '#max_length' => 6,
+          '#default_value' => $val['level_4'],
+      );
+      $ctl['max_score'] = array(
+          '#type' => 'textfield',
+          '#title' => 'Maximum Score',
+          '#size' => 3,
+          '#max_length' => 6,
+          '#default_value' => $val['max_score']
+      );
+
+      $form['validations'][] = $ctl;
+
+    }
+
     $form['actions']['save'] = array(
       '#type' => 'submit',
       '#value' => t('Save'),
     );
   }
+
 
   return $form;
 }
@@ -988,9 +1128,22 @@ function forena_schools_test_rules_select_measure_submit($form, &$form_state) {
   $form_state['redirect'] = "test/$test_id/edit/rules/$measure_id";
 }
 
+function forena_schools_validation_ajax_callback($form, &$form_state) {
+  return $form['validations'];
+}
+
 function forena_schools_rules_ajax_callback($form, &$form_state) {
   // @TODO: Persist form state values
   return $form['measure'];
+}
+
+function forena_schools_test_edit_rules_form_validate($form, &$form_state) {
+  $measure = $form_state['values']['measure'];
+  if ($measure['calc_rule']) {
+    if (!array_filter($measure['calc_measures'])) {
+      form_set_error('measure][calc_measures', 'You must select at least on measure for calculation.');
+    }
+  }
 }
 
 /**
@@ -1002,10 +1155,13 @@ function forena_schools_test_edit_rules_form_submit($form, &$form_state) {
   extract($form_state['storage']);
   $t = ForenaSchoolsTest::instance();
 
-  // Update the measure calculations.
-  $measure_calc = $form_state['values']['measure']['calc'];
-  $measure_calc['measure_id'] = $measure_id;
-  $t->saveMeasure($measure_calc);
+  // Update the measure.
+  $measure_data = $form_state['values']['measure'];
+  $measure_data['measure_id'] = $measure_id;
+  $t->load($test_id);
+  $t->loadSchedules();
+  $t->saveMeasure($measure_data);
 
-  // Update Rules.
+  // Update Validations.
+  $t->saveValidations($measure_id, $measure_data['normalization'], $form_state['values']['validations']);
 }

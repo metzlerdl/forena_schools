@@ -4,6 +4,7 @@ class ForenaSchoolsTest {
   public $test;
   public $measures;
   public $schedules;
+  public $validations;
 
   /**
    * Singleton Factory.
@@ -108,7 +109,10 @@ class ForenaSchoolsTest {
 
   // Load Schedules
   function loadSchedules() {
-    $rs = db_query('SELECT * FROM {a_test_schedules} WHERE test_id = :test_id ORDER BY seq', array(':test_id' => $this->test_id));
+
+    $rs = db_query('SELECT * FROM {a_test_schedules} WHERE test_id = :test_id ORDER BY seq',
+        array(':test_id' => $this->test_id)
+    );
     if (!$this->schedules = $rs->fetchAllAssoc('seq', PDO::FETCH_ASSOC)) {
       $this->schedules = array();
     }
@@ -119,6 +123,7 @@ class ForenaSchoolsTest {
     }
     return $this->schedules;
   }
+
 
   // Load all validations
   function loadValidations() {
@@ -396,6 +401,67 @@ class ForenaSchoolsTest {
       ->condition('test_id', $this->test_id)
       ->condition('seq', $seqs , 'NOT IN')
       ->execute();
+  }
+
+
+  function saveValidations($measure_id, $normalization, $validations) {
+
+    if (!$this->schedules) {
+      $this->loadSchedules();
+    }
+    if (!$this->validations) {
+      $this->loadValidations();
+    }
+    $m_val = array();
+    $min_grade = $this->test['min_grade'];
+    $max_grade = $this->test['max_grade'];
+    foreach($validations as $val) {
+      // Build validations from array.
+      if ($normalization == 'custom') {
+        $m_val[$val['grade_level']][$val['seq']] = $val;
+      }
+      else if ($normalization != 'grade') {
+        // We need to set each sequence for each grade level to be the same.
+        for ($g=$min_grade; $g <= $max_grade; $g++) {
+          $val['grade_level'] = $g;
+          foreach($this->schedules as $seq => $sched) {
+            $val['seq'] = $seq;
+            $m_val[$g][$seq] = $val;
+          }
+        }
+      }
+      else {
+        // We need to set each sequence
+        foreach($this->schedules as $seq => $sched) {
+          $val['seq'] = $seq;
+          $m_val[$val['grade_level']][$seq] = $val;
+        }
+      }
+    }
+
+    // Wipe existing validations and save.
+    if ($m_val) {
+      db_delete('a_test_rules')
+        ->condition('measure_id', $measure_id)
+        ->execute();
+      foreach($m_val as $grade_level => $grade_vals) {
+        foreach($grade_vals as $seq => $val) {
+          db_insert('a_test_rules')
+            ->fields(array(
+              'measure_id' => $measure_id,
+              'grade_level' => $grade_level,
+              'seq' => $seq,
+              'level_1' => $val['level_1'],
+              'level_2' => $val['level_2'],
+              'level_3' => $val['level_3'],
+              'level_4' => $val['level_4'],
+              'max_score' => $val['max_score'],
+            ))
+            ->execute();
+        }
+      }
+    }
+
   }
 
   /**

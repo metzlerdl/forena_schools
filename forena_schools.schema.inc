@@ -499,10 +499,10 @@ function forena_schools_schema() {
         'type' => 'varchar',
         'length' => 60,
       ),
-      'is_trendable' => array(
-      	'type' => 'int',
-        'size' => 'small',
-      )
+      'normalization' => array(
+      	'type' => 'varchar',
+        'length' => 25,
+      ),
     ),
     'primary key' => array('measure_id'),
   );

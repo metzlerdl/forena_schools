@@ -43,6 +43,12 @@ function forena_schools_update_7009() {
   db_query("insert into {a_profile_displays} (profile_id, display) SELECT profile_id, 'Group' from {a_profiles} where analysis_only = '0'" );
 }
 
+function forena_schools_update_7010() {
+  if (!db_field_exists('a_test_measures', 'normalization')) {
+    db_add_field('a_test_measures', 'normalization', array('type' => 'varchar', 'length' => 25 ));
+  }
+}
+
 /**
  * Loads configuration data from a simple xml file.  Usually saved from a forena block.
  * @param unknown_type $file
