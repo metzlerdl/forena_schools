@@ -754,10 +754,8 @@ function forena_schools_add_measure_submit($form, &$form_state) {
 }
 
 function forena_schools_save_measures_submit($form, &$form_state) {
-  extract($form_state['storage']);
   ForenaSchoolsTest::instance()->saveMeasures($form_state['values']['measures']);
   drupal_set_message('Test Measures Saved');
-  $form_state['redirect'] = "forenaschools/tests";
 }
 
 /**
