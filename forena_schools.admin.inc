@@ -554,14 +554,27 @@ function forena_schools_save_test_submit($form, &$form_state) {
   $t = ForenaSchoolsTest::instance();
   $test_id = $form_state['values']['test_id'];
   $t->saveGeneral($form_state['values']);
+  drupal_set_message(t('Changes saved.'));
   if (!$test_id) {
     $test_id = $form_state['values']['test_id'];
     $form_state['redirect'] = array("test/$test_id/edit");
   }
+
 }
 
 function forena_schools_test_edit_cancel($form, &$form_state) {
   $form_state['redirect'] = 'forenaschools/tests';
+}
+
+function forena_schools_measure_config_icon($test_id, $measure_id) {
+  $image = array(
+      'path' => file_create_url("misc/configure.png"),
+      'alt' => t('Configure'),
+      'title' => t('Configure'),
+  );
+  $image = theme('image', $image);
+  $options = array('html' => TRUE);
+  return l($image . $label, "test/$test_id/edit/rules/$measure_id", $options);
 }
 
 function forena_schools_test_edit_measures_form($form, &$form_state, $test_id) {
@@ -569,6 +582,9 @@ function forena_schools_test_edit_measures_form($form, &$form_state, $test_id) {
     drupal_not_found();
     exit;
   }
+  // build configu
+
+
   $t = ForenaSchoolsTest::instance();
   $t->load($test_id);
   $measures = $t->loadMeasures();
@@ -616,6 +632,12 @@ function forena_schools_test_edit_measures_form($form, &$form_state, $test_id) {
       '#default_value' => $measure['name'],
     );
 
+    $ctl['actions'] = array(
+    	'#type' => 'item',
+      '#title' => t('Config'),
+      '#markup' => forena_schools_measure_config_icon($test_id, $measure_id),
+    );
+
     $ctl['abbrev'] = array(
       '#type' => 'textfield',
       '#title' => t('Abbreviation'),
@@ -631,6 +653,7 @@ function forena_schools_test_edit_measures_form($form, &$form_state, $test_id) {
       '#size' => 20,
       '#default_value' => $measure['code'],
     );
+
 
     $ctl['inactive'] = array(
     	'#type' => 'checkbox',
@@ -691,6 +714,12 @@ function forena_schools_test_edit_measures_form($form, &$form_state, $test_id) {
     '#submit' => array('forena_schools_save_measures_submit'),
   );
 
+  $form['actions']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+      '#submit' => array('forena_schools_test_edit_cancel'),
+  );
+
   $form['new_measure']['actions'] = array(
     '#type' => 'submit',
     '#value' => 'add',
@@ -725,8 +754,10 @@ function forena_schools_add_measure_submit($form, &$form_state) {
 }
 
 function forena_schools_save_measures_submit($form, &$form_state) {
+  extract($form_state['storage']);
   ForenaSchoolsTest::instance()->saveMeasures($form_state['values']['measures']);
   drupal_set_message('Test Measures Saved');
+  $form_state['redirect'] = "forenaschools/tests";
 }
 
 /**
@@ -826,6 +857,12 @@ function forena_schools_test_edit_schedules_form($form, &$form_state, $test_id) 
     '#submit' => array('forena_schools_save_schedules_submit'),
   );
 
+  $form['actions']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+      '#submit' => array('forena_schools_test_edit_cancel'),
+  );
+
   return $form;
 }
 
@@ -909,26 +946,6 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
     $measure = $measures[$measure_id];
   }
 
-  $form['select'] = array(
-  	'#type' => 'fieldset',
-    '#title' => 'Select Measure',
-    '#tree' => TRUE,
-  );
-
-  $form['select']['measure_id'] = array(
-    '#type' => 'select',
-    '#title' => t('Measure'),
-    '#options' => $measure_list,
-    '#empty_option' => t('--select--'),
-    '#default_value' => $measure_id,
-    '#description' => 'Be careful to save changes before selecting another meausure.',
-  );
-
-  $form['select']['choose'] = array(
-  	'#type' => 'submit',
-    '#value' => t('Load'),
-    '#submit' => array('forena_schools_test_rules_select_measure_submit'),
-  );
 
   if ($measure_id) {
 
@@ -1113,7 +1130,6 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
     );
   }
 
-
   return $form;
 }
 
@@ -1164,4 +1180,6 @@ function forena_schools_test_edit_rules_form_submit($form, &$form_state) {
 
   // Update Validations.
   $t->saveValidations($measure_id, $measure_data['normalization'], $form_state['values']['validations']);
+  $form_state['redirect'] = "test/$test_id/edit/measures";
+
 }

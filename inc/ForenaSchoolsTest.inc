@@ -451,11 +451,11 @@ class ForenaSchoolsTest {
               'measure_id' => $measure_id,
               'grade_level' => $grade_level,
               'seq' => $seq,
-              'level_1' => $val['level_1'],
-              'level_2' => $val['level_2'],
-              'level_3' => $val['level_3'],
-              'level_4' => $val['level_4'],
-              'max_score' => $val['max_score'],
+              'level_1' => $this->val($val['level_1']),
+              'level_2' => $this->val($val['level_2']),
+              'level_3' => $this->val($val['level_3']),
+              'level_4' => $this->val($val['level_4']),
+              'max_score' => $this->val($val['max_score']),
             ))
             ->execute();
         }
@@ -480,5 +480,9 @@ class ForenaSchoolsTest {
       ->fields($measure)
       ->execute();
     $measure['measure_id'] = $measure_id;
+  }
+
+  public function val($val) {
+    return $val === '' ? NULL : floatval($val);
   }
 }

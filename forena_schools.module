@@ -285,9 +285,9 @@ function forena_schools_menu() {
 	    'file' => 'forena_schools.admin.inc',
 	);
 
-	$items['test/%/edit/rules'] = array(
-	    'title' => 'Rules',
-	    'type' => MENU_LOCAL_TASK,
+	$items['test/%/edit/rules/%'] = array(
+	    'title' => 'Advanced Measure Config',
+	    'type' => MENU_CALLBACK,
 	    'access callback' => 'forena_schools_access',
 	    'access arguments' => array('sys_admin'),
 	    'page callback' => 'drupal_get_form',
