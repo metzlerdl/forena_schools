@@ -940,6 +940,7 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
   $t->loadSchedules();
   $measures = $t->loadMeasures();
   $measure_list = $t->listMeasures();
+  $subjects = $t->subjectAreas();
   if ($measure_id) {
     $measure = $measures[$measure_id];
   }
@@ -977,6 +978,24 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
           'callback' => 'forena_schools_rules_ajax_callback',
           'wrapper' => 'measure-info',
       ),
+    );
+
+    $form['measure']['subject'] = array(
+    	'#type' => 'select',
+      '#options' => $subjects,
+      '#empty_option' => t('--none--'),
+      '#title' => 'Subject Area',
+      '#default_value' => $measure['subject'],
+      '#description' => 'Indicates subject growth graph that this measure counts towards.'
+    );
+
+    $form['measure']['grad_requirement'] = array(
+    	'#type' => 'select',
+      '#options' => $subjects,
+      '#empty_option' => t('--none--'),
+      '#title' => t('Graduation Requirement'),
+      '#description' => t('Indicates subject this is a grad requirement for'),
+      '#default_value' => $measure['grad_requirement'],
     );
 
     $calc_list = $measure_list;

@@ -347,7 +347,6 @@ class ForenaSchoolsTest {
         }
         $measure['calc_measures'] = $calc_measures;
       }
-
       db_update('a_test_measures')
         ->fields($measure)
         ->condition('measure_id', $measure_id)
@@ -482,7 +481,26 @@ class ForenaSchoolsTest {
     $measure['measure_id'] = $measure_id;
   }
 
+  /**
+   * Convert numeric value to NULL or numeric
+   * @param string $val
+   * @return number
+   */
   public function val($val) {
     return $val === '' ? NULL : floatval($val);
+  }
+
+  /**
+   * Return the subject areas defined in the system.
+   * @return areas:
+   */
+  public function subjectAreas() {
+    $subjects = array();
+    $rs = db_query('SELECT subject FROM i_subjects ');
+    if ($rs) {
+      $vals = $rs->fetchCol();
+      $subjects = array_combine($vals, $vals);
+    }
+    return $subjects;
   }
 }
