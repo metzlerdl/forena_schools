@@ -503,6 +503,10 @@ function forena_schools_schema() {
       	'type' => 'varchar',
         'length' => 25,
       ),
+      'is_graphable' => array(
+      	'type' => 'int',
+        'size' => 'tiny',
+      ),
     ),
     'primary key' => array('measure_id'),
   );

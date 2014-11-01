@@ -998,6 +998,14 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
       '#default_value' => $measure['grad_requirement'],
     );
 
+    $form['measure']['is_graphable'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'Graphable',
+      '#description' => t('This measure has enough variation to be able to graph its values over time.
+          This graph will be either normal or raw values based on the normalizatioin type. '),
+      '#default_value' => $measure['is_graphable'],
+    );
+
     $calc_list = $measure_list;
     unset($calc_list[$measure_id]);
     $form['measure']['calc_measures'] = array(
