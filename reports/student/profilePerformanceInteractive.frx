@@ -31,6 +31,7 @@
       frx:renderer="FrxSVGGraph" 
       frx:series_1="{norm_score}" 
       frx:label="{grade}" 
+      frx:guideline="3"
       frx:tooltip = "{name}: {score}"
       frx:best_fit="straight" 
       frx:label_x="Grade Level" 
@@ -55,7 +56,7 @@
 	</div>
   
 
-  <h3>Student Performanc by Subject</h3>
+  <h3>Student Performance by Subject</h3>
 
 	<div id="subject_performance" frx:block="ims/student/subject_performance_summary" frx:parameters="3subjects=1" >
     <p> 
