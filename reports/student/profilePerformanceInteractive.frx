@@ -30,7 +30,8 @@
 		<svg frx:type="scatterplot" 
       frx:renderer="FrxSVGGraph" 
       frx:series_1="{norm_score}" 
-      frx:seriesx_1="{grade}" 
+      frx:label="{grade}" 
+      frx:tooltip = "{name}: {score}"
       frx:best_fit="straight" 
       frx:label_x="Grade Level" 
       frx:label_y="Normalized Score"/>
