@@ -1100,7 +1100,7 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
           '#title' => t('Schedule'),
           '#markup' => $schedules[$seq]['label'],
         );
-        $ctl['sched'] = array(
+        $ctl['seq'] = array(
         	'#type' => 'value',
           '#value' => $seq,
         );

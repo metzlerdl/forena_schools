@@ -9,7 +9,7 @@
 <frx:options form="InteractiveGraph"/>
 <frx:fields/>
 <frx:parameters>
-	<frx:parm id="profile_id" label="Profile" type="select" data_source="ims/student/performance_profiles" data_field="profile_id" label_field="name"/> 
+	<frx:parm id="profile_id" label="Profile" type="select" data_source="ims/student/performance_profiles" data_field="profile_id" label_field="name"/>   
 	<frx:parm id="school_year" type="hidden"/>
 </frx:parameters>
 <frx:docgen>
@@ -26,19 +26,14 @@
   </div>
 
   <div id="subject_performance" frx:block="ims/student/profile_performance">
-
-		<svg frx:type="scatterplot" frx:renderer="FrxSVGGraph" frx:series_1="{norm_score}" frx:seriesx_1="{grade}" frx:best_fit="straight" frx:label_x="Grade Level" frx:label_y="Normalized Score"/>
-
-		<table>
-		<tr frx:foreach="*">
-		  <td><span frx:renderer="FrxXMLSource"/></td>
-		</tr></table>
-	</div>
-  
-
-  <h3>Scores</h3>
-
-	<div id="subject_performance" frx:block="ims/student/profile_performance">
+    <div frx:frenderer="FrxXML"/>
+		<svg frx:type="scatterplot" 
+      frx:renderer="FrxSVGGraph" 
+      frx:series_1="{norm_score}" 
+      frx:seriesx_1="{grade}" 
+      frx:best_fit="straight" 
+      frx:label_x="Grade Level" 
+      frx:label_y="Normalized Score"/>
 		<table>
 		<thead>
 		 <tr>
@@ -56,6 +51,23 @@
 		  <td>{norm_score}</td>
 		</tr>
 		</tbody></table>
+	</div>
+  
+
+  <h3>Student Performanc by Subject</h3>
+
+	<div id="subject_performance" frx:block="ims/student/subject_performance_summary" frx:parameters="3subjects=1" >
+    <p> 
+      The following graph demonstrates normalized scores on a scale from 1-5 for graphable subject areas over a 
+      averaged over a two year history.
+    </p>
+    <svg frx:renderer="FrxSVGGraph" frx:type="radargraph"
+      series_1="{norm_score}" label="{subject}" axis_max_v="5" 
+      grid_division_v="1" grid_back_stripe="1" 
+      grid_back_colour="white"
+      guideline="3"
+      guideline_colour="green"
+      grid_back_stripe_colour="#ddd"/>
 	</div>
 </body>
 </html>

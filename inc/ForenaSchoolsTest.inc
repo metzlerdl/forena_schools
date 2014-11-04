@@ -142,15 +142,15 @@ class ForenaSchoolsTest {
     foreach ($rows as $valid) {
       if (isset($this->schedules[$valid['seq']])
           && isset($this->measures[$valid['measure_id']])
-          && $valid['grade_level']>= $this->test['grade_level']
-          && $valid['grade_level']<= $this->test['grade_level'])
+          && $valid['grade_level']>= $this->test['min_grade']
+          && $valid['grade_level']<= $this->test['max_grade'])
       $validations[$valid['measure_id']][$valid['grade_level']][$valid['seq']] = $valid;
     }
 
     foreach ($this->measures as $mid => $measure) {
       for ($g=$this->test['min_grade']; $g<= $this->test['max_grade']; $g++) {
         foreach ($this->schedules as $seq=>$sched) {
-          if (!$validations[$mid][$g][$seq]) {
+          if (!isset($validations[$mid][$g][$seq])) {
             $validations[$mid][$g][$seq] = array(
               'measure_id' => $mid,
             	'grade_level' => $g,

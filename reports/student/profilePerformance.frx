@@ -11,6 +11,7 @@
 <frx:parameters>
 	<frx:parm id="profile_id"  label="Profile"  type="select" data_source="ims/student/performance_profiles" data_field="profile_id" label_field="name"/> 
 	<frx:parm id="school_year" type="hidden"></frx:parm>
+  
 </frx:parameters>
 <frx:docgen />
 <!--  <frx:menu path="student/:person_id/profile" type="local-task" title="Performance"/>
