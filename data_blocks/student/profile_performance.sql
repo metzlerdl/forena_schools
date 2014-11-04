@@ -1,11 +1,17 @@
 --ACCESS=TEACHER
 SELECT 
+  a.person_id,
   a.grade_level, 
   t.abbrev as test_abbrev, 
   t.name as test_name, 
   round((a.grade_level + (a.date_taken - y.start_date)*1.0/(y.end_date-y.start_date)* 1.0), 2) grade,
   a.date_taken, 
-  m.abbrev, m.name, sc.norm_score, sc.score FROM 
+  m.abbrev, 
+  m.name,
+  m.subject, 
+  m.is_graphable, 
+  sc.norm_score, 
+  sc.score FROM 
   a_profiles p JOIN a_profile_measures pm ON pm.profile_id=p.profile_id
   JOIN a_test_measures m ON pm.measure_id=m.measure_id
   JOIN a_tests t ON m.test_id = t.test_id
@@ -17,4 +23,5 @@ WHERE a.person_id=:person_id
   AND a.school_year - :filter.school_year >= p.school_year_offset
   AND a.school_year <= :filter.school_year
   AND p.profile_id =:profile_id
+  AND m.is_graphable=1
 ORDER BY date_taken

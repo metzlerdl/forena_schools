@@ -9,8 +9,9 @@
 <frx:options form="InteractiveGraph"/>
 <frx:fields/>
 <frx:parameters>
-	<frx:parm id="profile_id" label="Profile" type="select" data_source="ims/student/performance_profiles" data_field="profile_id" label_field="name"/>   
+	<frx:parm id="profile_id" label="Profile" type="select" data_source="ims/student/performance_profiles" data_field="profile_id" label_field="name" required="true"/>   
 	<frx:parm id="school_year" type="hidden"/>
+  <frx:parm id="showdata" type="checkbox" label="Include data"/>
 </frx:parameters>
 <frx:docgen>
 </frx:docgen>
@@ -24,20 +25,35 @@
   <div id="profile" frx:block="ims/profiles/profile" frx:foreach="*">
     <h2>{name}</h2>
   </div>
-
-  <div id="subject_performance" frx:block="ims/student/profile_performance">
+  <div id="profile_performance" frx:block="ims/student/profile_performance">
     <div frx:frenderer="FrxXML"/>
-		<svg frx:type="scatterplot" 
+		<svg frx:type="multilinegraph" 
       frx:renderer="FrxSVGGraph" 
       frx:series_1="{norm_score}" 
       frx:label="{grade}" 
+      frx:axis_min_h="0"
+      frx:axis_max_h="{profile.max_grade}"
       frx:guideline="3"
-      frx:tooltip = "{name}: {score}"
+      frx:dim="{subject}"
+      frx:group="{grade}"
+      frx:legend_entries="{subject}"
+      frx:tooltip = "{test_abbrev} {name}: {score}"
       frx:best_fit="straight" 
+      frx:marker_colour_1="red"
+      frx:marker_colour_2="blue"
+      frx:marker_colour_3="green"
+      frx:marker_colour_4="orange"
+      frx:best_fit_colour_1 = "red"
+      frx:best_fit_colour_2 = "blue" 
+      frx:best_fit_colour_3 = "green"
+      frx:best_fit_colour_4 = "orange"
+      frx:legend_position = "outer left 5 5"
+      frx:grid_division_v = "1"
+      frx:axis_max_v = "5"
       frx:label_x="Grade Level" 
       frx:label_y="Normalized Score"/>
-		<table>
-		<thead>
+		<table frx:if="{parm.showdata}">
+		<thead >
 		 <tr>
 		   <th>Date</th>
 		   <th>Measure</th>
@@ -54,14 +70,22 @@
 		</tr>
 		</tbody></table>
 	</div>
-  
-
-  <h3>Student Performance by Subject</h3>
-
-	<div id="subject_performance" frx:block="ims/student/subject_performance_summary" frx:parameters="3subjects=1" >
+  <div frx:if="!{profile_performance.row/person_id}"> 
+    <p >
+      Well, that's embarassing!   You selected a profile, but no graphable performance measures were found. 
+      This may be because the student did not participate in any assessments that are included in this profile
+      or it may meant that the profile is set up incorrectly. 
+    </p> 
     <p> 
-      The following graph demonstrates normalized scores on a scale from 1-5 for graphable subject areas over a 
-      averaged over a two year history.
+      Please contact technical support for additional info. 
+    </p>
+  </div>
+  <h3>Performance by Subject</h3>
+	<div id="subject_performance" 
+    frx:block="ims/student/profile_subject_performance_summary" 
+    frx:if="{*[subjects &gt; 2]}">
+    <p> 
+      The following graph demonstrates normalized scores on a scale from 1-5 for graphable subject areas. 
     </p>
     <svg frx:renderer="FrxSVGGraph" frx:type="radargraph"
       series_1="{norm_score}" label="{subject}" axis_max_v="5" 
@@ -71,5 +95,6 @@
       guideline_colour="green"
       grid_back_stripe_colour="#ddd"/>
 	</div>
+  
 </body>
 </html>
