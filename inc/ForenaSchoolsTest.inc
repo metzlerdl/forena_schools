@@ -127,6 +127,9 @@ class ForenaSchoolsTest {
 
   // Load all validations
   function loadValidations() {
+    if (!$this->schedules) $this->loadSchedules();
+    if (!$this->measures) $this->loadMeasures();
+
     $validations = array();
     $rs = db_query('SELECT * FROM {a_test_rules} r JOIN {a_test_measures} m ON m.measure_id=r.measure_id WHERE m.test_id = :test_id
       ORDER BY r.measure_id, r.grade_level', array(':test_id' => $this->test_id));
@@ -137,7 +140,30 @@ class ForenaSchoolsTest {
       $this->validations = array();
     }
     foreach ($rows as $valid) {
+      if (isset($this->schedules[$valid['seq']])
+          && isset($this->measures[$valid['measure_id']])
+          && $valid['grade_level']>= $this->test['grade_level']
+          && $valid['grade_level']<= $this->test['grade_level'])
       $validations[$valid['measure_id']][$valid['grade_level']][$valid['seq']] = $valid;
+    }
+
+    foreach ($this->measures as $mid => $measure) {
+      for ($g=$this->test['min_grade']; $g<= $this->test['max_grade']; $g++) {
+        foreach ($this->schedules as $seq=>$sched) {
+          if (!$validations[$mid][$g][$seq]) {
+            $validations[$mid][$g][$seq] = array(
+              'measure_id' => $mid,
+            	'grade_level' => $g,
+              'seq' => $seq,
+              'level_1' => '',
+              'level_2' => '',
+              'level_3' => '',
+              'level_4' => '',
+              'max_score' => '',
+            );
+          }
+        }
+      }
     }
     $this->validations = $validations;
     return $this->validations;
