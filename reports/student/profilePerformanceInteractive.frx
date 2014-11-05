@@ -72,9 +72,9 @@
 	</div>
   <div frx:if="!{profile_performance.row/person_id}"> 
     <p >
-      Well, that's embarassing!   You selected a profile, but no graphable performance measures were found. 
+      Well, that's unfortunate!   You selected a profile, but no graphable performance measures were found. 
       This may be because the student did not participate in any assessments that are included in this profile
-      or it may meant that the profile is set up incorrectly. 
+      or it may mean that the profile is set up incorrectly. 
     </p> 
     <p> 
       Please contact technical support for additional info. 
@@ -89,11 +89,8 @@
     </p>
     <svg frx:renderer="FrxSVGGraph" frx:type="radargraph"
       series_1="{norm_score}" label="{subject}" axis_max_v="5" 
-      grid_division_v="1" grid_back_stripe="1" 
-      grid_back_colour="white"
-      guideline="3"
-      guideline_colour="green"
-      grid_back_stripe_colour="#ddd"/>
+      grid_division_v="1" 
+      grid_back_colour="white"/>
 	</div>
   
 </body>
