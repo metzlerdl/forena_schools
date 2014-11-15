@@ -87,7 +87,7 @@ class ForenaSchoolsTest {
       }
     }
     // NO common parents means this is a root level measure, so list all root level measures.
-    else {
+    elseif (!$list) {
       foreach($this->measures as $mid => $measure) {
         if ($measure['parent_measure'] == $measure['measure_id'] && $measure_id != $mid) {
           $list[$mid] = $measure['name'];
