@@ -63,8 +63,45 @@ class ForenaSchoolsTest {
     return $this->test;
   }
 
+  // List the measures that might be included the calculation.
+  public function childMeasures($measure_id) {
+    // Make sure we have measures loaded.
+    if (!$this->measures) {
+      $this->loadMeasures();
+    }
+
+    // Determine if the measure is a parent.
+    $list = array();
+    foreach($this->measures as $mid => $measure) {
+      if ($measure['parent_measure'] == $measure_id && $mid != $measure_id) {
+        $list[$mid] = $measure['name'];
+      }
+    }
+
+    // NO children means this is a parent and we should list all children with common parents as a choice
+    if (!$list && @$measure_id != $this->measures[$measure_id]['parent_measure']) {
+      foreach($this->measures as $mid => $measure) {
+        if ($measure['parent_measure'] == @$this->measures[$measure_id]['parent_measure']&& $mid != $measure_id) {
+          $list[$mid] = $measure['name'];
+        }
+      }
+    }
+    // NO common parents means this is a root level measure, so list all root level measures.
+    else {
+      foreach($this->measures as $mid => $measure) {
+        if ($measure['parent_measure'] == $measure['measure_id'] && $measure_id != $mid) {
+          $list[$mid] = $measure['name'];
+        }
+      }
+    }
+
+
+    return $list;
+  }
+
+  // List the measures for a test.
   function listMeasures($test_id='') {
-      if (!$test_id) $test_id = $this->test_id;
+     if (!$test_id) $test_id = $this->test_id;
       $rs = db_query('SELECT measure_id, name FROM {a_test_measures}
       WHERE test_id = :test_id
         ORDER by sort_order', array(':test_id' => $test_id)

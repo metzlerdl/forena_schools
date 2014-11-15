@@ -939,7 +939,8 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
   $t->load($test_id);
   $t->loadSchedules();
   $measures = $t->loadMeasures();
-  $measure_list = $t->listMeasures();
+  $measure_list = $t->childMeasures($measure_id);
+  $measure_count = count($measure_list);
   $subjects = $t->subjectAreas();
   if ($measure_id) {
     $measure = $measures[$measure_id];
@@ -974,10 +975,21 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
       '#options' => $calc_choices,
       '#title' => t('Caculation rule method'),
       '#default_value' => $measure['calc_rule'],
+      '#disabled' => $measure_count < 2,
       '#ajax' => array(
           'callback' => 'forena_schools_rules_ajax_callback',
           'wrapper' => 'measure-info',
       ),
+    );
+
+    $calc_list = $measure_list;
+    unset($calc_list[$measure_id]);
+    $form['measure']['calc_measures'] = array(
+      '#type' => 'checkboxes',
+      '#options' => $calc_list,
+      '#title' => t('Measured included in calculation'),
+      '#access' => !empty($measure['calc_rule']),
+      '#default_value' => $measure['calc_measures'],
     );
 
     $form['measure']['subject'] = array(
@@ -1004,16 +1016,6 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
       '#description' => t('This measure has enough variation to be able to graph its values over time.
           This graph will be either normal or raw values based on the normalizatioin type. '),
       '#default_value' => $measure['is_graphable'],
-    );
-
-    $calc_list = $measure_list;
-    unset($calc_list[$measure_id]);
-    $form['measure']['calc_measures'] = array(
-      '#type' => 'checkboxes',
-      '#options' => $calc_list,
-      '#title' => t('Measured included in calculation'),
-      '#access' => !empty($measure['calc_rule']),
-      '#default_value' => $measure['calc_measures'],
     );
 
     // New validation type
@@ -1153,6 +1155,13 @@ function forena_schools_test_edit_rules_form($form, &$form_state, $test_id='', $
       '#type' => 'submit',
       '#value' => t('Save'),
     );
+
+    $form['actions']['cancel'] = array(
+    	'#type' => 'submit',
+      '#value' => t('Cancel'),
+      '#submit' => array('forena_schools_measure_edit_cancel'),
+      '#limit_validation_errors' => array(),
+    );
   }
 
   return $form;
@@ -1167,6 +1176,16 @@ function forena_schools_test_rules_select_measure_submit($form, &$form_state) {
   extract($form_state['storage']);
   $measure_id = $form_state['values']['select']['measure_id'];
   $form_state['redirect'] = "test/$test_id/edit/rules/$measure_id";
+}
+
+function forena_schools_measure_edit_cancel($form, &$form_state) {
+  extract($form_state['storage']);
+  if ($test_id) {
+    $form_state['redirect'] = "test/$test_id/edit/measures";
+  }
+  else {
+    $form_state['redirect'] = 'forenaschools/tests';
+  }
 }
 
 function forena_schools_validation_ajax_callback($form, &$form_state) {
