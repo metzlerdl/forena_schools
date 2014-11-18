@@ -45,11 +45,11 @@
 
   Drupal.behaviors.forenaSchools = {
     attach: function (context, settings) {
-      var oTable = jQuery('table.pedagoggle-scores').dataTable({
+    var oTable = jQuery('table.pedagoggle-scores').dataTable({
         "bPaginate": false, 
         "bSort": true,
-        "sScrollX": "80%",
-        "sScrollY": "500",
+        "sScrollX": "100%",
+        "sScrollY": "500",  
         "bScrollCollapse": true
       }); 
       if (oTable) { 

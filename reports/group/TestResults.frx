@@ -31,7 +31,7 @@
 				<table frx:renderer="FrxPedagoggleScores" frx:profile="schedule">
 					<thead>
 						<tr>
-							<th class="name">Name</th>
+							<th class="name" width="150px;">Name</th>
 							<th style="display: none;">SIS ID</th>
 							<th style="display: none;">Building</th>
 							<th style="display: none;">Grade</th>
@@ -39,7 +39,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>{last_name}, {first_name}</td>
+							<td class="name" width="150px;">{last_name}, {first_name}</td>
 							<td style="display: none;">{sis_id}</td>
 							<td style="display: none;">{sis_code}</td>
 							<td style="display: none;">{grade}</td>
