@@ -4,7 +4,7 @@
 	width: 300px; 
 }
 
-th.m-abbrev, td.score { width: 50px; }
+th.m-abbrev, td.score { width: 60px; }
 
 .test-scores { 
 	min-width : 25em;

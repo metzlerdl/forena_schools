@@ -24,7 +24,7 @@ class FrxPedagoggleScores extends FrxRenderer {
     	  $this->parseFields($measures,$depth);
     	}
     }
-    $width = (count($this->columns) + count($this->def_columns) +1) * 70 + 320;
+    $width = (count($this->columns) + count($this->def_columns) +1) * 75 + 320;
     $output = "<table class='pedagoggle-scores table table-bordered' style='width:${width}px;'>";
     $output .= $this->renderHeaders();
     $output .= $this->renderStudents();
