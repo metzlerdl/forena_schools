@@ -15,6 +15,9 @@
 		link="reports/building.GradeTestView.csv?test_id={parm.test_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
 </frx:fields>
 <title>Test Results for Grade</title>
+<style>
+  svg { max-width: 800px;; max-height: 600px; width: 100%; height: 100%; }
+</style>
 </head>
 <body>
 	<div id="bldg" frx:block="ims/building/building_grade" frx:foreach="*">
