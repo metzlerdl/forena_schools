@@ -9,7 +9,6 @@
 <frx:options form="InteractiveGraph"/>
 <frx:fields/>
 <frx:parameters>
-	<frx:parm id="profile_id" label="Profile" type="select" data_source="ims/student/performance_profiles" data_field="profile_id" label_field="name" required="true"/>   
 	<frx:parm id="school_year" type="hidden"/>
   <frx:parm id="showdata" type="checkbox" label="Include data"/>
 </frx:parameters>
@@ -25,6 +24,8 @@
   <div id="profile" frx:block="ims/profiles/profile" frx:foreach="*">
     <h2>{name}</h2>
   </div>
+  <div frx:block="ims/student/performance_profiles" frx:foreach="*">
+   <h2>{name}</h2>
   <div id="profile_performance" frx:block="ims/student/profile_performance">
     <div frx:frenderer="FrxXML"/>
 		<svg frx:type="multilinegraph" 
@@ -72,7 +73,7 @@
 	</div>
   <div frx:if="!{profile_performance.row/person_id}"> 
     <p >
-      Well, that's unfortunate!   You selected a profile, but no graphable performance measures were found. 
+      Well, that's unfortunate!   No graphable performance measures were found. 
       This may be because the student did not participate in any assessments that are included in this profile
       or it may mean that the profile is set up incorrectly. 
     </p> 
@@ -92,6 +93,7 @@
       grid_division_v="1" 
       grid_back_colour="white"/>
 	</div>
+  </div>
   
 </body>
 </html>
