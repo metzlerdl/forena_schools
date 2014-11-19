@@ -47,10 +47,24 @@
 		<div id="schedule" frx:block="ims/building/stat_schedules"
 			frx:foreach="*">
 			<h4>{sched_label} {year_label}</h4>
-			<div
-				frx:src="reports/building.TestStatsGraph.svg?height=400&amp;width=600&amp;test_id={test_id}&amp;school_year={school_year}&amp;seq={seq}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}"
-				frx:renderer="FrxInclude" frx:height="420" frx:width="640"></div>
+
 			<div id="test_stats" frx:block="ims/building/schedule_stats">
+      <svg id="test-chart" frx:renderer="FrxSVGGraph"
+        frx:link="building.MeasureStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;school_year={parm.school_year}"
+        frx:type="stackedbargraph" frx:xpath="*" frx:height="600"
+        frx:width="800"
+        frx:series_1="{bl1_percent}"
+        frx:series_2="{bl2_percent}"
+        frx:series_3="{bl3_percent}"
+        frx:series_4="{bl4_percent}"
+        frx:label="{abbrev}"
+        frx:colour_1="#E3B5B5"
+        frx:colour_2="#E3E288"
+        frx:colour_3="#BBE3B5"
+        frx:colour_4="#B5C0E3"
+        frx:axis_max_v="100.0"
+        frx:grid_division_v="10">
+      </svg>
 				<table>
 					<thead>
 						<tr>
