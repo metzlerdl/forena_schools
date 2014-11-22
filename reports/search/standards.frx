@@ -16,7 +16,7 @@
 	<frx:parm id="grade_level" type="selectajax" data_source="ims/grade_levels"/>
 	<frx:parm id="max_grade_level" type="select" data_source="ims/grade_levels"/>
 	<frx:parm id="test_id" type="selectajax" data_source="ims/building/tests"/> 
-	<frx:parm id="grad_subject" type="select" data_source="ims/tests/grad_subjects" /> 
+	<frx:parm id="grad_subject" type="multiselect" data_source="ims/tests/grad_subjects" /> 
 	<frx:parm id="norm_score" type="select" data_source="ims/tests/norm_scores">3</frx:parm>
 	<frx:parm id="last"/>
 </frx:parameters>
