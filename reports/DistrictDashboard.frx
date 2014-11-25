@@ -7,6 +7,7 @@
 <frx:fields>
 	<frx:field id="@title" link="{@path}" target="{@target}" />
 	<frx:field id="name" link="reports/BuildingDashboard?bldg_id={bldg_id}" />
+  <frx:field id="grade_level_name" link="reports/district.GradeDashboard?grade_level={grade_level}"/> 
 </frx:fields>
 <frx:parameters>
 </frx:parameters>
@@ -40,5 +41,11 @@
 			</li>
 		</ul>
 	</div>
+  <div frx:block="ims/grade_levels" class="span3">
+    <h2>District Grade Level Data</h2>
+    <ul>
+      <li frx:foreach="*">{grade_level_name}</li>
+    </ul>
+  </div>
 </body>
 </html>

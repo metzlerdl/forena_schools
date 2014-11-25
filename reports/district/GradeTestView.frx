@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:options hidden="1" />
+<frx:fields>
+  <frx:field id="bldg.name" link="reports/BuildingDashboard?bldg_id={bldg_id}" />
+  <frx:field id="grade_name" link="{bldg.building_dashboard}?bldg_id={bldg_id}&amp;grade_level={parm.grade_level}" />
+  <frx:field id="last_name" link="student/{person_id}" />
+  <frx:field id="export"
+    link="reports/district.GradeTestView.csv?test_id={parm.test_id}&amp;grade_level={parm.grade_level}&amp;school_year={parm.school_year}&amp;seq={parm.seq}">Export to .csv</frx:field>
+</frx:fields>
+<title>Test Results for Grade</title>
+<style>
+svg {
+	max-width: 800px;;
+	max-height: 600px;
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+<body>
+
+  <div id="test_block" frx:block="ims/tests/schedule">
+    <div frx:foreach="*" id="profile">
+      <h3>{test_name} - {sched_label}</h3>
+      <div class="pedagoggle-scores" frx:block="ims/district/grade_test_scores"
+        frx:parameters="school_year={profile.school_year}&amp;seq={seq}&amp;grade_level={parm.grade_level}&amp;bldg_id={parm.bldg_id}&amp;test_id={parm.test_id}">
+        <table class="table" frx:renderer="FrxPedagoggleScores" frx:profile="profile" style="width: 2048px;">
+          <thead>
+            <tr>
+              <th class="name">Name</th>
+              <th style="display: none;">SIS ID</th>
+              <th style="display: none;">Building</th>
+              <th style="display: none;">Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="name">{last_name}, {first_name}</td>
+              <td style="display: none;">{sis_id}</td>
+              <td style="display: none;">{sis_code}</td>
+              <td style="display: none;">{grade}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="schedule-stats" frx:block="ims/district/test_statistics">
+        <svg id="test-chart" frx:renderer="FrxSVGGraph"
+        frx:link="building.MeasureStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;school_year={parm.school_year}"
+        frx:type="stackedbargraph" frx:xpath="*" frx:height="600"
+        frx:width="800"
+        frx:series_1="{bl1_percent}"
+        frx:series_2="{bl2_percent}"
+        frx:series_3="{bl3_percent}"
+        frx:series_4="{bl4_percent}"
+        frx:label="{abbrev}"
+        frx:colour_1="#E3B5B5"
+        frx:colour_2="#E3E288"
+        frx:colour_3="#BBE3B5"
+        frx:colour_4="#B5C0E3"
+        frx:axis_max_v="100.0"
+        frx:grid_division_v="10">
+        </svg>
+        <table>
+          <thead>
+            <tr>
+              <th>measure</th>
+              <th>building average</th>
+              <th>district average</th>
+              <th>struggling</th>
+              <th>below</th>
+              <th>met</th>
+              <th>exceeded</th>
+              <th>percent met standard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr frx:foreach="*">
+              <td>{name}</td>
+              <td>{b_score}</td>
+              <td>{d_score}</td>
+              <td>{bl1_percent}</td>
+              <td>{bl2_percent}</td>
+              <td>{bl3_percent}</td>
+              <td>{bl4_percent}</td>
+              <td>{b_percent_met}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+  <div id="footer-block">
+    <ul class="nav hnav">
+      <li>{export}</li>
+    </ul>
+  </div>
+</body>
+</html>

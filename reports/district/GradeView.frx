@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root [
+<!ENTITY nbsp "&#160;">
+]>
+<html xmlns:frx="urn:FrxReports">
+<head>
+<frx:options hidden="1"/>
+<frx:fields>
+  <frx:field id="grade_name" link="reports/district.GradeView?grade_level={grade_level}"/>
+  <frx:field id="export" link="reports/district.GradeView.csv?profile_id={parm.profile_id}&amp;bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}">Export to .csv</frx:field> 
+</frx:fields>
+<title>Grade View</title>
+</head>
+<body>
+  <div frx:block="ims/grade" frx:foreach="*" >
+    <h2>{grade_name}</h2>
+  </div>
+
+  <div id="profile-block" frx:block="ims/profiles/profile">
+    <div frx:foreach="*" id="profile">
+      <h3>{name}</h3>
+      <div class="pedagoggle-scores" frx:block="ims/district/grade_profile_scores" >
+      <table class="table" frx:renderer="FrxPedagoggleScores" frx:profile="profile">
+        <thead>
+          <tr>
+            <th class="name">Name</th>
+            <th style="display: none; ">SIS ID </th>
+            <th style="display: none; ">Building</th>
+            <th style="display: none;">Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name">{last_name}, {first_name}</td>
+            <td style="display: none;">{sis_id}</td>
+            <td style="display: none;">{sis_code}</td>
+            <td style="display: none;">{grade}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  <div id="footer-block" >
+    <ul class="nav hnav">
+     <li>{export}</li>
+    </ul>
+  </div>
+</body>
+</html>
