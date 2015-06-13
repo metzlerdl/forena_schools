@@ -55,7 +55,7 @@
 					level.
 				</p>
 
-			<div id="schedule-stats" frx:block="ims/building/test_statistics">
+			<div id="schedule-stats" frx:block="ims/building/schedule_stats">
         <svg id="test-chart" frx:renderer="FrxSVGGraph"
         frx:link="building.MeasureStatistics?bldg_id={parm.bldg_id}&amp;grade_level={parm.grade_level}&amp;measure_id={measure_id}&amp;school_year={parm.school_year}"
         frx:type="stackedbargraph" frx:xpath="*" frx:height="600"
