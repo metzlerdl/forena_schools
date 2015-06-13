@@ -157,6 +157,7 @@ class ForenaSchoolsTest {
     foreach($this->schedules as $k=>$schedule) {
       $this->schedules[$k]['start_date'] = $y->date($schedule['start_day']);
       $this->schedules[$k]['end_date'] = $y->date($schedule['end_day']);
+      $this->schedules[$k]['target_date'] = $y->date($schedule['target_day']);
     }
     return $this->schedules;
   }
@@ -440,7 +441,8 @@ class ForenaSchoolsTest {
 
       $schedule['start_day'] = $y->day($schedule['start_date']);
       $schedule['end_day'] = $y->day($schedule['end_date']);
-      $fields = array_fill_keys(array('seq', 'label', 'start_day', 'end_day'), '');
+      $schedule['target_day'] = $y->day($schedule['target_date']);
+      $fields = array_fill_keys(array('seq', 'label', 'start_day', 'end_day', 'target_day'), '');
       $schedule = array_intersect_key($schedule, $fields);
       $seqs[] = $schedule['seq'];
       if (isset($this->schedules[$schedule['seq']])) {

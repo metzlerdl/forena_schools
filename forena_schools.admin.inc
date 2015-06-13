@@ -815,6 +815,14 @@ function forena_schools_test_edit_schedules_form($form, &$form_state, $test_id) 
       '#default_value' => $schedule['start_date'],
     );
 
+    $ctl['target_date'] = array(
+      '#type' => 'date_popup',
+      '#title' => t('Target Date'),
+      '#required' => TRUE,
+      '#date_format' => 'Y-m-d',
+      '#default_value' => $schedule['target_date'],
+    );
+
     $ctl['end_date'] = array(
     	'#type' => 'date_popup',
       '#required' => TRUE,

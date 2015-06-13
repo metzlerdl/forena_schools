@@ -172,6 +172,6 @@ class ForenaSchoolsYear {
     $i = $start->diff($date);
     $interval = (int)$i->format('%r%a');
     if ($interval < 0) $interval += 365;
-    return $interval + 1;
+    return $interval;
   }
 }
