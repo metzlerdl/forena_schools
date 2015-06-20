@@ -393,8 +393,6 @@ class ForenaSchoolsTest {
           $child_no++;
         }
         $measures[$mid]['sort_order'] = $measure['sort_order'] = sprintf('%d.%02d', $parent_no, $child_no);
-        // Remove the weight column
-        unset($measure['weight']);
       }
 
       $measure_id = $measure['measure_id'];
@@ -411,6 +409,8 @@ class ForenaSchoolsTest {
         }
         $measure['calc_measures'] = $calc_measures;
       }
+      // Remove the weight column
+      unset($measure['weight']);
       db_update('a_test_measures')
         ->fields($measure)
         ->condition('measure_id', $measure_id)
@@ -540,6 +540,7 @@ class ForenaSchoolsTest {
   function addMeasure(&$measure) {
     // Determine default sort
     $measure['test_id'] = $this->test_id;
+    if (!$measure['parent_measure']) $measure['parent_measure'] = NULL;
     $measure_id = db_insert('a_test_measures')
       ->fields($measure)
       ->execute();
